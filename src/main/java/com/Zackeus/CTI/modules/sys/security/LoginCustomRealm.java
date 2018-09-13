@@ -1,12 +1,9 @@
 package com.Zackeus.CTI.modules.sys.security;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -78,20 +75,6 @@ public class LoginCustomRealm extends AuthorizingRealm {
 		}
     }
     
-    /**
-     * 
-     * @Title：initCredentialsMatcher
-     * @Description: TODO(设定密码校验的Hash算法与迭代次数,重写 shiro 密码校验规则)
-     * @see：    被@PostConstruct修饰的方法会在服务器加载Servle的时候运行，并且只会被服务器执行一次。
-     * PostConstruct在构造函数之后执行,init()方法之前执行。PreDestroy（）方法在destroy()方法执行执行之后执行
-     */
-	@PostConstruct
-	public void initCredentialsMatcher() {
-		HashedCredentialsMatcher matcher = new HashedCredentialsMatcher(SystemService.HASH_ALGORITHM);
-		matcher.setHashIterations(SystemService.HASH_INTERATIONS);
-		setCredentialsMatcher(matcher);
-	}
-		
 	/**
 	 * 
 	 * @Title：clearCached

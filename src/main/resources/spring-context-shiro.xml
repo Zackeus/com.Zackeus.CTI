@@ -107,8 +107,8 @@
     
     <!-- 自定义域realm -->
     <bean id="custom_Realm" class="com.Zackeus.CTI.modules.sys.security.LoginCustomRealm">
-    	<!-- 将上面声明的密码匹配器注入到自定义 Realm 的属性中去 -->
-		<!-- <property name="credentialsMatcher" ref="credentialsMatcher"/> -->
+    	<!-- 密码匹配器注入到自定义 Realm 的属性中去 -->
+		<property name="credentialsMatcher" ref="credentialsMatcher"/>
         <!-- 将自定义的权限匹配器注入到自定义 Realm 中 -->
 		<!-- <property name="permissionResolver" ref="permissionResolver"/> -->
 
@@ -123,6 +123,13 @@
         <property name="authorizationCachingEnabled" value="true"/>
 		<!-- 指定授权缓存的名字(与 ehcache.xml 中声明的相同) -->
         <property name="authorizationCacheName" value="authorizationCache"/>
+    </bean>
+    <!-- 密码匹配器 -->
+    <bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="SHA-1" />
+        <property name="hashIterations" value="1024" />
+        <!-- 是否存储散列后的密码为16进制，需要和生成密码时的一样 -->
+        <property name="storedCredentialsHexEncoded" value="true" />
     </bean>
     
     <!-- 开启spring缓存 -->

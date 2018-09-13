@@ -168,7 +168,7 @@ public class LoginAuthenticationFilter extends org.apache.shiro.web.filter.authc
 	 */
 	@Override
 	protected void issueSuccessRedirect(ServletRequest request, ServletResponse response) throws Exception {
-		WebUtils.issueRedirect(request, response, getSuccessUrl(), null, true);
+		WebUtils.issueRedirect(request, response, getSuccessUrl(), null, Boolean.TRUE);
 	}
 	
 }
