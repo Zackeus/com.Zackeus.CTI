@@ -1,6 +1,7 @@
 package com.Zackeus.CTI.modules.sys.utils;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -16,8 +17,12 @@ import org.springframework.stereotype.Component;
 
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
+import com.Zackeus.CTI.modules.sys.entity.Menu;
 import com.Zackeus.CTI.modules.sys.entity.Principal;
+import com.Zackeus.CTI.modules.sys.entity.Role;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.service.MenuService;
+import com.Zackeus.CTI.modules.sys.service.RoleService;
 import com.Zackeus.CTI.modules.sys.service.UserService;
 
 /**
@@ -36,6 +41,12 @@ public class UserUtils {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private RoleService roleService;
+	
+	@Autowired
+	private MenuService menuService;
 	
 	public static UserUtils userUtils;
 	
@@ -65,6 +76,34 @@ public class UserUtils {
 	public static User getByLoginName(String loginName){
 		User user = userUtils.userService.getByLoginName(new User(null, loginName));
 		return ObjectUtils.isEmpty(user) ? null : user;
+	}
+	
+	/**
+	 * 
+	 * @Title：getRoleByUser
+	 * @Description: TODO(根据用户查询角色)
+	 * @see：
+	 * @param user
+	 * @return
+	 */
+	public static List<Role> getRoleByUser() {
+		Principal principal = getPrincipal();
+		if (principal.isAdmin()) {
+			return userUtils.roleService.findAllList();
+		}
+		return userUtils.roleService.getRoleByUser(new Role(principal));
+	}
+	
+	/**
+	 * 
+	 * @Title：getMenuListByUser
+	 * @Description: TODO(获取用户授权获取菜单列表)
+	 * @see：
+	 * @param id 菜单父级ID
+	 * @return
+	 */
+	public static List<Menu> getMenuListByUser(String id) {
+		return userUtils.menuService.getMenuList(new Menu(getPrincipal(), id));
 	}
 	
 	/**

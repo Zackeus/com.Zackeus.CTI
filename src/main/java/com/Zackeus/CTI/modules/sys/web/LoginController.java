@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
+import com.Zackeus.CTI.common.utils.WebUtils;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.sys.entity.Principal;
 import com.Zackeus.CTI.modules.sys.security.LoginAuthenticationFilter;
@@ -29,7 +30,7 @@ import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 @Controller
 @RequestMapping("/sys")
 public class LoginController extends BaseController {
-
+	
 	/**
 	 * 
 	 * @Title：login
@@ -84,8 +85,31 @@ public class LoginController extends BaseController {
 	 */
 	@RequiresPermissions("user")
 	@RequestMapping(value = "/loginSuccess", produces = DEFAUlT_PRODUCES)
-	public void loginSuccess(HttpServletRequest request, HttpServletResponse response, Model model) {
-		renderString(response, new AjaxResult(0, "登录成功"));
+	public String loginSuccess(HttpServletRequest request, HttpServletResponse response, Model model) {
+		if (WebUtils.isAjaxRequest(request)) {
+			renderString(response, new AjaxResult(0, "登录成功"));
+			return null;
+		}
+		return "modules/sys/sysIndex";
+	}
+	
+	/**
+	 * 
+	 * @Title：logout
+	 * @Description: TODO(用户退出)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @param model
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "/logout")
+	public String logout(HttpServletRequest request, HttpServletResponse response) {
+		Principal principal = UserUtils.getPrincipal();
+		if (!ObjectUtils.isEmpty(principal)) {
+			UserUtils.getSubject().logout();
+		}
+		return "redirect:" + "/sys/login";
 	}
 
 }

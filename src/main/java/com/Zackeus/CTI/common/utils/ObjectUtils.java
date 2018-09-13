@@ -135,6 +135,10 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 		}
 		return false;
 	}
+	
+	public static boolean isNotEmpty(Object obj) {
+		return !isEmpty(obj);
+	}
 
 	/**
 	 * 

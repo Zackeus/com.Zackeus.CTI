@@ -2,6 +2,10 @@ package com.Zackeus.CTI.modules.sys.entity;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import com.Zackeus.CTI.common.utils.StringUtils;
+
 /**
  * 
  * @Title:Principal
@@ -18,6 +22,8 @@ public class Principal implements Serializable {
 	private String loginName; 		// 登录名
 	private String name; 			// 姓名
 	private boolean mobileLogin; 	// 是否手机登录
+	
+	public static final String ADMIN_ID = "1";
 	
 	public Principal() {
 		super();
@@ -54,12 +60,17 @@ public class Principal implements Serializable {
 		return mobileLogin;
 	}
 	
-	public boolean isAdmin(){
+	public boolean isAdmin() {
 		return isAdmin(this.id);
 	}
 	
 	public static boolean isAdmin(String id){
-		return id != null && "1".equals(id);
+		return StringUtils.isNotBlank(id) && StringUtils.equals(ADMIN_ID, id);
+	}
+	
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 
 }

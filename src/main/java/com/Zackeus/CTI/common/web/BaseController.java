@@ -413,7 +413,7 @@ public abstract class BaseController {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String handleException(HttpServletRequest request, HttpServletResponse response, DataIntegrityViolationException e) {
         if (WebUtils.isAjaxRequest(request)) {
-            renderString(response, new AjaxResult(-1, "操作数据库异常：" + e.getMessage()));
+            renderString(response, new AjaxResult(1001, "操作数据库异常：" + e.getMessage()));
             return null;
         } else {
             return "sys/Error";
@@ -432,7 +432,7 @@ public abstract class BaseController {
 	@ExceptionHandler({ MyException.class })
 	public String schedulerException(HttpServletRequest request, HttpServletResponse response, MyException e) {
 		if (WebUtils.isAjaxRequest(request)) {
-			renderString(response, new AjaxResult(-1, e.getMessage()));
+			renderString(response, new AjaxResult(1000, e.getMessage()));
 			return null;
 		} else {
 			return "sys/Error";
@@ -452,7 +452,7 @@ public abstract class BaseController {
 	@ExceptionHandler({ Exception.class })
 	public String exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
 		if (WebUtils.isAjaxRequest(request)) {
-			renderString(response, new AjaxResult(-1, "未知的错误：" + e.getMessage()));
+			renderString(response, new AjaxResult(999, "未知的错误：" + e.getMessage()));
 			e.printStackTrace();
 			return null;
 		} else {

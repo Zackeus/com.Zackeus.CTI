@@ -40,4 +40,16 @@
 		timeToLiveSeconds="432000"
 		diskExpiryThreadIntervalSeconds="120"
 		memoryStoreEvictionPolicy="LRU"/>
+		
+	<!-- 系统菜单缓存 30天 -->
+    <cache name="sysMenuCache"          
+       	maxElementsInMemory="1000"
+	    maxElementsOnDisk="10000000"  
+	    eternal="false"
+	    overflowToDisk="false"   
+	    diskPersistent="false"  
+	    timeToIdleSeconds="2592000"  
+	    timeToLiveSeconds="2592000"   
+	    diskExpiryThreadIntervalSeconds="120"  
+	    memoryStoreEvictionPolicy="LRU"/>
 </ehcache>  

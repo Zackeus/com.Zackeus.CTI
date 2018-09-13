@@ -52,7 +52,6 @@ public abstract class BaseEntity<T> implements Serializable {
 	 */
 	protected boolean isNewRecord = false;
 	
-
 	public BaseEntity() {
 		
 	}

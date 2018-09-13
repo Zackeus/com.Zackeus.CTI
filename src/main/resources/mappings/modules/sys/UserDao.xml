@@ -45,7 +45,9 @@
     	ou.id AS "office.primaryPerson.id",
     	ou.name AS "office.primaryPerson.name",
     	ou2.id AS "office.deputyPerson.id",
-    	ou2.name AS "office.deputyPerson.name"
+    	ou2.name AS "office.deputyPerson.name",
+    	CIA.[WORK_NO] AS "agentUser.userNo",
+    	CIA.[PHONE_NUMBER] AS "agentUser.phonenumber"
     </sql>
     
     <sql id="userJoins">
@@ -57,6 +59,7 @@
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] cu2 ON cu2.id = c.deputy_person
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] ou ON ou.id = o.primary_person
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] ou2 ON ou2.id = o.deputy_person
+		LEFT JOIN [Message].[dbo].[CTI_USER_AGENT] CIA ON CIA.[USER_NO] = a.id
     </sql>
 
 	<!-- 根据编号获得用户 -->

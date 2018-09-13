@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.Zackeus.CTI.common.web.BaseController;
+import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
  * 
@@ -35,8 +36,7 @@ public class AreaController extends BaseController {
 	@RequiresPermissions("user")
 	@RequestMapping(value = "/index")
 	public String sysIndex(HttpServletRequest request, HttpServletResponse response, Model model) {
-		// 获取用户菜单树列表
-//		model.addAttribute("treeMenus", UserUtils.getTreeMenusByUser(UserUtils.getPrincipal()));
+		model.addAttribute("utilityMenus", UserUtils.getMenuListByUser("1"));
 		return "modules/sys/sysIndex";
 	}
 	

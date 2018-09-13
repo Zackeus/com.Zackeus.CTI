@@ -1,6 +1,7 @@
 package com.Zackeus.CTI.modules.sys.security;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
@@ -14,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.Zackeus.CTI.common.utils.Encodes;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
+import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.modules.sys.entity.Principal;
+import com.Zackeus.CTI.modules.sys.entity.Role;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.entity.UsernamePasswordToken;
 import com.Zackeus.CTI.modules.sys.service.SystemService;
@@ -42,6 +45,11 @@ public class LoginCustomRealm extends AuthorizingRealm {
     	//令牌——基于用户名和密码的令牌,把AuthenticationToken转换成UsernamePasswordToken
     	UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
     	User user = systemService.getUserByLoginName(token.getUsername());
+    	
+    	if (ObjectUtils.isEmpty(user.getAgentUser()) || StringUtils.isBlank(user.getAgentUser().getUserNo()) 
+    			|| StringUtils.isBlank(user.getAgentUser().getPhonenumber())) {
+    		throw new AuthenticationException("msg:此账号未绑定坐席账号");
+		} 
     	if (!ObjectUtils.isEmpty(user)) {
         	byte[] salt = Encodes.decodeHex(user.getPassword().substring(0,16));
         	return new SimpleAuthenticationInfo(new Principal(user, false), 
@@ -65,10 +73,14 @@ public class LoginCustomRealm extends AuthorizingRealm {
     	Logs.info("获取授权----------------");
     	
     	Principal principal = UserUtils.getPrincipal();
-		if (principal != null) {
+		if (ObjectUtils.isNotEmpty(principal)) {
 			SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 			// 添加用户权限
 			info.addStringPermission("user");
+			// 添加用户角色信息
+			for (Role role : UserUtils.getRoleByUser()) {
+				info.addRole(role.getEnName());
+			}
 			return info;
 		} else {
 			return null;
