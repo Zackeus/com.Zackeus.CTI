@@ -55,6 +55,18 @@ layui.define(['jquery','layer'],function(exports){
 			delMenu: function (data, index, url, tableIns) {
 				layuiRequest.jsonPostLoad(data, index, url, tableIns);
 			},
+			// 添加字典
+			addDict: function (url, data, btn) {
+				layuiRequest.jsonPostBtn(url, data, btn);
+			},
+			// 编辑字典
+			editDict: function (url, data, btn) {
+				layuiRequest.jsonPostBtn(url, data, btn);
+			},
+			// 删除字典
+			delDict: function (data, index, url, tableIns) {
+				layuiRequest.jsonPostLoad(data, index, url, tableIns);
+			},
 			// 加载Echarts图表
 			loadEcharts: function (url, data, echarts) {
 				$.ajax({

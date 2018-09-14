@@ -23,8 +23,6 @@ public class Principal implements Serializable {
 	private String name; 			// 姓名
 	private boolean mobileLogin; 	// 是否手机登录
 	
-	public static final String ADMIN_ID = "1";
-	
 	public Principal() {
 		super();
 	}
@@ -65,7 +63,7 @@ public class Principal implements Serializable {
 	}
 	
 	public static boolean isAdmin(String id){
-		return StringUtils.isNotBlank(id) && StringUtils.equals(ADMIN_ID, id);
+		return StringUtils.isNotBlank(id) && StringUtils.equals(User.ADMIN_ID, id);
 	}
 	
 	@Override

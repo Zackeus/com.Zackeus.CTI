@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.Zackeus.CTI.common.config.GlobalConfig;
+import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
@@ -72,7 +73,7 @@ public abstract class BaseEntity<T> implements Serializable {
 	@JsonIgnore
 	@XmlTransient
 	public User getCurrentUser() {
-		if(currentUser == null){
+		if(ObjectUtils.isEmpty(currentUser)){
 			currentUser = UserUtils.getUser();
 		}
 		return currentUser;
@@ -85,10 +86,7 @@ public abstract class BaseEntity<T> implements Serializable {
 	@JsonIgnore
 	@XmlTransient
 	public Page<T> getPage() {
-		if (page == null){
-			page = new Page<T>();
-		}
-		return page;
+		return ObjectUtils.isEmpty(page) ? new Page<T>() : page;
 	}
 	
 	public Page<T> setPage(Page<T> page) {

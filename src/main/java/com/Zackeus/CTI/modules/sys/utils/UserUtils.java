@@ -103,7 +103,11 @@ public class UserUtils {
 	 * @return
 	 */
 	public static List<Menu> getMenuListByUser(String id) {
-		return userUtils.menuService.getMenuList(new Menu(getPrincipal(), id));
+		Principal principal = getPrincipal();
+		if (principal.isAdmin()) {
+			return userUtils.menuService.getAllMenuList(new Menu(principal, id));
+		}
+		return userUtils.menuService.getMenuListByUser(new Menu(principal, id));
 	}
 	
 	/**

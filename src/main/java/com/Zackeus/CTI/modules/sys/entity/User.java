@@ -3,12 +3,15 @@ package com.Zackeus.CTI.modules.sys.entity;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
 import com.Zackeus.CTI.common.annotation.SupCol;
 import com.Zackeus.CTI.common.config.GlobalConfig;
 import com.Zackeus.CTI.common.entity.DataEntity;
+import com.Zackeus.CTI.common.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
@@ -24,6 +27,8 @@ import com.google.common.collect.Lists;
 public class User extends DataEntity<User> {
 
 	private static final long serialVersionUID = 1L;
+	private Office company;		// 归属公司
+	private Office office;		// 归属部门
 	private String loginName;	// 登录名
 	private String password;	// 密码
 	private String no;			// 工号
@@ -86,6 +91,24 @@ public class User extends DataEntity<User> {
 	@SupCol(isUnique="true", isHide="true")
 	public String getId() {
 		return id;
+	}
+	
+	@NotNull(message="归属公司不能为空")
+	public Office getCompany() {
+		return company;
+	}
+
+	public void setCompany(Office company) {
+		this.company = company;
+	}
+	
+	@NotNull(message="归属部门不能为空")
+	public Office getOffice() {
+		return office;
+	}
+
+	public void setOffice(Office office) {
+		this.office = office;
 	}
 
 	@Length(min=1, max=100, message="登录名长度必须介于 1 和 100 之间")
@@ -278,16 +301,18 @@ public class User extends DataEntity<User> {
 		this.agentUser = agentUser;
 	}
 
-	public boolean isAdmin(){
+	public boolean isAdmin() {
 		return isAdmin(this.id);
 	}
 	
-	public static boolean isAdmin(String id){
-		return id != null && "1".equals(id);
+	public static boolean isAdmin(String id) {
+		return StringUtils.isNotBlank(id) && StringUtils.equals(ADMIN_ID, id);
 	}
 	
 	@Override
 	public String toString() {
 		return id;
 	}
+	
+	public static final String ADMIN_ID = "1";
 }

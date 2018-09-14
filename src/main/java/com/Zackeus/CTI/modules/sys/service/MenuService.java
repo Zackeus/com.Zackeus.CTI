@@ -87,8 +87,8 @@ public class MenuService extends CrudService<MenuDao, Menu> {
 	 * @return
 	 */
 	@Cacheable(value = {"sysMenuCache"}, keyGenerator = "cacheKeyGenerator")
-	public List<Menu> getMenuList(Menu menu) {
-		return menuDao.getMenuList(menu);
+	public List<Menu> getMenuListByUser(Menu menu) {
+		return menuDao.getMenuListByUser(menu);
 	}
 	
 	/**

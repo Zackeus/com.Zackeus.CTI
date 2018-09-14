@@ -17,9 +17,9 @@ import com.Zackeus.CTI.modules.sys.entity.Menu;
 @MyBatisDao
 public interface MenuDao extends CrudDao<Menu> {
 	
-	public List<Menu> getMenuList(Menu menu);
-	
 	public List<Menu> getAllMenuList(Menu menu);
+	
+	public List<Menu> getMenuListByUser(Menu menu);
 	
 	public Integer getMaxSortById(String id);
 	

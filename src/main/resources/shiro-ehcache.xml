@@ -52,4 +52,16 @@
 	    timeToLiveSeconds="2592000"   
 	    diskExpiryThreadIntervalSeconds="120"  
 	    memoryStoreEvictionPolicy="LRU"/>
+	    
+	<!-- 系统字典缓存  10天 -->
+    <cache name="sysDictCache"          
+       	maxElementsInMemory="1000"
+	    maxElementsOnDisk="10000000"  
+	    eternal="false"
+	    overflowToDisk="false"   
+	    diskPersistent="false"  
+	    timeToIdleSeconds="864000"  
+	    timeToLiveSeconds="864000"   
+	    diskExpiryThreadIntervalSeconds="120"  
+	    memoryStoreEvictionPolicy="LRU"/>
 </ehcache>  

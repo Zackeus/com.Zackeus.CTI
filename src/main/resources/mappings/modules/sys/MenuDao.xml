@@ -17,17 +17,17 @@
       	M.[REMARKS]
 	</sql>
 	
-	<resultMap type="Menu" id="menuResultMap">
-		<id property="id" column="ID" />
-		<result property="parentId" column="PARENT_ID" />
-		<result property="userId" column="USER_ID" />
-		<collection property="children" column="{id = ID, userId = USER_ID}" select="getMenuList"/>
-	</resultMap>
-	
 	<resultMap type="Menu" id="allMenuResultMap">
 		<id property="id" column="ID" />
 		<result property="parentId" column="PARENT_ID" />
 		<collection property="children" column="ID" select="getAllMenuList"/>
+	</resultMap>
+	
+	<resultMap type="Menu" id="menuResultMap">
+		<id property="id" column="ID" />
+		<result property="parentId" column="PARENT_ID" />
+		<result property="userId" column="USER_ID" />
+		<collection property="children" column="{id = ID, userId = USER_ID}" select="getMenuListByUser"/>
 	</resultMap>
 	
 	<!-- 根据ID查询 -->
@@ -56,23 +56,15 @@
 	</select>
 	
 	<!--  根据用户权限和父级ID查询菜单列表 -->
-	<select id="getMenuList" resultMap="menuResultMap">
+	<select id="getMenuListByUser" resultMap="menuResultMap">
 		SELECT DISTINCT
 		<include refid="menuColumns"/>
-		<choose>
-        	<when test="userId != null and userId == '1'.toString()">
-        		,'1' AS [USER_ID]
-        		FROM [CTI].[dbo].[SYS_MENU] M
-            </when>
-            <otherwise>
-            	,U.id AS [USER_ID]
-				FROM [CTI].[dbo].[SYS_MENU] M
-				JOIN [CTI].[dbo].[SYS_ROLE_MENU] RM ON RM.[MENU_ID] = M.[ID]
-				JOIN [CTI].[dbo].[SYS_ROLE] R ON R.[ID] = RM.[ROLE_ID]
-				JOIN [CTI].[dbo].[SYS_USER_ROLE] UR ON UR.[ROLE_ID] = r.[ID]
-				JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID] AND u.id = #{userId}
-            </otherwise>
-        </choose>
+        ,U.id AS [USER_ID]
+		FROM [CTI].[dbo].[SYS_MENU] M
+		JOIN [CTI].[dbo].[SYS_ROLE_MENU] RM ON RM.[MENU_ID] = M.[ID]
+		JOIN [CTI].[dbo].[SYS_ROLE] R ON R.[ID] = RM.[ROLE_ID]
+		JOIN [CTI].[dbo].[SYS_USER_ROLE] UR ON UR.[ROLE_ID] = r.[ID]
+		JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID] AND u.id = #{userId}
 		WHERE M.[PARENT_ID] = #{id}
 		ORDER BY [SORT]
 	</select>

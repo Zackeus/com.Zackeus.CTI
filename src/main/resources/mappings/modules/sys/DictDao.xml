@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Zackeus.CTI.modules.sys.dao.DictDao">
+
+	<sql id="dictColumns">
+		[ID],
+		[VALUE],
+      	[LABEL],
+      	[TYPE],
+      	[DESCRIPTION],
+      	[SORT],
+      	[CREATE_DATE],
+      	[UPDATE_DATE],
+      	[CREATE_BY],
+      	[UPDATE_BY],
+      	[REMARKS]
+	</sql>
+	
+	<!-- 根据类别查询数据字典 -->
+	<select id="get" resultType="Dict">
+		SELECT
+		<include refid="dictColumns"/>
+		FROM [CTI].[dbo].[SYS_DICT]
+		WHERE [ID] = #{id}
+	</select>
+	
+	<!-- 分页查询字典信息 -->
+	<select id="findList" resultType="Dict">
+		SELECT
+			<include refid="dictColumns"/>
+		FROM [CTI].[dbo].[SYS_DICT]
+		<where>
+			<if test="type != null and type != ''">
+				AND [TYPE] = #{type}
+			</if>
+			<if test="description != null and description != ''">
+				AND [DESCRIPTION] LIKE '%' + #{description} + '%'
+			</if>
+		</where>
+		ORDER BY [TYPE], [SORT], [UPDATE_DATE] DESC
+	</select>
+	
+	<!-- 查询字典类型列表 -->
+	<select id="findTypeList" resultType="string">
+		SELECT [TYPE] 
+		FROM [CTI].[dbo].[SYS_DICT]
+		GROUP BY [TYPE]
+		ORDER BY [TYPE]
+	</select>
+	
+	<!-- 根据类别查询数据字典 -->
+	<select id="findListByType" resultType="Dict">
+		SELECT
+		<include refid="dictColumns"/>
+		FROM [CTI].[dbo].[SYS_DICT]
+		WHERE [TYPE] = #{type}
+		ORDER BY [SORT] 
+	</select>
+	
+	<!-- 增加字典 -->
+	<insert id="insert">
+		INSERT INTO [CTI].[dbo].[SYS_DICT]
+		(<include refid="dictColumns"/>)
+		VALUES (
+			#{id},
+			#{value},
+			#{label},
+			#{type},
+			#{description},
+			#{sort},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<!-- 更新字典 -->
+	<update id="update">
+		UPDATE [CTI].[dbo].[SYS_DICT] SET
+			[VALUE] = #{value},
+      		[LABEL] = #{label},
+      		[TYPE] = #{type},
+      		[DESCRIPTION] = #{description},
+      		[SORT] = #{sort},
+      		[UPDATE_DATE] = #{updateDate},
+      		[UPDATE_BY] = #{updateBy.id},
+      		[REMARKS] = #{remarks}
+		WHERE [ID] = #{id}
+	</update>
+	
+	<!-- 删除字典 -->
+	<delete id="delete">
+		DELETE [CTI].[dbo].[SYS_DICT] WHERE [ID] = #{id}
+	</delete>
+
+</mapper>

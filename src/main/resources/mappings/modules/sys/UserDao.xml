@@ -80,4 +80,18 @@
 		WHERE a.login_name = #{loginName} AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	
+	<!-- 分页查询用户信息 -->
+	<select id="findList" resultType="User">
+		SELECT
+			<include refid="userColumns"/>
+		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] a
+		<include refid="userJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<!-- 如果不是超级管理员，则不显示超级管理员用户 -->
+		<if test="!currentUser.admin">
+			AND a.id != #{ADMIN_ID}
+		</if>
+		ORDER BY c.code, o.code, a.name
+	</select>
+	
 </mapper>  
