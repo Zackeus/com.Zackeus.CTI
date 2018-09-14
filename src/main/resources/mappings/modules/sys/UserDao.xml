@@ -59,7 +59,7 @@
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] cu2 ON cu2.id = c.deputy_person
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] ou ON ou.id = o.primary_person
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] ou2 ON ou2.id = o.deputy_person
-		LEFT JOIN [Message].[dbo].[CTI_USER_AGENT] CIA ON CIA.[USER_NO] = a.id
+		LEFT JOIN [CTI].[dbo].[SYS_USER_AGENT] CIA ON CIA.[USER_NO] = a.id
     </sql>
 
 	<!-- 根据编号获得用户 -->

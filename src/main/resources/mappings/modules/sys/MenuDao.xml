@@ -24,12 +24,35 @@
 		<collection property="children" column="{id = ID, userId = USER_ID}" select="getMenuList"/>
 	</resultMap>
 	
+	<resultMap type="Menu" id="allMenuResultMap">
+		<id property="id" column="ID" />
+		<result property="parentId" column="PARENT_ID" />
+		<collection property="children" column="ID" select="getAllMenuList"/>
+	</resultMap>
+	
+	<!-- 根据ID查询 -->
+	<select id="get" resultType="Menu">
+		SELECT
+		<include refid="menuColumns"/>
+		FROM [CTI].[dbo].[SYS_MENU] M
+		WHERE M.[ID] = #{id}
+	</select>
+	
 	<!-- 获取全部菜单列表  -->
 	<select id="findAllList" resultType="Menu">
 		SELECT
 		<include refid="menuColumns"/>
-		FROM [Message].[dbo].[SYS_MENU] M
+		FROM [CTI].[dbo].[SYS_MENU] M
 		ORDER BY M.[SORT]
+	</select>
+	
+	<!-- 根据父级标识获取全部子菜单列表 -->
+	<select id="getAllMenuList" resultMap="allMenuResultMap">
+		SELECT DISTINCT
+		<include refid="menuColumns"/>
+		FROM [CTI].[dbo].[SYS_MENU] M
+		WHERE M.[PARENT_ID] = #{id}
+		ORDER BY [SORT]
 	</select>
 	
 	<!--  根据用户权限和父级ID查询菜单列表 -->
@@ -39,19 +62,65 @@
 		<choose>
         	<when test="userId != null and userId == '1'.toString()">
         		,'1' AS [USER_ID]
-        		FROM [Message].[dbo].[CTI_MENU] M
+        		FROM [CTI].[dbo].[SYS_MENU] M
             </when>
             <otherwise>
             	,U.id AS [USER_ID]
-				FROM [Message].[dbo].[CTI_MENU] M
-				JOIN [Message].[dbo].[CTI_ROLE_MENU] RM ON RM.[MENU_ID] = M.[ID]
-				JOIN [Message].[dbo].[CTI_ROLE] R ON R.[ID] = RM.[ROLE_ID]
-				JOIN [Message].[dbo].[CTI_USER_ROLE] UR ON UR.[ROLE_ID] = r.[ID]
+				FROM [CTI].[dbo].[SYS_MENU] M
+				JOIN [CTI].[dbo].[SYS_ROLE_MENU] RM ON RM.[MENU_ID] = M.[ID]
+				JOIN [CTI].[dbo].[SYS_ROLE] R ON R.[ID] = RM.[ROLE_ID]
+				JOIN [CTI].[dbo].[SYS_USER_ROLE] UR ON UR.[ROLE_ID] = r.[ID]
 				JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID] AND u.id = #{userId}
             </otherwise>
         </choose>
 		WHERE M.[PARENT_ID] = #{id}
 		ORDER BY [SORT]
 	</select>
+	
+	<!-- 根据 id 查询子菜单最大最大排序值 -->
+	<select id="getMaxSortById" resultType="int">
+		SELECT DISTINCT MAX([SORT]) FROM [CTI].[dbo].[SYS_MENU] WHERE [PARENT_ID] = #{parentId}
+	</select>
+	
+	<!-- 增加菜单 -->
+	<insert id="insert">
+		INSERT INTO [CTI].[dbo].[SYS_MENU]
+		(<include refid="menuColumns"/>)
+		VALUES (
+			#{id},
+			#{parentId},
+			#{name},
+			#{icon},
+			#{sort},
+			#{href},
+			#{spread},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<!-- 更新菜单 -->
+	<update id="update">
+		UPDATE [CTI].[dbo].[SYS_MENU] SET
+			[PARENT_ID] = #{parentId},
+			[NAME] = #{name},
+			[ICON] = #{icon},
+			[SORT] = #{sort},
+			[HREF] = #{href},
+			[SPREAD] = #{spread},
+			[UPDATE_DATE] = #{updateDate},
+			[UPDATE_BY] = #{updateBy.id},
+			[SYS_ID] = #{sysId},
+			[REMARKS] = #{remarks}
+		WHERE [ID] = #{id}
+	</update>
+	
+	<!-- 删除菜单 菜单表设计了级联删除 删除菜单会删除关联表的对应内容-->
+	<delete id="delete">
+        DELETE FROM [CTI].[dbo].[SYS_MENU] WHERE [ID] = #{id}
+    </delete>
 	
 </mapper>

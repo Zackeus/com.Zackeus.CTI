@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,7 +60,7 @@ public class LoginController extends BaseController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/login", produces = DEFAUlT_PRODUCES, method = RequestMethod.POST)
+	@RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void loginFail(HttpServletRequest request, HttpServletResponse response, Model model) {
 		Principal principal = UserUtils.getPrincipal();
 		// 如果已经登录，则跳转到管理首页
@@ -84,7 +85,7 @@ public class LoginController extends BaseController {
 	 * @return
 	 */
 	@RequiresPermissions("user")
-	@RequestMapping(value = "/loginSuccess", produces = DEFAUlT_PRODUCES)
+	@RequestMapping(value = "/loginSuccess", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String loginSuccess(HttpServletRequest request, HttpServletResponse response, Model model) {
 		if (WebUtils.isAjaxRequest(request)) {
 			renderString(response, new AjaxResult(0, "登录成功"));

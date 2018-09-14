@@ -19,4 +19,8 @@ public interface MenuDao extends CrudDao<Menu> {
 	
 	public List<Menu> getMenuList(Menu menu);
 	
+	public List<Menu> getAllMenuList(Menu menu);
+	
+	public Integer getMaxSortById(String id);
+	
 }

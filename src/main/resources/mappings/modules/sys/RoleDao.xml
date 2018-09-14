@@ -17,7 +17,7 @@
     <select id="findAllList" resultType="Role">
     	SELECT
 		<include refid="roleColumns"/>
-		FROM [Message].[dbo].[CTI_ROLE] R
+		FROM [CTI].[dbo].[SYS_ROLE] R
 		ORDER BY R.name
     </select>
     
@@ -25,8 +25,8 @@
 	<select id="getRoleByUser" resultType="Role">
 		SELECT
 		<include refid="roleColumns"/>
-		FROM [Message].[dbo].[CTI_ROLE] R
-		LEFT JOIN [Message].[dbo].[CTI_USER_ROLE] UR ON R.[ID] = UR.[ROLE_ID]
+		FROM [CTI].[dbo].[SYS_ROLE] R
+		LEFT JOIN [CTI].[dbo].[SYS_USER_ROLE] UR ON R.[ID] = UR.[ROLE_ID]
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID]
 		<where>
 			<if test="user != null and user.id != null and user.id != ''">

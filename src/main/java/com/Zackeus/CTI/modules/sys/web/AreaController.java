@@ -7,6 +7,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
@@ -54,6 +55,20 @@ public class AreaController extends BaseController {
 	@RequestMapping(value = "/main")
 	public String sysMain(HttpServletRequest request, HttpServletResponse response, Model model) {
 		return "modules/sys/sysMain";
+	}
+	
+	/**
+	 * 
+	 * @Title：icon
+	 * @Description: TODO(图标设置)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/icon", method = RequestMethod.GET)
+	public String icon(HttpServletRequest request, HttpServletResponse response) {
+		return "modules/sys/icon";
 	}
 
 }

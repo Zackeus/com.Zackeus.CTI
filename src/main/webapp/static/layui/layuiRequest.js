@@ -27,6 +27,34 @@ layui.define(['jquery','layer'],function(exports){
 					}
 				});
 			},
+			// 获取菜单最大排序
+			getMaxMenuSort: function (url) {
+				var returnMsg;
+        		$.ajax({
+        			async : false,
+        			method : 'GET',
+        			url : url,
+        			dataType : 'json',
+        			success : function(result) {
+        				returnMsg = result;
+        			},
+        			error : function(result) {
+        			}
+        		});
+        		return returnMsg;
+			},
+			// 添加菜单
+			addMenu: function (url, data, btn) {
+				layuiRequest.jsonPostBtn(url, data, btn);
+			},
+			// 编辑菜单
+			editMenu: function (url, data, btn) {
+				layuiRequest.jsonPostBtn(url, data, btn);
+			},
+			// 删除菜单
+			delMenu: function (data, index, url, tableIns) {
+				layuiRequest.jsonPostLoad(data, index, url, tableIns);
+			},
 			// 加载Echarts图表
 			loadEcharts: function (url, data, echarts) {
 				$.ajax({
@@ -53,8 +81,8 @@ layui.define(['jquery','layer'],function(exports){
 					}
 				});
 			},
-			// json提交
-			jsonPost: function (url, data, btn) {
+			// json提交(按钮提示)
+			jsonPostBtn: function (url, data, btn) {
         		$.ajax({
         			method: 'POST',
         			url : url,
@@ -76,6 +104,34 @@ layui.define(['jquery','layer'],function(exports){
         			error : function(result) {
         				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
         				btn.text("提交").attr("disabled",false).removeClass("layui-disabled");
+        			}
+        		});
+			},
+			// json提交(Load提示提示)
+			jsonPostLoad: function (data, index, url, tableIns) {
+        		$.ajax({
+        			method: 'POST',
+        			url : url,
+        			data : JSON.stringify(data),
+        			contentType : 'application/json',
+        			dataType : 'json',
+        			beforeSend: function() {
+        				layer.close(index);
+        				layer.load();
+        			},
+        			success : function(result) {
+        				layer.closeAll('loading');
+        				if (result.code == "0") {
+        					layer.msg(result.msg, {icon: 6,time: 1000});
+        					tableIns.reload();
+        				} else {
+        					layer.msg(result.msg, {icon: 5,time: 2000,shift: 6}, function(){});
+        				}
+        			},
+        			error : function(result) {
+        				// 错误信息
+        				layer.closeAll('loading');
+        				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
         			}
         		});
 			}

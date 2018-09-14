@@ -50,9 +50,6 @@ import net.sf.json.JSONObject;
 @SuppressWarnings("deprecation")
 public abstract class BaseController {
 	
-	// 默认返回值类型和字符编码
-	protected static final String DEFAUlT_PRODUCES = MediaType.APPLICATION_JSON + ";" + MediaType.CHARSET_PARAMETER + "=" + WebUtils.UTF_ENCODING;
-	
 	/**
 	 * 
 	 * @Title：addMessage
