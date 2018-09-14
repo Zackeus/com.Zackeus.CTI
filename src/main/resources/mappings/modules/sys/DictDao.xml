@@ -24,6 +24,13 @@
 		WHERE [ID] = #{id}
 	</select>
 	
+	<!-- 根据类型和键值获取字典标签 -->
+	<select id="getDictLabel" resultType="String">
+		SELECT TOP 1 [LABEL]
+		FROM [CTI].[dbo].[SYS_DICT]
+		WHERE [TYPE] = #{type} AND [VALUE] = #{value}
+	</select>
+	
 	<!-- 分页查询字典信息 -->
 	<select id="findList" resultType="Dict">
 		SELECT

@@ -27,6 +27,11 @@ public class Dict extends DataEntity<Dict> {
 	public Dict(String id) {
 		super(id);
 	}
+	public Dict(String type, String value) {
+		super();
+		this.type = type;
+		this.value = value;
+	}
 
 	public Dict(String label, String type, String description, Integer sort) {
 		super();

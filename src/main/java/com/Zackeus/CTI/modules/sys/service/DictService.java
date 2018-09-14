@@ -40,6 +40,19 @@ public class DictService extends CrudService<DictDao, Dict> {
 	
 	/**
 	 * 
+	 * @Title：getDictLabel
+	 * @Description: TODO(根据类型和键值获取字典标签)
+	 * @see：
+	 * @param dict
+	 * @return
+	 */
+	@Cacheable(value = {"sysDictCache"}, keyGenerator = "cacheKeyGenerator")
+	public String getDictLabel(Dict dict) {
+		return dictDao.getDictLabel(dict);
+	}
+	
+	/**
+	 * 
 	 * @Title：findTypeList
 	 * @Description: TODO(查询字典类型列表)
 	 * @see：

@@ -12,6 +12,13 @@
   <uri>http://java.sun.com/jsp/jstl/functionss</uri>
   
   <function>
+    <description>获取字典标签</description>
+    <name>getDictLabel</name>
+    <function-class>com.Zackeus.CTI.modules.sys.utils.DictUtils</function-class>
+    <function-signature>java.lang.String getDictLabel(java.lang.String, java.lang.String, java.lang.String)</function-signature>
+    <example>${fns:getDictLabel(type, value, defaultValue)}</example>  
+  </function>
+  <function>
     <description>获取字典对象列表</description>
     <name>getDictList</name>
     <function-class>com.Zackeus.CTI.modules.sys.utils.DictUtils</function-class>

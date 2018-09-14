@@ -17,6 +17,8 @@ import com.Zackeus.CTI.modules.sys.entity.Dict;
 @MyBatisDao
 public interface DictDao extends CrudDao<Dict> {
 	
+	public String getDictLabel(Dict dict);
+	
 	public List<String> findTypeList();
 	
 	public List<Dict> findListByType(String type);
