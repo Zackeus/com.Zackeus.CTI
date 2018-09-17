@@ -1,16 +1,68 @@
-layui.use(['form','layer','table','laytpl'],function(){
+layui.extend({
+	layuiRequest: '{/}' + ctxStatic + '/layui/layuiRequest',
+	customerFrom: '{/}' + ctxStatic + '/layui/lay/custom/from'
+})
+
+layui.use(['form','layer','table','laytpl','tree','layuiRequest','customerFrom'],function(){
     var form = layui.form,
         layer = parent.layer === undefined ? layui.layer : top.layer,
         $ = layui.jquery,
         laytpl = layui.laytpl,
-        table = layui.table;
+        tree = layui.tree,
+        table = layui.table,
+        layuiRequest = layui.layuiRequest,
+        customerFrom = layui.customerFrom,
+        treeSelectData;
+    
+    // 树形菜单下拉选点击
+	$(".downpanel").on("click",".layui-select-title",function(e) {
+		if (!treeSelectData) {
+			getTreeSelect();
+		}
+		$(".layui-form-select").not($(this).parents(".layui-form-select")).removeClass("layui-form-selected");
+		$(this).parents(".downpanel").toggleClass("layui-form-selected");
+		layui.stope(e);
+	}).on("click","dl i",function(e) {
+		layui.stope(e);
+	});
+	  
+	$(document).on("click",function(e) {
+		$(".layui-form-select").removeClass("layui-form-selected");
+	});
+	
+	// Select 渲染
+	function getTreeSelect() {
+	    $.ajax({
+			method: 'POST',
+			url : ctx + '/sys/office/mange',
+			dataType : 'json',
+	        success: function (result) {
+	            // 选择菜单下拉选
+	            layui.tree({
+	            	elem:'#classtree',
+	            	href:'javascript:;',
+	            	nodes:result,
+	            	click:function(node) {
+	            		var $select=$($(this)[0].elem).parents(".layui-form-select");
+	            		$select.removeClass("layui-form-selected").find(".layui-select-title span").html(node.name).end().find("input:hidden[name='office.id']").val(node.id);
+	            	}
+	            });
+	            treeSelectData = result;
+	        },
+			error : function(result) {
+				layer.msg('加载组织架构列表失败', {icon: 5,time: 2000,shift: 6}, function(){});
+			}
+	    })
+	}
 
     layer.load();
     var userListtIns =  table.render({
         elem: '#userList',
         title: '用户表',								//  定义 table 的大标题（在文件导出等地方会用到）layui 2.4.0 新增
-        url : ctx + '/sys/user/manage',
-        toolbar: '#toolbarDemo',					// 	头部工具栏 (layui 2.4.0 开始新增)
+        method : 'post',
+        contentType: 'application/json',
+        url : ctx + '/sys/user/list',
+        toolbar: '#userListToolBar',
         cellMinWidth : 50, 							//	（layui 2.2.1 新增）全局定义所有常规单元格的最小宽度（默认：60），一般用于列宽自动分配的情况。其优先级低于表头参数中的 minWidth
         loading : true, 							//	是否显示加载条
         page : true, 								//	开启分页
@@ -35,10 +87,11 @@ layui.use(['form','layer','table','laytpl'],function(){
         cols : [[
             {templet: '<div>{{d.company.name}}</div>', title: '归属公司', align:'center'},
             {templet: '<div>{{d.office.name}}</div>', title: '归属部门', align:'center'},
-            {field: 'loginName', title: '登录名',  minWidth: 30, align:'center'},
+            {field: 'loginName', title: '登录名', align:'center'},
+            {field: 'agent.workno', templet: '#workNoTpl', title: '坐席工号', align:'center'},
             {field: 'name', title: '姓名', align:'center'},
-            {field: 'userType', title: '用户类型', align:'center'},
-            {field: 'phone', title: '电话', align:'center'},
+            {field: 'userTypeName', title: '用户类型', align:'center'},
+            {templet: '#phoneTpl', title: '座机', align:'center'},
             {field: 'mobile', title: '手机', align:'center'},
             {title: '操作', fixed:"right", align: 'center', templet:'#timerListBar'}
         ]],
@@ -47,33 +100,71 @@ layui.use(['form','layer','table','laytpl'],function(){
         }
     });
     
-    //头工具栏事件
-    table.on('toolbar(userList)', function(obj) {
-      switch(obj.event) {
-      
-        case 'add':
-        	console.log(obj);
-        break;
-      };
-    });
-    
     //监听行工具事件
     table.on('tool(userList)', function(obj){
 		switch (obj.event) {
 		
 		case "edit":
-			console.log(obj.data);
-//			editTimer(obj.data);
-			break;
-			
-		case "del":
-//			delTimer(obj.data);
+			editUser(obj.data);
 			break;
 			
 		default:
 			break;
 		}
     });
+    
+    function editUser(data) {
+    	var editUserIndex = layui.layer.open({
+            type: 2,
+            title: '编辑用户', 		// 不显示标题栏
+            closeBtn: 1,			// 关闭按钮
+            shade: 0, 				// 遮罩
+            shadeClose: false, 		// 是否点击遮罩关闭
+            anim: 0, 				// 弹出动画
+            isOutAnim: true, 		// 关闭动画
+            scrollbar: false, 		// 是否允许浏览器出现滚动条
+            maxmin: true, 			// 最大最小化
+            id: 'LAY_EditUser', 	// 用于控制弹层唯一标识
+            moveType: 1,
+            content: [ctx + '/sys/user/edit/' + data.id],
+            success : function(layero, index) {
+                var body = layui.layer.getChildFrame('body', index);
+                setTimeout(function(){
+                    layui.layer.tips('点击此处返回用户列表', '.layui-layer-setwin .layui-layer-close', {
+                        tips: 3
+                    });
+                },500)
+            },
+            end:function(index) {
+            	userListtIns.reload();
+           }
+    	});
+    	layui.layer.full(editUserIndex);
+        window.sessionStorage.setItem("editUserIndex", editUserIndex);
+        $(window).on("resize",function() {
+        	layui.layer.full(window.sessionStorage.getItem("editUserIndex"));
+        })
+	}
+    
+    form.on('submit(search)', function(data) {
+    	layer.load();
+    	userListtIns.reload({
+    		where: customerFrom.serializeJson($("#sesarchForm")),
+    		page: {curr: 1},
+            done: function(res, curr, count) {
+            	layer.closeAll('loading');
+            }
+    	});
+    	return false;
+    });
+    
+    form.verify({
+    	myNumber: function(value, item) {
+    		if(value.trim().length != 0 && !/^[-+]?\d*$/.test(value.trim())) {
+    			return '只能填写数字';
+    		}
+    	}
+    });  
     
     //控制表格编辑时文本的位置【跟随渲染时的位置】
     $("body").on("click",".layui-table-body.layui-table-main tbody tr td",function() {

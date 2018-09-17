@@ -1,5 +1,7 @@
 package com.Zackeus.CTI.common.entity;
 
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
@@ -24,6 +26,7 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 	protected String parentIds; 	// 所有父级编号
 	protected String name; 			// 机构名称
 	protected Integer sort;			// 排序
+	protected List<T> children;		// 子级
 	
 	public TreeEntity() {
 		super();
@@ -80,6 +83,14 @@ public abstract class TreeEntity<T> extends DataEntity<T> {
 			id = (String)Reflections.getFieldValue(parent, "id");
 		}
 		return StringUtils.isNotBlank(id) ? id : "0";
+	}
+
+	public List<T> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<T> children) {
+		this.children = children;
 	}
 	
 }

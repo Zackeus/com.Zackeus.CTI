@@ -14,6 +14,7 @@
 		a.phone,
 		a.mobile,
 		a.user_type,
+		SUT.[TYPE_VALUE] AS "userTypeName",
 		a.login_ip,
 		a.login_date,
 		a.remarks,
@@ -46,8 +47,8 @@
     	ou.name AS "office.primaryPerson.name",
     	ou2.id AS "office.deputyPerson.id",
     	ou2.name AS "office.deputyPerson.name",
-    	CIA.[WORK_NO] AS "agentUser.userNo",
-    	CIA.[PHONE_NUMBER] AS "agentUser.phonenumber"
+    	CIA.[WORK_NO] AS "agentUser.workno",
+    	a.phone AS "agentUser.phonenumber"
     </sql>
     
     <sql id="userJoins">
@@ -60,6 +61,7 @@
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] ou ON ou.id = o.primary_person
 		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] ou2 ON ou2.id = o.deputy_person
 		LEFT JOIN [CTI].[dbo].[SYS_USER_AGENT] CIA ON CIA.[USER_NO] = a.id
+		LEFT JOIN [CTI].[dbo].[SYS_USER_TYPE] SUT ON SUT.[USER_TYPE] = a.user_type
     </sql>
 
 	<!-- 根据编号获得用户 -->
@@ -80,6 +82,15 @@
 		WHERE a.login_name = #{loginName} AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 	
+	<!-- 根据坐席工号查询用户 -->
+	<select id="getByAgentWorkNo" resultType="User" parameterType="User">
+		SELECT
+		<include refid="userColumns"/>
+		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] a
+		<include refid="userJoins"/>
+		WHERE [CIA].[WORK_NO] = #{agentUser.workno}
+	</select>
+	
 	<!-- 分页查询用户信息 -->
 	<select id="findList" resultType="User">
 		SELECT
@@ -87,9 +98,24 @@
 		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] a
 		<include refid="userJoins"/>
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="office != null and office.id != null and office.id != ''">
+			AND (o.id = #{office.id} OR o.parent_ids LIKE '%,'+#{office.id}+',%')
+		</if>
 		<!-- 如果不是超级管理员，则不显示超级管理员用户 -->
 		<if test="!currentUser.admin">
 			AND a.id != #{ADMIN_ID}
+		</if>
+		<if test="loginName != null and loginName != ''">
+			AND a.login_name like '%'+#{loginName}+'%'
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name like '%'+#{name}+'%'
+		</if>
+		<if test="agentUser != null and agentUser.workno != null and agentUser.workno != ''">
+			AND CIA.[WORK_NO] = #{agentUser.workno}
+		</if>
+		<if test="agentUser != null and agentUser.phonenumber != null and agentUser.phonenumber != ''">
+			AND a.phone = #{agentUser.phonenumber}
 		</if>
 		ORDER BY c.code, o.code, a.name
 	</select>

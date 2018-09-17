@@ -46,10 +46,14 @@ public class LoginCustomRealm extends AuthorizingRealm {
     	UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
     	User user = systemService.getUserByLoginName(token.getUsername());
     	
-    	if (ObjectUtils.isEmpty(user.getAgentUser()) || StringUtils.isBlank(user.getAgentUser().getUserNo()) 
-    			|| StringUtils.isBlank(user.getAgentUser().getPhonenumber())) {
-    		throw new AuthenticationException("msg:此账号未绑定坐席账号");
-		} 
+    	if (ObjectUtils.isEmpty(user.getAgentUser()) || StringUtils.isBlank(user.getAgentUser().getWorkno())) {
+    		throw new AuthenticationException("msg:此账号未注册坐席账号");
+		}
+    	
+//    	if (StringUtils.isBlank(user.getAgentUser().getPhonenumber())) {
+//    		throw new AuthenticationException("msg:此账号未绑定座机号");
+//		}
+    	
     	if (!ObjectUtils.isEmpty(user)) {
         	byte[] salt = Encodes.decodeHex(user.getPassword().substring(0,16));
         	return new SimpleAuthenticationInfo(new Principal(user, false), 

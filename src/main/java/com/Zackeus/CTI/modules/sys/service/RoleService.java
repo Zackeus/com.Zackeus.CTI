@@ -2,7 +2,6 @@ package com.Zackeus.CTI.modules.sys.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +20,6 @@ import com.Zackeus.CTI.modules.sys.entity.Role;
 @Service("roleService")
 public class RoleService extends CrudService<RoleDao, Role> {
 
-	@Autowired
-	RoleDao roleDao;
-	
 	/**
 	 * 获取全部角色列表
 	 */
@@ -42,7 +38,7 @@ public class RoleService extends CrudService<RoleDao, Role> {
 	 */
 	@Cacheable(value = {"authorizationCache"}, keyGenerator = "cacheKeyGenerator")
 	public List<Role> getRoleByUser(Role role) {
-		return roleDao.getRoleByUser(role);
+		return dao.getRoleByUser(role);
 	}
 	
 }

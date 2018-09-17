@@ -2,7 +2,6 @@ package com.Zackeus.CTI.modules.sys.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -22,9 +21,6 @@ import com.Zackeus.CTI.modules.sys.entity.Dict;
 @Service("dictService")
 public class DictService extends CrudService<DictDao, Dict> {
 	
-	@Autowired
-	private DictDao dictDao;
-
 	/**
 	 * 
 	 * @Title：get
@@ -48,7 +44,7 @@ public class DictService extends CrudService<DictDao, Dict> {
 	 */
 	@Cacheable(value = {"sysDictCache"}, keyGenerator = "cacheKeyGenerator")
 	public String getDictLabel(Dict dict) {
-		return dictDao.getDictLabel(dict);
+		return dao.getDictLabel(dict);
 	}
 	
 	/**
@@ -73,7 +69,7 @@ public class DictService extends CrudService<DictDao, Dict> {
 	 */
 	@Cacheable(value = {"sysDictCache"}, keyGenerator = "cacheKeyGenerator")
 	public List<Dict> findListByType(String type) {
-		return dictDao.findListByType(type);
+		return dao.findListByType(type);
 	}
 	
 	/**

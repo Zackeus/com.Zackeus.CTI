@@ -2,7 +2,6 @@ package com.Zackeus.CTI.modules.sys.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -22,9 +21,6 @@ import com.Zackeus.CTI.modules.sys.entity.Menu;
  */
 @Service("menuService")
 public class MenuService extends CrudService<MenuDao, Menu> {
-	
-	@Autowired
-	private MenuDao menuDao;
 	
 	/**
 	 * 
@@ -50,7 +46,7 @@ public class MenuService extends CrudService<MenuDao, Menu> {
 	 */
 	@Cacheable(value = {"sysMenuCache"}, keyGenerator = "cacheKeyGenerator")
 	public Integer getMaxSortById(String id) {
-		return menuDao.getMaxSortById(id);
+		return dao.getMaxSortById(id);
 	}
 	
 	/**
@@ -75,7 +71,7 @@ public class MenuService extends CrudService<MenuDao, Menu> {
 	 * @return
 	 */
 	public List<Menu> getAllMenuList(Menu menu) {
-		return menuDao.getAllMenuList(menu);
+		return dao.getAllMenuList(menu);
 	}
 	
 	/**
@@ -88,7 +84,7 @@ public class MenuService extends CrudService<MenuDao, Menu> {
 	 */
 	@Cacheable(value = {"sysMenuCache"}, keyGenerator = "cacheKeyGenerator")
 	public List<Menu> getMenuListByUser(Menu menu) {
-		return menuDao.getMenuListByUser(menu);
+		return dao.getMenuListByUser(menu);
 	}
 	
 	/**

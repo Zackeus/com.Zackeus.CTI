@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.Zackeus.CTI.modules.sys.dao.OfficeDao">
+
+	<sql id="officeColumns">
+		a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids,
+		a.area_id AS "area.id",
+		a.code,
+		a.name,
+		a.sort,
+		a.type,
+		a.grade,
+		a.address, 
+		a.zip_code, 
+		a.master, 
+		a.phone, 
+		a.fax, 
+		a.email, 
+		a.remarks,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.useable AS useable,
+		a.primary_person AS "primaryPerson.id",
+		a.deputy_person AS "deputyPerson.id"
+	</sql>
+	
+	<resultMap type="Office" id="officeResultMap">
+		<id property="id" column="ID" />
+		<collection property="children" column="{id = ID, DEL_FLAG_NORMAL = del_flag}" select="getOffuceListByParent"/>
+	</resultMap>
+			
+	<select id="findAllList" resultType="Office">
+		SELECT
+		<include refid="officeColumns"/>
+		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_office] a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY a.code
+	</select>
+	
+	<!-- 获取全部组织架构列表列表 -->
+	<select id="getAllOffuceList" resultMap="officeResultMap">
+		SELECT DISTINCT
+		<include refid="officeColumns"/>
+		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_office] a
+		WHERE a.type = '1' AND a.grade = '1' AND a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY [sort]
+	</select>
+	
+	<!-- 根据父级查询全部子级组织架构 -->
+	<select id="getOffuceListByParent" resultMap="officeResultMap">
+		SELECT DISTINCT
+		<include refid="officeColumns"/>
+		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_office] a
+		WHERE a.parent_id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY [sort]
+	</select>
+	
+</mapper>

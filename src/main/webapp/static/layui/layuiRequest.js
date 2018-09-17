@@ -27,6 +27,10 @@ layui.define(['jquery','layer'],function(exports){
 					}
 				});
 			},
+			// 编辑用户
+			editUser: function (url, data, btn) {
+				layuiRequest.jsonPostBtn(url, data, btn);
+			},
 			// 获取菜单最大排序
 			getMaxMenuSort: function (url) {
 				var returnMsg;
