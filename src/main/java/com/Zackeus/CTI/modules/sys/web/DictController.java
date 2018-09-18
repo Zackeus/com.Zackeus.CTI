@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.entity.Page;
+import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.web.BaseController;
@@ -106,7 +107,7 @@ public class DictController extends BaseController {
 		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void addDict(@RequestBody Dict dict, HttpServletRequest request, HttpServletResponse response) {
 		dictService.save(dict);
-		renderString(response, new AjaxResult(0, "添加字典成功"));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "添加字典成功"));
 	}
 	
 	/**
@@ -142,7 +143,7 @@ public class DictController extends BaseController {
 		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void editDict(@RequestBody Dict dict, HttpServletRequest request, HttpServletResponse response) {
 		dictService.save(dict);
-		renderString(response, new AjaxResult(0, "更新字典成功"));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "更新字典成功"));
 	}
 	
 	/**
@@ -159,7 +160,7 @@ public class DictController extends BaseController {
 		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void delDict(@RequestBody Dict dict, HttpServletRequest request, HttpServletResponse response) {
 		dictService.delete(dict);
-		renderString(response, new AjaxResult(0, "删除字典成功"));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "删除字典成功"));
 	}
 
 }

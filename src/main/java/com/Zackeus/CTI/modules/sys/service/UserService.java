@@ -1,11 +1,11 @@
 package com.Zackeus.CTI.modules.sys.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.Zackeus.CTI.common.service.CrudService;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
-import com.Zackeus.CTI.common.utils.StringUtils;
-import com.Zackeus.CTI.common.utils.exception.MyException;
 import com.Zackeus.CTI.modules.sys.dao.UserDao;
 import com.Zackeus.CTI.modules.sys.entity.User;
 
@@ -40,8 +40,20 @@ public class UserService extends CrudService<UserDao, User> {
 	 * @param user
 	 * @return
 	 */
-	public User getByAgentWorkNo(User user) {
+	public List<User> getByAgentWorkNo(User user) {
 		return dao.getByAgentWorkNo(user);
+	}
+	
+	/**
+	 * 
+	 * @Title：getByPhone
+	 * @Description: TODO(根据座机号查询用户)
+	 * @see：
+	 * @param user
+	 * @return
+	 */
+	public List<User> getByPhone(User user) {
+		return dao.getByPhone(user);
 	}
 
 	/**
@@ -49,11 +61,29 @@ public class UserService extends CrudService<UserDao, User> {
 	 */
 	@Override
 	public void save(User user) {
-		User agentUser = getByAgentWorkNo(user);
-		if (ObjectUtils.isNotEmpty(agentUser.getAgentUser()) && 
-				StringUtils.isNotBlank(agentUser.getAgentUser().getWorkno())) {
-			throw new MyException("账号：" + user.getAgentUser().getWorkno() + "，已被 " + agentUser.getName() + " 注册！");
+		if (ObjectUtils.isEmpty(dao.getAgentUser(user))) {
+			// 执行插入操作
+			user.setIsNewRecord(Boolean.TRUE);
+			user.preInsert();
+			dao.insert(user);
+		} else {
+			// 更新操作
+			user.preUpdate();
+			dao.update(user);
 		}
+		dao.updatePhone(user);
+	}
+	
+	/**
+	 * 
+	 * @Title：cancelUser
+	 * @Description: TODO(注销用户)
+	 * @see：
+	 * @param user
+	 * @param id
+	 */
+	public void cancelUser(User user) {
+		dao.delete(user);
 	}
 	
 }

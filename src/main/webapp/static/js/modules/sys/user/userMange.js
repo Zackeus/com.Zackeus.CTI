@@ -107,6 +107,10 @@ layui.use(['form','layer','table','laytpl','tree','layuiRequest','customerFrom']
 		case "edit":
 			editUser(obj.data);
 			break;
+		
+		case "cancer":
+			cancerUser(obj.data);
+			break;
 			
 		default:
 			break;
@@ -145,6 +149,20 @@ layui.use(['form','layer','table','laytpl','tree','layuiRequest','customerFrom']
         	layui.layer.full(window.sessionStorage.getItem("editUserIndex"));
         })
 	}
+    
+    function cancerUser(data) {
+        layer.msg("是否注销此账号？", {
+        	time: 0, 
+        	btn: ['确定', '取消'],
+        	btnAlign: 'c',
+            btn1: function(index, layero) {
+            	layuiRequest.cancelUser(data, index, ctx + '/sys/user/cancel', userListtIns);
+            },
+            btn2: function(index, layero) {
+            	layer.close(index);
+            }
+        });
+    }
     
     form.on('submit(search)', function(data) {
     	layer.load();

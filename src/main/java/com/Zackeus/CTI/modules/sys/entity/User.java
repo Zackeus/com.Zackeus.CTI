@@ -7,10 +7,13 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.stereotype.Component;
 
 import com.Zackeus.CTI.common.annotation.SupCol;
+import com.Zackeus.CTI.common.annotation.validator.UserValidator;
 import com.Zackeus.CTI.common.config.GlobalConfig;
 import com.Zackeus.CTI.common.entity.DataEntity;
+import com.Zackeus.CTI.common.service.valid.UpdateVaild;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,6 +27,8 @@ import com.google.common.collect.Lists;
  * @author zhou.zhang
  * @date 2018年8月10日 上午11:08:54
  */
+@UserValidator(groups = {UpdateVaild.class})
+@Component
 public class User extends DataEntity<User> {
 
 	private static final long serialVersionUID = 1L;

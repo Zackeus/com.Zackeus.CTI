@@ -15,7 +15,6 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.http.HttpStatus;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,6 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.utils.DateUtils;
+import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.WebUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
@@ -410,7 +410,7 @@ public abstract class BaseController {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String handleException(HttpServletRequest request, HttpServletResponse response, DataIntegrityViolationException e) {
         if (WebUtils.isAjaxRequest(request)) {
-            renderString(response, new AjaxResult(1001, "操作数据库异常：" + e.getMessage()));
+            renderString(response, new AjaxResult(HttpStatus.SC_SQL_SERROR, "操作数据库异常：" + e.getMessage()));
             return null;
         } else {
             return "sys/Error";
@@ -429,7 +429,7 @@ public abstract class BaseController {
 	@ExceptionHandler({ MyException.class })
 	public String schedulerException(HttpServletRequest request, HttpServletResponse response, MyException e) {
 		if (WebUtils.isAjaxRequest(request)) {
-			renderString(response, new AjaxResult(1000, e.getMessage()));
+			renderString(response, new AjaxResult(e.getErrorCode(), e.getMessage(), e.getObject()));
 			return null;
 		} else {
 			return "sys/Error";
@@ -449,7 +449,7 @@ public abstract class BaseController {
 	@ExceptionHandler({ Exception.class })
 	public String exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
 		if (WebUtils.isAjaxRequest(request)) {
-			renderString(response, new AjaxResult(999, "未知的错误：" + e.getMessage()));
+			renderString(response, new AjaxResult(HttpStatus.SC_UNKNOWN, "未知的错误：" + e.getMessage()));
 			e.printStackTrace();
 			return null;
 		} else {

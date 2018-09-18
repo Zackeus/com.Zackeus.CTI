@@ -51,15 +51,25 @@
     	a.phone AS "agentUser.phonenumber"
     </sql>
     
+    <sql id="agentUserColumns">
+    	[USER_NO],
+      	[WORK_NO],
+      	[CREATE_DATE],
+      	[UPDATE_DATE],
+      	[CREATE_BY],
+      	[UPDATE_BY],
+      	[REMARKS]
+    </sql>
+    
     <sql id="userJoins">
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_office] c ON c.id = a.company_id
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_area] ca ON ca.id = c.area_id
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_office] o ON o.id = a.office_id
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_area] oa ON oa.id = o.area_id
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] cu ON cu.id = c.primary_person
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] cu2 ON cu2.id = c.deputy_person
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] ou ON ou.id = o.primary_person
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] ou2 ON ou2.id = o.deputy_person
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_office] c ON c.id = a.company_id
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_area] ca ON ca.id = c.area_id
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_office] o ON o.id = a.office_id
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_area] oa ON oa.id = o.area_id
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] cu ON cu.id = c.primary_person
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] cu2 ON cu2.id = c.deputy_person
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] ou ON ou.id = o.primary_person
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] ou2 ON ou2.id = o.deputy_person
 		LEFT JOIN [CTI].[dbo].[SYS_USER_AGENT] CIA ON CIA.[USER_NO] = a.id
 		LEFT JOIN [CTI].[dbo].[SYS_USER_TYPE] SUT ON SUT.[USER_TYPE] = a.user_type
     </sql>
@@ -68,7 +78,7 @@
 	<select id="get" resultType="User">
 		SELECT
 		<include refid="userColumns"/>
-		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] a
+		FROM [jeesite-yfc].[dbo].[sys_user] a
 		<include refid="userJoins"/>
 		WHERE a.id = #{id}
 	</select>
@@ -77,7 +87,7 @@
 	<select id="getByLoginName" resultType="User" parameterType="User">
 		SELECT
 		<include refid="userColumns"/>
-		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] a
+		FROM [jeesite-yfc].[dbo].[sys_user] a
 		<include refid="userJoins"/>
 		WHERE a.login_name = #{loginName} AND a.del_flag = #{DEL_FLAG_NORMAL}
 	</select>
@@ -86,16 +96,34 @@
 	<select id="getByAgentWorkNo" resultType="User" parameterType="User">
 		SELECT
 		<include refid="userColumns"/>
-		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] a
+		FROM [jeesite-yfc].[dbo].[sys_user] a
 		<include refid="userJoins"/>
 		WHERE [CIA].[WORK_NO] = #{agentUser.workno}
+	</select>
+	
+	<!-- 根据用户标识查询坐席账号 -->
+	<select id="getAgentUser" resultType="AgentUser">
+		SELECT
+			[USER_NO] AS "userNo",
+			[WORK_NO] AS "workno"
+		FROM [CTI].[dbo].[SYS_USER_AGENT]
+		WHERE [USER_NO] = #{id}
+	</select>
+	
+	<!-- 根据座机查询用户 -->
+	<select id="getByPhone" resultType="User">
+		SELECT
+			<include refid="userColumns"/>
+		FROM [jeesite-yfc].[dbo].[sys_user] a
+		<include refid="userJoins"/>
+		WHERE a.[phone] = #{agentUser.phonenumber}
 	</select>
 	
 	<!-- 分页查询用户信息 -->
 	<select id="findList" resultType="User">
 		SELECT
 			<include refid="userColumns"/>
-		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] a
+		FROM [jeesite-yfc].[dbo].[sys_user] a
 		<include refid="userJoins"/>
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		<if test="office != null and office.id != null and office.id != ''">
@@ -119,5 +147,41 @@
 		</if>
 		ORDER BY c.code, o.code, a.name
 	</select>
+	
+	<!-- 注册用户 -->
+	<insert id="insert">
+		INSERT INTO [CTI].[dbo].[SYS_USER_AGENT]
+		(<include refid="agentUserColumns"/>)
+		VALUES(	
+			#{id},
+			#{agentUser.workno},
+			#{createDate},
+			#{updateDate},
+			#{createBy.id},
+			#{updateBy.id},
+			#{remarks})
+	</insert>
+	
+	<!-- 更新用户 -->
+	<update id="update">
+		UPDATE [CTI].[dbo].[SYS_USER_AGENT] SET
+			[WORK_NO] = #{agentUser.workno},
+			[UPDATE_DATE] = #{updateDate},
+			[UPDATE_BY] = #{updateBy.id},
+			[REMARKS] = #{remarks}
+		WHERE [USER_NO] = #{id}
+	</update>
+	
+	<!-- 更新座机 -->
+	<update id="updatePhone">
+		UPDATE [jeesite-yfc].[dbo].[sys_user] SET
+			[phone] = #{agentUser.phonenumber}
+		WHERE [id] = #{id}
+	</update>
+	
+	<!-- 注销用户 -->
+	<delete id="delete">
+		DELETE [CTI].[dbo].[SYS_USER_AGENT] WHERE [USER_NO] = #{id}
+	</delete>
 	
 </mapper>  

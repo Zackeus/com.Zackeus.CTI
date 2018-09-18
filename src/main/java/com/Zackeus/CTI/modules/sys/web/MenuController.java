@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.entity.LayuiTable;
+import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.WebUtils;
 import com.Zackeus.CTI.common.web.BaseController;
@@ -128,7 +129,7 @@ public class MenuController extends BaseController {
 		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void addMenu(@RequestBody Menu menu, HttpServletRequest request, HttpServletResponse response) {
 		menuService.save(menu);
-		renderString(response, new AjaxResult(0, "添加菜单成功"));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "添加菜单成功"));
 	}
 	
 	/**
@@ -164,7 +165,7 @@ public class MenuController extends BaseController {
 	@RequestMapping(value = "/edit", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void editMenu(@RequestBody Menu menu, HttpServletRequest request, HttpServletResponse response) {
 		menuService.save(menu);
-		renderString(response, new AjaxResult(0, "更新菜单成功"));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "更新菜单成功"));
 	}
 	
 	/**
@@ -179,7 +180,7 @@ public class MenuController extends BaseController {
 	@RequestMapping(value = "/del", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void delMenu(@RequestBody Menu menu, HttpServletRequest request, HttpServletResponse response) {
 		menuService.delete(menu);
-		renderString(response, new AjaxResult(0, "删除菜单成功"));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "删除菜单成功"));
 	}
 	
 }

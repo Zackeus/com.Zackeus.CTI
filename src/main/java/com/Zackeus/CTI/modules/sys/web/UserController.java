@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.entity.Page;
+import com.Zackeus.CTI.common.service.valid.UpdateVaild;
+import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.service.UserService;
@@ -96,9 +99,28 @@ public class UserController extends BaseController {
 	@RequiresRoles(value = { "admin" })
 	@RequestMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE,
 		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
-	public void editUser(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+	public void editUser(@Validated({ UpdateVaild.class }) @RequestBody User user, 
+			HttpServletRequest request, HttpServletResponse response) {
 		userService.save(user);
-		renderString(response, new AjaxResult(0, "更新用户成功"));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "更新用户成功"));
+	}
+	
+	/**
+	 * 
+	 * @Title：cancelUser
+	 * @Description: TODO(注销用户)
+	 * @see：
+	 * @param id
+	 * @param user
+	 * @param request
+	 * @param response
+	 */
+	@RequiresRoles(value = { "admin" })
+	@RequestMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE, 
+		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void cancelUser(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+		userService.cancelUser(user);
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "注销用户成功"));
 	}
 	
 }

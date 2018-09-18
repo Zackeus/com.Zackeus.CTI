@@ -1,7 +1,10 @@
 package com.Zackeus.CTI.modules.sys.dao;
 
+import java.util.List;
+
 import com.Zackeus.CTI.common.annotation.MyBatisDao;
 import com.Zackeus.CTI.common.dao.CrudDao;
+import com.Zackeus.CTI.modules.sys.entity.AgentUser;
 import com.Zackeus.CTI.modules.sys.entity.User;
 
 /**
@@ -17,6 +20,12 @@ public interface UserDao extends CrudDao<User> {
 	
 	public User getByLoginName(User user);
 	
-	public User getByAgentWorkNo(User user);
+	public List<User> getByAgentWorkNo(User user);
+	
+	public List<User> getByPhone(User user);
+	
+	public AgentUser getAgentUser(User user);
+	
+	public void updatePhone(User user);
 
 }

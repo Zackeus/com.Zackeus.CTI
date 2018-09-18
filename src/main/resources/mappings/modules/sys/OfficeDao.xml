@@ -37,7 +37,7 @@
 	<select id="findAllList" resultType="Office">
 		SELECT
 		<include refid="officeColumns"/>
-		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_office] a
+		FROM [jeesite-yfc].[dbo].[sys_office] a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY a.code
 	</select>
@@ -46,7 +46,7 @@
 	<select id="getAllOffuceList" resultMap="officeResultMap">
 		SELECT DISTINCT
 		<include refid="officeColumns"/>
-		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_office] a
+		FROM [jeesite-yfc].[dbo].[sys_office] a
 		WHERE a.type = '1' AND a.grade = '1' AND a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY [sort]
 	</select>
@@ -55,7 +55,7 @@
 	<select id="getOffuceListByParent" resultMap="officeResultMap">
 		SELECT DISTINCT
 		<include refid="officeColumns"/>
-		FROM [10.5.60.80].[jeesite-yfc].[dbo].[sys_office] a
+		FROM [jeesite-yfc].[dbo].[sys_office] a
 		WHERE a.parent_id = #{id} AND a.del_flag = #{DEL_FLAG_NORMAL}
 		ORDER BY [sort]
 	</select>

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.Zackeus.CTI.common.entity.AjaxResult;
+import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.WebUtils;
@@ -65,14 +66,14 @@ public class LoginController extends BaseController {
 		Principal principal = UserUtils.getPrincipal();
 		// 如果已经登录，则跳转到管理首页
 		if (principal != null) {
-			renderString(response, new AjaxResult(0, "已经登录"));
+			renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "已经登录"));
 			return;
 		}
 		String message = (String) request.getAttribute(LoginAuthenticationFilter.DEFAULT_MESSAGE_PARAM);
 		if (StringUtils.isBlank(message) || StringUtils.equals(message, "null")) {
 			message = "用户或密码错误, 请重试.";
 		}
-		renderString(response, new AjaxResult(-1, message));
+		renderString(response, new AjaxResult(HttpStatus.SC_LOGIN_ERROR, message));
 	}
 	
 	/**
@@ -88,7 +89,7 @@ public class LoginController extends BaseController {
 	@RequestMapping(value = "/loginSuccess", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String loginSuccess(HttpServletRequest request, HttpServletResponse response, Model model) {
 		if (WebUtils.isAjaxRequest(request)) {
-			renderString(response, new AjaxResult(0, "登录成功"));
+			renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "登录成功"));
 			return null;
 		}
 		return "modules/sys/sysIndex";

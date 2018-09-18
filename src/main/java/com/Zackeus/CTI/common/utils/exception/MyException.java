@@ -15,7 +15,12 @@ public class MyException extends RuntimeException {
 	/**
 	 * 错误编码
 	 */
-	private String errorCode;
+	private Integer errorCode;
+	
+	/**
+	 * 附加信息
+	 */
+	private Object object;
 
 	/**
 	 * 消息是否为属性文件中的Key
@@ -36,8 +41,18 @@ public class MyException extends RuntimeException {
 	 * @param errorCode 错误编码
 	 * @param message 信息描述
 	 */
-	public MyException(String errorCode, String message) {
+	public MyException(Integer errorCode, String message) {
 		this(errorCode, message, true);
+	}
+	
+	/**
+	 * 构造一个基本异常
+	 * @param errorCode
+	 * @param message
+	 * @param object 附加信息
+	 */
+	public MyException(Integer errorCode, String message, Object object) {
+		this(errorCode, message, object, true);
 	}
 
 	/**
@@ -46,7 +61,7 @@ public class MyException extends RuntimeException {
 	 * @param message
 	 * @param cause
 	 */
-	public MyException(String errorCode, String message, Throwable cause) {
+	public MyException(Integer errorCode, String message, Throwable cause) {
 		this(errorCode, message, cause, true);
 	}
 
@@ -56,10 +71,24 @@ public class MyException extends RuntimeException {
 	 * @param message 信息描述
 	 * @param propertiesKey 消息是否为属性文件中的Key
 	 */ 
-	public MyException(String errorCode, String message, boolean propertiesKey) {
+	public MyException(Integer errorCode, String message, boolean propertiesKey) {
 		super(message);
 		this.setErrorCode(errorCode);
 		this.setPropertiesKey(propertiesKey);
+	}
+	
+	/**
+	 * 构造一个基本异常. 
+	 * @param errorCode
+	 * @param message
+	 * @param object 附加信息
+	 * @param propertiesKey
+	 */
+	public MyException(Integer errorCode, String message, Object object, boolean propertiesKey) {
+		super(message);
+		this.setErrorCode(errorCode);
+		this.setPropertiesKey(propertiesKey);
+		this.setObject(object);
 	}
 
 	/**
@@ -69,7 +98,7 @@ public class MyException extends RuntimeException {
 	 * @param cause
 	 * @param propertiesKey
 	 */
-	public MyException(String errorCode, String message, Throwable cause, boolean propertiesKey) {
+	public MyException(Integer errorCode, String message, Throwable cause, boolean propertiesKey) {
 		super(message, cause);
 		this.setErrorCode(errorCode);
 		this.setPropertiesKey(propertiesKey);
@@ -84,12 +113,20 @@ public class MyException extends RuntimeException {
 		super(message, cause);
 	}
 
-	public String getErrorCode() {
+	public Integer getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(String errorCode) {
+	public void setErrorCode(Integer errorCode) {
 		this.errorCode = errorCode;
+	}
+	
+	public Object getObject() {
+		return object;
+	}
+
+	public void setObject(Object object) {
+		this.object = object;
 	}
 
 	public boolean isPropertiesKey() {

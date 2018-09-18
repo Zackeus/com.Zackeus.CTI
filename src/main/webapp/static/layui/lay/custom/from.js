@@ -1,6 +1,5 @@
-layui.define(['jquery','layer'],function(exports){
-	var	$ = layui.$,
-		layer = parent.layer === undefined ? layui.layer : top.layer;
+layui.define(['jquery'],function(exports){
+	var	$ = layui.$;
 	var customerFrom = {
 			// 表单序列化Json 序列化嵌套对象
 			serializeJson : function(from) {

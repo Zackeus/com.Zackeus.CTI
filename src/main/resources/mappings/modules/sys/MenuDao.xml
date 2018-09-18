@@ -64,7 +64,7 @@
 		JOIN [CTI].[dbo].[SYS_ROLE_MENU] RM ON RM.[MENU_ID] = M.[ID]
 		JOIN [CTI].[dbo].[SYS_ROLE] R ON R.[ID] = RM.[ROLE_ID]
 		JOIN [CTI].[dbo].[SYS_USER_ROLE] UR ON UR.[ROLE_ID] = r.[ID]
-		JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID] AND u.id = #{userId}
+		JOIN [jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID] AND u.id = #{userId}
 		WHERE M.[PARENT_ID] = #{id}
 		ORDER BY [SORT]
 	</select>

@@ -50,9 +50,9 @@ public class LoginCustomRealm extends AuthorizingRealm {
     		throw new AuthenticationException("msg:此账号未注册坐席账号");
 		}
     	
-//    	if (StringUtils.isBlank(user.getAgentUser().getPhonenumber())) {
-//    		throw new AuthenticationException("msg:此账号未绑定座机号");
-//		}
+    	if (StringUtils.isBlank(user.getAgentUser().getPhonenumber())) {
+    		throw new AuthenticationException("msg:此账号未绑定座机号");
+		}
     	
     	if (!ObjectUtils.isEmpty(user)) {
         	byte[] salt = Encodes.decodeHex(user.getPassword().substring(0,16));

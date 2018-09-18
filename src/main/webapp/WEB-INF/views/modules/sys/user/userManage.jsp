@@ -55,6 +55,7 @@
 	<script type="text/html" id="timerListBar">
 		<shiro:hasRole name="admin">
 			<a title=">编辑" class="layui-btn layui-btn-xs layui-btn-warm" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+			<a title="注销" class="layui-btn layui-btn-xs layui-btn-danger" lay-event="cancer"><i class="layui-icon">&#xe640;</i></a>
 		</shiro:hasRole>
 	</script>
 	

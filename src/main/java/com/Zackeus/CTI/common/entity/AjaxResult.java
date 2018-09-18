@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import net.sf.json.JSONObject;
-
 /**
  * 
  * @Title:LayuiResult
@@ -20,8 +18,8 @@ public class AjaxResult implements Serializable {
 
 	private Integer code; 					// 响应code
 	private String msg; 					// 响应内容
-	private JSONObject customObj; 			// 自定义参数
-
+	private Object customObj; 				// 自定义参数
+	
 	public AjaxResult() {
 		super();
 	}
@@ -30,11 +28,11 @@ public class AjaxResult implements Serializable {
 		this(code, message, null);
 	}
 	
-	public AjaxResult(Integer code, String msg, JSONObject jsonObject) {
+	public AjaxResult(Integer code, String msg, Object object) {
 		super();
 		this.code = code;
 		this.msg = msg;
-		this.customObj = jsonObject;
+		this.customObj = object;
 	}
 
 	public Integer getCode() {
@@ -53,12 +51,12 @@ public class AjaxResult implements Serializable {
 		this.msg = msg;
 	}
 
-	public JSONObject getCustomObj() {
+	public Object getCustomObj() {
 		return customObj;
 	}
 
-	public void setCustomObj(JSONObject customObj) {
-		this.customObj = customObj;
+	public void setCustomObj(Object object) {
+		this.customObj = object;
 	}
 
 	@Override

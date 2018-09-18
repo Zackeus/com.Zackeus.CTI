@@ -27,7 +27,7 @@
 		<include refid="roleColumns"/>
 		FROM [CTI].[dbo].[SYS_ROLE] R
 		LEFT JOIN [CTI].[dbo].[SYS_USER_ROLE] UR ON R.[ID] = UR.[ROLE_ID]
-		LEFT JOIN [10.5.60.80].[jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID]
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID]
 		<where>
 			<if test="user != null and user.id != null and user.id != ''">
 				AND U.id = #{user.id}
