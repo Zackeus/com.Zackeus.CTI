@@ -35,7 +35,7 @@ public class UserService extends CrudService<UserDao, User> {
 	/**
 	 * 
 	 * @Title：getByAgentWorkNo
-	 * @Description: TODO(根据坐席工号查询用户)
+	 * @Description: TODO(根据坐席工号查询用户(剔除待查询账号))
 	 * @see：
 	 * @param user
 	 * @return
@@ -47,7 +47,7 @@ public class UserService extends CrudService<UserDao, User> {
 	/**
 	 * 
 	 * @Title：getByPhone
-	 * @Description: TODO(根据座机号查询用户)
+	 * @Description: TODO(根据座机号查询用户(剔除待查询账号))
 	 * @see：
 	 * @param user
 	 * @return

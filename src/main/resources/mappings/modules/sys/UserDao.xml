@@ -98,7 +98,16 @@
 		<include refid="userColumns"/>
 		FROM [jeesite-yfc].[dbo].[sys_user] a
 		<include refid="userJoins"/>
-		WHERE [CIA].[WORK_NO] = #{agentUser.workno}
+		WHERE [CIA].[WORK_NO] = #{agentUser.workno} AND a.id != #{id}
+	</select>
+	
+	<!-- 根据座机查询用户 -->
+	<select id="getByPhone" resultType="User">
+		SELECT
+			<include refid="userColumns"/>
+		FROM [jeesite-yfc].[dbo].[sys_user] a
+		<include refid="userJoins"/>
+		WHERE a.[phone] = #{agentUser.phonenumber} AND a.id != #{id}
 	</select>
 	
 	<!-- 根据用户标识查询坐席账号 -->
@@ -108,15 +117,6 @@
 			[WORK_NO] AS "workno"
 		FROM [CTI].[dbo].[SYS_USER_AGENT]
 		WHERE [USER_NO] = #{id}
-	</select>
-	
-	<!-- 根据座机查询用户 -->
-	<select id="getByPhone" resultType="User">
-		SELECT
-			<include refid="userColumns"/>
-		FROM [jeesite-yfc].[dbo].[sys_user] a
-		<include refid="userJoins"/>
-		WHERE a.[phone] = #{agentUser.phonenumber}
 	</select>
 	
 	<!-- 分页查询用户信息 -->

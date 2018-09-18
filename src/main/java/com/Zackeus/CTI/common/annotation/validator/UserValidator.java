@@ -4,7 +4,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidatorContext;
@@ -49,18 +48,14 @@ public @interface UserValidator {
 
 		@Override
 		public boolean isValid(User user, ConstraintValidatorContext context) {
-			List<User> workNoUsers = userService.getByAgentWorkNo(user);
-			for(User workNoUser : workNoUsers) {
+			for(User workNoUser : userService.getByAgentWorkNo(user)) {
 				if (ObjectUtils.isNotEmpty(workNoUser) && ObjectUtils.isNotEmpty(workNoUser.getAgentUser()) && StringUtils.
-						isNotBlank(workNoUser.getAgentUser().getWorkno()) && !StringUtils.equals(user.getId(), workNoUser.getId())) {
+						isNotBlank(workNoUser.getAgentUser().getWorkno())) {
 					return sendErrorMsg(context, "账号：" + user.getAgentUser().getWorkno() + "，已被 " + workNoUser.getName() + " 注册！");
 				}
 			}
-
-			List<User> phoneUsers = userService.getByPhone(user);
-			for(User phoneUser : phoneUsers) {
-				if (ObjectUtils.isNotEmpty(phoneUser) && StringUtils.isNotBlank(phoneUser.getPhone()) 
-						&& !StringUtils.equals(user.getId(), phoneUser.getId())) {
+			for(User phoneUser : userService.getByPhone(user)) {
+				if (ObjectUtils.isNotEmpty(phoneUser) && StringUtils.isNotBlank(phoneUser.getPhone())) {
 					return sendErrorMsg(context, "座机：" + user.getAgentUser().getPhonenumber() + "，已被 " + phoneUser.getName() + " 占用！");
 				}
 			}
