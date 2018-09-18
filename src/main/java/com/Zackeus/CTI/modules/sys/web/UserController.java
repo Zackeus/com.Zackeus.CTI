@@ -27,21 +27,21 @@ import com.Zackeus.CTI.modules.sys.service.UserService;
  * 
  * @Title:UserController
  * @Description:TODO(用户Controller)
- * @Company: 
+ * @Company:
  * @author zhou.zhang
  * @date 2018年8月15日 上午9:25:13
  */
 @Controller
 @RequestMapping("/sys/user")
 public class UserController extends BaseController {
-	
+
 	@Autowired
 	private UserService userService;
-	
+
 	/**
 	 * 
 	 * @Title：userMange
-	 * @Description: TODO(用户管理)
+	 * @Description: TODO(用户管理) 
 	 * @see：
 	 * @param request
 	 * @param response
@@ -51,27 +51,26 @@ public class UserController extends BaseController {
 	public String userManage(HttpServletRequest request, HttpServletResponse response) {
 		return "modules/sys/user/userManage";
 	}
-	
+
 	/**
 	 * 
 	 * @Title：userList
-	 * @Description: TODO(用户分页条件查询)
+	 * @Description: TODO(用户分页条件查询) 
 	 * @see：
 	 * @param user
 	 * @param request
 	 * @param response
 	 */
 	@RequiresRoles(value = { "admin" })
-	@RequestMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE, 
-		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	@RequestMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void userList(@PageRequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 		renderString(response, userService.findPage(new Page<>(request), user));
 	}
-	
+
 	/**
 	 * 
 	 * @Title：editUserPage
-	 * @Description: TODO(编辑用户页面)
+	 * @Description: TODO(编辑用户页面) 
 	 * @see：
 	 * @param id
 	 * @param request
@@ -81,34 +80,33 @@ public class UserController extends BaseController {
 	 */
 	@RequiresRoles(value = { "admin" })
 	@RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
-	public String editUserPage(@PathVariable("id") String id, HttpServletRequest request, 
-			HttpServletResponse response, Model model) {
+	public String editUserPage(@PathVariable("id") String id, HttpServletRequest request, HttpServletResponse response,
+			Model model) {
 		model.addAttribute("user", userService.get(id));
 		return "modules/sys/user/editUser";
 	}
-	
+
 	/**
 	 * 
 	 * @Title：editUser
-	 * @Description: TODO(编辑用户)
+	 * @Description: TODO(编辑用户) 
 	 * @see：
 	 * @param user
 	 * @param request
 	 * @param response
 	 */
 	@RequiresRoles(value = { "admin" })
-	@RequestMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE,
-		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
-	public void editUser(@Validated({ UpdateVaild.class }) @RequestBody User user, 
-			HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void editUser(@Validated({ UpdateVaild.class }) @RequestBody User user, HttpServletRequest request,
+			HttpServletResponse response) {
 		userService.save(user);
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "更新用户成功"));
 	}
-	
+
 	/**
 	 * 
 	 * @Title：cancelUser
-	 * @Description: TODO(注销用户)
+	 * @Description: TODO(注销用户) 
 	 * @see：
 	 * @param id
 	 * @param user
@@ -116,11 +114,10 @@ public class UserController extends BaseController {
 	 * @param response
 	 */
 	@RequiresRoles(value = { "admin" })
-	@RequestMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE, 
-		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	@RequestMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void cancelUser(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 		userService.cancelUser(user);
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "注销用户成功"));
 	}
-	
+
 }
