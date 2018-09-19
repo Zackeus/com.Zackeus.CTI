@@ -1,22 +1,18 @@
 package com.Zackeus.CTI.modules.sys.utils;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.InvalidSessionException;
-import org.apache.shiro.session.Session;
-import org.apache.shiro.session.mgt.eis.SessionDAO;
-import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 
-import com.Zackeus.CTI.common.utils.Logs;
+import com.Zackeus.CTI.common.security.MySessionManager;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
+import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.modules.sys.entity.Menu;
 import com.Zackeus.CTI.modules.sys.entity.Principal;
 import com.Zackeus.CTI.modules.sys.entity.Role;
@@ -35,9 +31,6 @@ import com.Zackeus.CTI.modules.sys.service.UserService;
  */
 @Component
 public class UserUtils {
-
-	@Autowired
-	private SessionDAO sessionDAO;
 	
 	@Autowired
 	private UserService userService;
@@ -156,48 +149,14 @@ public class UserUtils {
 	
 	/**
 	 * 
-	 * @Title：getSession
-	 * @Description: TODO(获取session)
-	 * @see：
-	 * @return
-	 */
-	public static Session getSession(){
-		try{
-			Subject subject = SecurityUtils.getSubject();
-			Session session = subject.getSession(false);
-			if (session == null){
-				session = subject.getSession();
-			}
-			if (session != null){
-				return session;
-			}
-		}catch (InvalidSessionException e){
-			
-		}
-		return null;
-	}
-	
-	/**
-	 * 
 	 * @Title：kickOutUser
-	 * @Description: TODO((踢除指定用户)
+	 * @Description: TODO(踢除指定用户)
 	 * @see：
-	 * @param id 用户编号
+	 * @param user
 	 */
-	public static void kickOutUser(String id) {
-	   	// 踢出此账号在线用户
-    	Collection<Session> sessions = userUtils.sessionDAO.getActiveSessions();
-    	for(Session session : sessions) {
-    		Object obj = session.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
-            if (!ObjectUtils.isEmpty(obj)) {
-                Principal principal = (Principal) ((SimplePrincipalCollection) obj).getPrimaryPrincipal();
-                if (id.equalsIgnoreCase(principal.getId())
-                		&& !UserUtils.getSession().getId().equals(session.getId())) {
-                	Logs.info("踢出用户：" + session.getId());
-                	userUtils.sessionDAO.delete(session);
-				}
-    		}
-    	}
+	public static void kickOutUser(User user, CloseStatus closeStatus) {
+		if (StringUtils.isNotBlank(user.getId())) {
+			MySessionManager.deleteSession(user.getId(), closeStatus);
+		}
 	}
-	
 }

@@ -1,5 +1,7 @@
 package com.Zackeus.CTI.common.utils;
 
+import org.springframework.web.socket.CloseStatus;
+
 /**
  * 
  * @Title:HttpStatus
@@ -29,6 +31,16 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	 * 登录异常
 	 */
 	public static final int SC_LOGIN_ERROR = -1;
+	
+	/**
+	 * 异地登录
+	 */
+	public static final CloseStatus SC_KICK_OUT = new CloseStatus(4600, "账号异地登录！");
+	
+	/**
+	 * 会话超时
+	 */
+	public static final CloseStatus SC_SESSION_EXPRIES = new CloseStatus(4700, "会话失效！");
 	
 	/**
 	 * 数据库异常

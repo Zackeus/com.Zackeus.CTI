@@ -109,5 +109,6 @@
 	<div class="site-mobile-shade"></div>
 
 	<script type="text/javascript" src="${ctxStatic}/js/index.js"></script>
+	<script type="text/javascript" src="${ctxStatic}/js/websocket.js"></script>
 </body>
 </html>

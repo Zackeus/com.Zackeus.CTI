@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
  * @date 2018年7月10日 上午10:24:55
  */
 public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
-
+	
 	/**
 	 * 
 	 * @Title:annotationToObject
@@ -108,7 +108,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 	@SuppressWarnings("rawtypes")
 	public static boolean isEmpty(Object obj) {
 		if (obj == null)
-			return true;
+			return Boolean.TRUE;
 
 		if (obj instanceof CharSequence)
 			return ((CharSequence) obj).length() == 0;
@@ -122,18 +122,18 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 		if (obj instanceof Object[]) {
 			Object[] object = (Object[]) obj;
 			if (object.length == 0) {
-				return true;
+				return Boolean.TRUE;
 			}
-			boolean empty = true;
+			boolean empty = Boolean.TRUE;
 			for (int i = 0; i < object.length; i++) {
 				if (!isEmpty(object[i])) {
-					empty = false;
+					empty = Boolean.FALSE;
 					break;
 				}
 			}
 			return empty;
 		}
-		return false;
+		return Boolean.FALSE;
 	}
 	
 	public static boolean isNotEmpty(Object obj) {

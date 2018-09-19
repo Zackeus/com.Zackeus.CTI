@@ -37,7 +37,7 @@ public class UserController extends BaseController {
 
 	@Autowired
 	private UserService userService;
-
+	
 	/**
 	 * 
 	 * @Title：userMange
