@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -32,15 +31,23 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		users.put(getUserId(session), session);
+		Logs.info("当前用户：" + users.size());
 	}
 
 	/**
-	 * js调用websocket.send时候，会调用该方法
+	 * 
+	 * @Title：handleTextMessage
+	 * @Description: TODO(js调用websocket.send时候，会调用该方法)
+	 * @see：
+	 * @param session
+	 * @param message
+	 * @throws Exception
 	 */
 	@Override
-	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-		super.handleMessage(session, message);
+	protected void handleTextMessage(WebSocketSession session, TextMessage message) {
+		Logs.info("信息：" + message);
 	}
+	
 	
 	/**
 	 * 传输异常

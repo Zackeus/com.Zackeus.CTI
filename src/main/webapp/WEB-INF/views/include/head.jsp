@@ -9,7 +9,11 @@
 	<meta http-equiv="Expires" content="0">
 	<meta http-equiv="Cache-Control" content="no-cache">
 	<meta http-equiv="Cache-Control" content="no-store">
-	<script type="text/javascript">var ctx = '${ctx}', ctxStatic='${ctxStatic}';</script>
+	<script type="text/javascript">
+		var ctx = '${ctx}', 
+		ctxStatic = '${ctxStatic}', 
+		socketUrl = location.hostname + ':' + location.port + '${ctx}';
+	</script>
 	<link type="text/css" rel="stylesheet" href="${ctxStatic}/layui/css/layui.css"/>
 	<link type="text/css" rel="stylesheet" href="${ctxStatic}/css/public.css"/>
 	<script type="text/javascript" src="${ctxStatic}/layui/layui.js"></script>

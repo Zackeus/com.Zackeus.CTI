@@ -1,10 +1,10 @@
-var $,tab,dataStr,layer;
-layui.config({
-	base : ctxStatic + "/js/"
-}).extend({
-	"bodyTab" : "bodyTab"
+var $,tab,dataStr,layer,websocket;
+layui.extend({
+	bodyTab: '{/}' + ctxStatic + '/js/bodyTab',
+	websocket: '{/}' + ctxStatic + '/layui/lay/modules/websocket'
 })
-layui.use(['bodyTab','form','element','layer','jquery'],function(){
+
+layui.use(['bodyTab','form','element','layer','jquery','websocket'],function(){
 	var form = layui.form,
 		element = layui.element;
 		$ = layui.$;
@@ -12,8 +12,9 @@ layui.use(['bodyTab','form','element','layer','jquery'],function(){
 		tab = layui.bodyTab({
 			openTabNum : "50",  			//最大可打开窗口数量
 			url : ctx + "/sys/menu/list" 	//获取菜单json地址
-		});
-
+		}),
+		websocket = layui.websocket.init(socketUrl + '/websocket/socketsever', socketUrl + '/sockjs/socketsever');
+	
 	//通过顶部菜单获取左侧二三级菜单   注：此处只做演示之用，实际开发中通过接口传参的方式获取导航数据
 	function getData(json){
 		$.getJSON(tab.tabConfig.url + "/" + json,function(data) {
@@ -129,6 +130,54 @@ layui.use(['bodyTab','form','element','layer','jquery'],function(){
     }else{
 		window.sessionStorage.removeItem("menu");
 		window.sessionStorage.removeItem("curmenu");
+	}
+	
+	// 连接打开事件的事件监听器
+	websocket.onopen = function (evnt) {};
+	
+	// 消息事件的事件监听器
+	websocket.onmessage = function (evnt) {
+		console.log(evnt);
+	}
+	
+	// 监听error事件
+	websocket.onerror = function (evnt) {};
+	
+	// 监听连接关闭事件
+	websocket.onclose = function (evnt) {
+		var closeMsg;
+		switch (evnt.code) {
+		case 1006:
+			closeMsg = "验证未通过！";
+			break;
+
+		default:
+			if ($.isEmptyObject(evnt.reason)) {
+				closeMsg = "账号已登出！";
+			}
+			closeMsg = evnt.reason;
+			break;
+		}
+		
+		layer.open({
+			type: 1,
+			title: false,
+			closeBtn: false,
+			area: '300px;',
+			shade: 0.8,
+			id: 'LAY_Onclose',
+			btn: ['确认'],
+			btnAlign: 'c',
+			moveType: 1,
+			zIndex: 999,
+			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300; text-align: center;">' + closeMsg + '请重新登录！</div>',
+			success: function(layero) {
+				var btn = layero.find('.layui-layer-btn');
+				btn.find('.layui-layer-btn0').attr({
+					href : ctx + '/sys/logout'
+				});
+			}
+	    });
 	}
 })
 

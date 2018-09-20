@@ -40,7 +40,6 @@ public class WebSocketInterceptor extends HttpSessionHandshakeInterceptor {
 			}
 		}
 		return Boolean.FALSE;
-		
 	}
 	
 	@Override
