@@ -1,8 +1,8 @@
 package com.Zackeus.CTI.common.websocket;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -23,15 +23,15 @@ import com.Zackeus.CTI.common.utils.ObjectUtils;
 public class WebSocketHandler extends TextWebSocketHandler {
 	
 	//Map来存储WebSocketSession，key用USER_ID 即在线用户列表 
-	public final Map<String, WebSocketSession> users = new HashMap<String, WebSocketSession>();
+	public final Map<String, WebSocketSession> socketUsers = new ConcurrentHashMap<String, WebSocketSession>();
 	
 	/**
 	 * 链接(onopen)
 	 */
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		users.put(getUserId(session), session);
-		Logs.info("当前用户：" + users.size());
+		socketUsers.put(getUserId(session), session);
+		Logs.info("当前用户：" + socketUsers.size());
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
         String userId = getUserId(session);
         Logs.error(userId + ": 传输出现异常，关闭websocket连接... ");
-        users.remove(userId);
+        socketUsers.remove(userId);
 	}
 	
 	@Override
@@ -76,9 +76,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * @param message
 	 */
 	public void sendMessageToUser(String userId, TextMessage message) {  
-		if (users.get(userId).isOpen()) {
+		if (isOnLine(socketUsers.get(userId))) {
 			try {
-				users.get(userId).sendMessage(message);
+				socketUsers.get(userId).sendMessage(message);
 			} catch (IOException e) {
 				Logs.error(userId + ": 单发信息失败--" + e.getMessage());
 			}  
@@ -93,10 +93,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * @param message
 	 */
 	public void sendMessageToUsers(TextMessage message) {
-		for (String userId : users.keySet()) {
-			if (users.get(userId).isOpen()) {
+		for (String userId : socketUsers.keySet()) {
+			if (isOnLine(socketUsers.get(userId))) {
 				try {
-					users.get(userId).sendMessage(message);
+					socketUsers.get(userId).sendMessage(message);
 				} catch (IOException e) {
 					Logs.error(userId + ": 群发信息失败--" + e.getMessage());
 				}
@@ -113,8 +113,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * @param userId
 	 */
 	public void kickOutUser(String userId, CloseStatus closeStatus) {
-		WebSocketSession session = users.get(userId);
-		if (ObjectUtils.isNotEmpty(session) && session.isOpen()) {
+		WebSocketSession session = socketUsers.get(userId);
+		if (isOnLine(session)) {
 			try {
 				session.close(closeStatus);
 			} catch (IOException e) {
@@ -142,11 +142,23 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 */
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        users.remove(getUserId(session));
+		socketUsers.remove(getUserId(session));
 	}
 	
 	private String getUserId(WebSocketSession session) {
 		return (String) session.getAttributes().get(WebSocketInterceptor.HTTP_SESSION_ID_ATTR_NAME);
+	}
+	
+	/**
+	 * 
+	 * @Title：isOnLine
+	 * @Description: TODO(判断是否在线)
+	 * @see：
+	 * @param session
+	 * @return
+	 */
+	private boolean isOnLine(WebSocketSession session) {
+		return ObjectUtils.isNotEmpty(session) && session.isOpen();
 	}
 
 }

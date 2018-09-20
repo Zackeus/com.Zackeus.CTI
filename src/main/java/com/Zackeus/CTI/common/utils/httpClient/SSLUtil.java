@@ -9,6 +9,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -49,17 +50,17 @@ public class SSLUtil {
 		// 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
 		X509TrustManager trustManager = new X509TrustManager() {
 			@Override
-			public void checkClientTrusted(java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+			public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate,
 					String paramString) throws CertificateException {
 			}
 
 			@Override
-			public void checkServerTrusted(java.security.cert.X509Certificate[] paramArrayOfX509Certificate,
+			public void checkServerTrusted(X509Certificate[] paramArrayOfX509Certificate,
 					String paramString) throws CertificateException {
 			}
 
 			@Override
-			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			public X509Certificate[] getAcceptedIssuers() {
 				return null;
 			}
 		};

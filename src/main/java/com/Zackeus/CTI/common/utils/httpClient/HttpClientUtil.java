@@ -57,15 +57,15 @@ import net.sf.json.JSONObject;
 public class HttpClientUtil {
 	
 	// 设置连接超时时间，单位毫秒。
-	private static final int CONNECT_TIMEOUT = 6000;
+	protected static final int CONNECT_TIMEOUT = 6000;
 
 	// 请求获取数据的超时时间(即响应时间)，单位毫秒。
-	private static final int SOCKET_TIMEOUT = 6000;
+	protected static final int SOCKET_TIMEOUT = 6000;
 
-	private static final String paramMap = "Map";
+	protected static final String paramMap = "Map";
 
-	private static final String paramJson = "Json";
-
+	protected static final String paramJson = "Json";
+	
 	/**
 	 * 
 	 * @Title:doGet
@@ -256,7 +256,7 @@ public class HttpClientUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static HttpClientResult doPutMap(String url, Map<String, String> params) throws Exception {
+	public static HttpClientResult doPutMap(String url, Map<String, Object> params) throws Exception {
 		return doPut(url, params, paramMap);
 	}
 

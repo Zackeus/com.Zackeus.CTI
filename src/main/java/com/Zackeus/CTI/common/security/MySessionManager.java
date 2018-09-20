@@ -1,7 +1,7 @@
 package com.Zackeus.CTI.common.security;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
@@ -17,10 +17,7 @@ import org.springframework.web.socket.CloseStatus;
 
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
-import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.websocket.WebSocketConfig;
-import com.Zackeus.CTI.modules.sys.entity.User;
-import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
  * 
@@ -39,13 +36,32 @@ public class MySessionManager {
 	@Autowired
 	private WebSocketConfig webSocketConfig;
 	
-	public static final Map<String, Session> shiroUsers = new HashMap<String, Session>();
+	public static final Map<String, Session> shiroUsers = new ConcurrentHashMap<String, Session>();
 	
 	public static MySessionManager sessionManager;
 	
 	@PostConstruct
 	public void init() {
 		sessionManager = this;
+	}
+	
+	/**
+	 * 
+	 * @Title：putSession
+	 * @Description: TODO(添加session队列)
+	 * @see：
+	 * @param id
+	 */
+	public static void putSession(String id) {
+		putSession(id, null);
+	}
+	
+	public static void putSession(String id, Session session) {
+		if (ObjectUtils.isEmpty(session)) {
+			session = getSession();
+		}
+		session.setAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME, id);
+		MySessionManager.shiroUsers.put((String) session.getAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME), session);
 	}
 	
 	/**
@@ -80,35 +96,6 @@ public class MySessionManager {
 	 */
 	public static Session getSession(String id) {
 		return ObjectUtils.isEmpty(shiroUsers.get(id)) ? null : shiroUsers.get(id);
-	}
-	
-	/**
-	 * 
-	 * @Title：addOnlineUser
-	 * @Description: TODO(添加在线用户)
-	 * @see：
-	 */
-	public static void addOnlineUser() {
-		Session session = getSession();
-		if (ObjectUtils.isNotEmpty(session)) {
-			session.setAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME, UserUtils.getPrincipal().getId());
-			shiroUsers.put((String) session.getAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME), session);
-		}
-	}
-	
-	/**
-	 * 
-	 * @Title：addOnlineUser
-	 * @Description: TODO(添加在线用户)
-	 * @see：
-	 * @param user
-	 * @param session
-	 */
-	public static void addOnlineUser(User user, Session session) {
-		if (StringUtils.isNotBlank(user.getId())) {
-			session.setAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME, user.getId());
-			shiroUsers.put((String) session.getAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME), session);
-		}
 	}
 	
 	/**

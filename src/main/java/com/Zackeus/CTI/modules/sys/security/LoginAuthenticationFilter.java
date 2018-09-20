@@ -141,7 +141,7 @@ public class LoginAuthenticationFilter extends org.apache.shiro.web.filter.authc
 			ServletResponse response) throws Exception {
 		// 踢出同一用户
 		UserUtils.kickOutUser(new User(UserUtils.getPrincipal()), HttpStatus.SC_KICK_OUT);
-		MySessionManager.addOnlineUser();
+		UserUtils.addOnlineUser();
 		return super.onLoginSuccess(token, subject, request, response);
 	}
 	

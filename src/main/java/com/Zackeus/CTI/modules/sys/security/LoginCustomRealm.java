@@ -20,6 +20,7 @@ import com.Zackeus.CTI.modules.sys.entity.Principal;
 import com.Zackeus.CTI.modules.sys.entity.Role;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.entity.UsernamePasswordToken;
+import com.Zackeus.CTI.modules.sys.service.AgentService;
 import com.Zackeus.CTI.modules.sys.service.SystemService;
 import com.Zackeus.CTI.modules.sys.service.UserService;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
@@ -39,6 +40,9 @@ public class LoginCustomRealm extends AuthorizingRealm {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	AgentService agentService;
 	
 	 /** 
      * 登陆认证
@@ -64,6 +68,13 @@ public class LoginCustomRealm extends AuthorizingRealm {
     	
     	if (ObjectUtils.isNotEmpty(userService.getByPhone(user))) {
     		throw new AuthenticationException("msg:座机号:" + user.getAgentUser().getPhonenumber() + "已被多个用户占用，请联系管理员");
+		}
+    	
+    	try {
+			agentService.login(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new AuthenticationException("msg:登录坐席失败:" + e.getMessage());
 		}
     	
     	if (!ObjectUtils.isEmpty(user)) {

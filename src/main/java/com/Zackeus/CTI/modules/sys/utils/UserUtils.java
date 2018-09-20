@@ -5,18 +5,22 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
 
 import com.Zackeus.CTI.common.security.MySessionManager;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
+import com.Zackeus.CTI.common.websocket.WebSocketConfig;
 import com.Zackeus.CTI.modules.sys.entity.Menu;
 import com.Zackeus.CTI.modules.sys.entity.Principal;
 import com.Zackeus.CTI.modules.sys.entity.Role;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.service.AgentService;
 import com.Zackeus.CTI.modules.sys.service.MenuService;
 import com.Zackeus.CTI.modules.sys.service.RoleService;
 import com.Zackeus.CTI.modules.sys.service.UserService;
@@ -36,10 +40,16 @@ public class UserUtils {
 	private UserService userService;
 	
 	@Autowired
+	private AgentService agentService;
+	
+	@Autowired
 	private RoleService roleService;
 	
 	@Autowired
 	private MenuService menuService;
+	
+	@Autowired
+	private WebSocketConfig webSocketConfig;
 	
 	public static UserUtils userUtils;
 	
@@ -149,6 +159,48 @@ public class UserUtils {
 	
 	/**
 	 * 
+	 * @Title：sendMessageToUser
+	 * @Description: TODO(单发信息)
+	 * @see：
+	 */
+	public static void sendMessageToUser(User user, String meg) {
+		if (ObjectUtils.isNotEmpty(user) && StringUtils.isNotBlank(user.getId())) {
+			userUtils.webSocketConfig.webSocketHandler().sendMessageToUser(user.getId(), 
+					new TextMessage(meg));
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：addOnlineUser
+	 * @Description: TODO(添加在线用户)
+	 * @see：
+	 */
+	public static void addOnlineUser() {
+		Principal principal = getPrincipal();
+		if (ObjectUtils.isNotEmpty(principal) && StringUtils.isNotBlank(principal.getId())) {
+			MySessionManager.putSession(principal.getId());
+			userUtils.agentService.addQueue(new User(principal));
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：addOnlineUser
+	 * @Description: TODO(添加在线用户)
+	 * @see：
+	 * @param user
+	 * @param session
+	 */
+	public static void addOnlineUser(User user, Session session) {
+		if (ObjectUtils.isNotEmpty(user) && StringUtils.isNotBlank(user.getId())) {
+			MySessionManager.putSession(user.getId(), session);
+			userUtils.agentService.addQueue(user);
+		}
+	}
+	
+	/**
+	 * 
 	 * @Title：kickOutUser
 	 * @Description: TODO(踢除指定用户)
 	 * @see：
@@ -157,6 +209,7 @@ public class UserUtils {
 	public static void kickOutUser(User user, CloseStatus closeStatus) {
 		if (StringUtils.isNotBlank(user.getId())) {
 			MySessionManager.deleteSession(user.getId(), closeStatus);
+			userUtils.agentService.clearResourse(user);
 		}
 	}
 }
