@@ -164,9 +164,23 @@ public class UserUtils {
 	 * @see：
 	 */
 	public static void sendMessageToUser(User user, String meg) {
-		if (ObjectUtils.isNotEmpty(user) && StringUtils.isNotBlank(user.getId())) {
+		if (ObjectUtils.isNotEmpty(user) && StringUtils.isNotBlank(user.getId()) 
+				&& StringUtils.isNotBlank(meg)) {
 			userUtils.webSocketConfig.webSocketHandler().sendMessageToUser(user.getId(), 
 					new TextMessage(meg));
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：sendMessageToUsers
+	 * @Description: TODO(群发信息)
+	 * @see：
+	 * @param meg
+	 */
+	public static void sendMessageToUsers(String meg) {
+		if (StringUtils.isNotBlank(meg)) {
+			userUtils.webSocketConfig.webSocketHandler().sendMessageToUsers(new TextMessage(meg));
 		}
 	}
 	

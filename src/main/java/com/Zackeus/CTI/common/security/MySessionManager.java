@@ -95,7 +95,7 @@ public class MySessionManager {
 	 * @return
 	 */
 	public static Session getSession(String id) {
-		return ObjectUtils.isEmpty(shiroUsers.get(id)) ? null : shiroUsers.get(id);
+		return shiroUsers.containsKey(id) ? shiroUsers.get(id) : null;
 	}
 	
 	/**
@@ -107,7 +107,7 @@ public class MySessionManager {
 	 */
 	public static void deleteSession(String id, CloseStatus closeStatus) {
 		Session session = getSession(id);
-		if (ObjectUtils.isNotEmpty(session)) {
+		if (shiroUsers.containsKey(id)) {
 			sessionManager.sessionDAO.delete(session);
 			shiroUsers.remove(id);
 		}

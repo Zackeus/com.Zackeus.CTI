@@ -1,21 +1,23 @@
 package com.Zackeus.CTI.modules.sys.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
-import com.Zackeus.CTI.common.config.AgentConfig;
-import com.Zackeus.CTI.common.entity.HttpClientResult;
 import com.Zackeus.CTI.common.service.BaseService;
-import com.Zackeus.CTI.common.utils.Logs;
+import com.Zackeus.CTI.common.utils.HttpStatus;
+import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
-import com.Zackeus.CTI.common.utils.httpClient.AgentClientUtil;
+import com.Zackeus.CTI.common.utils.exception.MyException;
+import com.Zackeus.CTI.modules.sys.config.AgentParam;
+import com.Zackeus.CTI.modules.sys.config.AgentResultStatus;
+import com.Zackeus.CTI.modules.sys.config.LoginParam;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpResult;
+import com.Zackeus.CTI.modules.sys.utils.AgentClientUtil;
 import com.Zackeus.CTI.modules.sys.utils.AgentEventThread;
 import com.Zackeus.CTI.modules.sys.utils.AgentQueue;
+import com.alibaba.fastjson.JSON;
 
 /**
  * 
@@ -27,35 +29,51 @@ import com.Zackeus.CTI.modules.sys.utils.AgentQueue;
  */
 @Service("agentService")
 public class AgentService extends BaseService {
-
-	@Autowired
-	private AgentConfig agentConfig;
 	
 	@Autowired
 	private TaskExecutor taskExecutor;
 
 	@Autowired
+	private AgentParam defaultAgentParam;
+	
+	@Autowired
 	private AgentQueue agentQueue;
-
+	
+	private static String AGENT_ID = "{agentid}";
+	
 	/**
 	 * 
 	 * @Title：login
-	 * @Description: TODO(坐席签入) 
+	 * @Description: TODO(坐席签入)
 	 * @see：
 	 * @param user
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void login(User user) throws Exception {
-		Map<String, Object> loginParam = new HashMap<String, Object>();
-        loginParam.put("password", StringUtils.EMPTY);            			// 坐席密码(默认为空)
-        loginParam.put("phonenum", user.getAgentUser().getPhonenumber());  	// 坐席电话
-        loginParam.put("autoanswer", Boolean.FALSE);             			// 是否自动应答(true：自动应答 false：手动应答)
-        loginParam.put("autoenteridle", Boolean.TRUE);         				// 是否自动进入空闲态(true：空闲态 false：整理态)
-        loginParam.put("status", 4);                     					// 签入后的状态(4：空闲态 5：整理态)
-        loginParam.put("releasephone", Boolean.TRUE);           			// 座席挂机后是否进入非长通态 (true：非长通态  false：长通态)
-        loginParam.put("ip", agentConfig.getLocalIp());            			// 座席ip(默认127.0.0.1)
-        HttpClientResult httpClientResult = AgentClientUtil.put(user, agentConfig.getLoginUrl() + user.getAgentUser().getWorkno(), loginParam);
-        Logs.info("结果：" + httpClientResult);
+		login(user, null);
+	}
+	
+	public void login(User user, LoginParam loginParam) throws Exception {
+		if (ObjectUtils.isEmpty(loginParam)) {
+			loginParam = defaultAgentParam.getLoginParam();
+		}
+		loginParam.setPhonenum(user.getAgentUser().getPhonenumber());
+		AgentHttpResult loginResult = JSON.parseObject(AgentClientUtil.put(user, defaultAgentParam.getLoginUrl().
+				replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam).getContent(), AgentHttpResult.class);
+		if (StringUtils.equals(AgentResultStatus.AS_SUCCESS.getAgentStatus(), loginResult.getRetcode())) {
+			// 登录成功
+			return;
+		}
+		if (StringUtils.equals(AgentResultStatus.AS_HAS_LOGIN.getAgentStatus(), loginResult.getRetcode())) {
+			// 坐席已登录进行强制登录
+			AgentHttpResult forceLoginResult = JSON.parseObject(AgentClientUtil.put(user, defaultAgentParam.getForceLoginUrl().
+					replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam).getContent(), AgentHttpResult.class);
+			if (StringUtils.equals(AgentResultStatus.AS_SUCCESS.getAgentStatus(), forceLoginResult.getRetcode())) {
+				return;
+			}
+			throw new MyException(HttpStatus.AGENT_ERROR, forceLoginResult.getMessage());
+		}
+		throw new MyException(HttpStatus.AGENT_ERROR, loginResult.getMessage());
 	}
 
 	/**

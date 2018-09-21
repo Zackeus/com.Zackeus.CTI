@@ -15,6 +15,7 @@ import com.Zackeus.CTI.common.config.GlobalConfig;
 import com.Zackeus.CTI.common.entity.DataEntity;
 import com.Zackeus.CTI.common.service.valid.UpdateVaild;
 import com.Zackeus.CTI.common.utils.StringUtils;
+import com.Zackeus.CTI.modules.sys.entity.agent.AgentUser;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;

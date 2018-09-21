@@ -21,6 +21,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.ssl.SSLContexts;
 
@@ -38,16 +39,15 @@ public class SSLUtil {
 
 	/**
 	 * 
-	 * @Title:createIgnoreVerifySSL
+	 * @Title：createIgnoreVerifySSL
 	 * @Description: TODO(绕过验证)
+	 * @see：
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
 	 */
 	public static SSLContext createIgnoreVerifySSL() throws NoSuchAlgorithmException, KeyManagementException {
-		SSLContext sc = SSLContext.getInstance("SSLv3");
-
-		// 实现一个X509TrustManager接口，用于绕过验证，不用修改里面的方法
+		SSLContext sslContext = SSLContext.getInstance(SSLConnectionSocketFactory.SSL);
 		X509TrustManager trustManager = new X509TrustManager() {
 			@Override
 			public void checkClientTrusted(X509Certificate[] paramArrayOfX509Certificate,
@@ -64,9 +64,8 @@ public class SSLUtil {
 				return null;
 			}
 		};
-
-		sc.init(null, new TrustManager[] { trustManager }, null);
-		return sc;
+		sslContext.init(null, new TrustManager[] { trustManager }, null);
+		return sslContext;
 	}
 	
 	/**

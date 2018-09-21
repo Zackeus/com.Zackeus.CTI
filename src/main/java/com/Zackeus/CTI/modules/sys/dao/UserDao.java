@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.Zackeus.CTI.common.annotation.MyBatisDao;
 import com.Zackeus.CTI.common.dao.CrudDao;
-import com.Zackeus.CTI.modules.sys.entity.AgentUser;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.entity.agent.AgentUser;
 
 /**
  * 

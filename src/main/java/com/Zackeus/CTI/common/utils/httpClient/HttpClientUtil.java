@@ -13,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
 import org.apache.commons.collections.MapUtils;
-import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -29,6 +28,7 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -40,7 +40,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.Zackeus.CTI.common.entity.HttpClientResult;
+import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
+import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.WebUtils;
 
 import net.sf.json.JSONArray;
@@ -57,14 +59,15 @@ import net.sf.json.JSONObject;
 public class HttpClientUtil {
 	
 	// 设置连接超时时间，单位毫秒。
-	protected static final int CONNECT_TIMEOUT = 6000;
+	public static final int CONNECT_TIMEOUT = 6000;
 
 	// 请求获取数据的超时时间(即响应时间)，单位毫秒。
-	protected static final int SOCKET_TIMEOUT = 6000;
+	public static final int SOCKET_TIMEOUT = 6000;
 
-	protected static final String paramMap = "Map";
-
-	protected static final String paramJson = "Json";
+	public static final String PARAM_MAP = "Map";
+	public static final String PARAM_JSON = "Json";
+	public static final String HEAD_HTTP = "http";
+	public static final String HEAD_HTTPS = "https";
 	
 	/**
 	 * 
@@ -159,7 +162,7 @@ public class HttpClientUtil {
 	 * @throws Exception
 	 */
 	public static HttpClientResult doPostMap(String url, Map<String, String> params) throws Exception {
-		return doPost(url, null, params, paramMap);
+		return doPost(url, null, params, PARAM_MAP);
 	}
 
 	/**
@@ -172,7 +175,7 @@ public class HttpClientUtil {
 	 * @throws Exception
 	 */
 	public static HttpClientResult doPostJson(String url, JSONObject params) throws Exception {
-		return doPost(url, null, params, paramJson);
+		return doPost(url, null, params, PARAM_JSON);
 	}
 
 	/**
@@ -185,7 +188,7 @@ public class HttpClientUtil {
 	 * @throws Exception
 	 */
 	public static HttpClientResult doPostJson(String url, JSONArray params) throws Exception {
-		return doPost(url, null, params, paramJson);
+		return doPost(url, null, params, PARAM_JSON);
 	}
 
 	/**
@@ -257,7 +260,7 @@ public class HttpClientUtil {
 	 * @throws Exception
 	 */
 	public static HttpClientResult doPutMap(String url, Map<String, Object> params) throws Exception {
-		return doPut(url, params, paramMap);
+		return doPut(url, params, PARAM_MAP);
 	}
 
 	/**
@@ -270,7 +273,7 @@ public class HttpClientUtil {
 	 * @throws Exception
 	 */
 	public static HttpClientResult doPutJson(String url, JSONObject params) throws Exception {
-		return doPut(url, params, paramJson);
+		return doPut(url, params, PARAM_JSON);
 	}
 
 	/**
@@ -283,7 +286,7 @@ public class HttpClientUtil {
 	 * @throws Exception
 	 */
 	public static HttpClientResult doPutJson(String url, JSONArray params) throws Exception {
-		return doPut(url, params, paramJson);
+		return doPut(url, params, PARAM_JSON);
 	}
 
 	/**
@@ -406,17 +409,15 @@ public class HttpClientUtil {
 	 * @throws Exception
 	 */
 	public static CloseableHttpClient getHttpClient(String url) throws Exception {
-		if (url.startsWith("https")) {
+		if (url.startsWith(HEAD_HTTPS)) {
 			// 采用绕过验证的方式处理https请求
-			SSLContext sslcontext = SSLUtil.createIgnoreVerifySSL();
-
-			// 设置协议http和https对应的处理socket链接工厂的对象
-			Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
-					.register("http", PlainConnectionSocketFactory.INSTANCE)
-					.register("https", new SSLConnectionSocketFactory(sslcontext)).build();
-			PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(
-					socketFactoryRegistry);
-			return HttpClients.custom().setConnectionManager(connManager).build();
+			SSLContext sslContext = SSLUtil.createIgnoreVerifySSL();
+			Registry<ConnectionSocketFactory> r = RegistryBuilder.<ConnectionSocketFactory>create()
+	                .register(HEAD_HTTP, PlainConnectionSocketFactory.INSTANCE)
+	                .register(HEAD_HTTPS, new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
+	                .build();
+			PoolingHttpClientConnectionManager pcm = new PoolingHttpClientConnectionManager(r);
+			return HttpClients.custom().setConnectionManager(pcm).build();
 		}
 		return HttpClients.createDefault();
 	}
@@ -452,7 +453,7 @@ public class HttpClientUtil {
 		if (!ObjectUtils.isEmpty(params)) {
 			switch (paramType) {
 
-			case paramMap:
+			case PARAM_MAP:
 				// Map数据
 				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 				Set<Entry<String, Object>> entrySet = ObjectUtils.objectToMap(params)
@@ -464,7 +465,7 @@ public class HttpClientUtil {
 				httpMethod.setEntity(new UrlEncodedFormEntity(nvps, WebUtils.UTF_ENCODING));
 				break;
 
-			case paramJson:
+			case PARAM_JSON:
 				// Json数据
 				StringEntity stringEntity = new StringEntity(params.toString(), WebUtils.UTF_ENCODING);// 解决中文乱码问题
 				stringEntity.setContentEncoding(WebUtils.UTF_ENCODING);
@@ -511,10 +512,9 @@ public class HttpClientUtil {
 			CloseableHttpClient httpClient, HttpRequestBase httpMethod) throws Exception {
 		// 执行请求
 		httpResponse = httpClient.execute(httpMethod);
-
 		// 获取返回结果
 		if (httpResponse != null && httpResponse.getStatusLine() != null) {
-			String content = "";
+			String content = StringUtils.EMPTY;
 			if (httpResponse.getEntity() != null) {
 				content = EntityUtils.toString(httpResponse.getEntity(), WebUtils.UTF_ENCODING);
 			}

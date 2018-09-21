@@ -147,8 +147,14 @@ layui.use(['bodyTab','form','element','layer','jquery','websocket'],function(){
 	websocket.onclose = function (evnt) {
 		var closeMsg;
 		switch (evnt.code) {
+		
+		case 1000:
+		case 1001:
+			break;
+		
 		case 1006:
 			closeMsg = "验证未通过！";
+			openCloseLay(closeMsg);
 			break;
 
 		default:
@@ -156,9 +162,13 @@ layui.use(['bodyTab','form','element','layer','jquery','websocket'],function(){
 				closeMsg = "账号已登出！";
 			}
 			closeMsg = evnt.reason;
+			openCloseLay(closeMsg);
 			break;
 		}
-		
+	}
+	
+	// 信息提示框
+	function openCloseLay(closeMsg) {
 		layer.open({
 			type: 1,
 			title: false,

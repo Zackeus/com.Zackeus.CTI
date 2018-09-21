@@ -73,7 +73,6 @@ public class LoginCustomRealm extends AuthorizingRealm {
     	try {
 			agentService.login(user);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new AuthenticationException("msg:登录坐席失败:" + e.getMessage());
 		}
     	

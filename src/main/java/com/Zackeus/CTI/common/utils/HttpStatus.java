@@ -58,5 +58,12 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	public static final int SC_CUSTOM_A = -100;
 	public static final int SC_CUSTOM_B = -200;
 	public static final int SC_CUSTOM_C = -300;
+	
+	/**
+	 * 坐席接口异常
+	 * 3000000范围状态码为坐席接口状态码
+	 * 详情见 AgentResultStatus
+	 */
+	public static final Integer AGENT_ERROR = 3999999;
 
 }

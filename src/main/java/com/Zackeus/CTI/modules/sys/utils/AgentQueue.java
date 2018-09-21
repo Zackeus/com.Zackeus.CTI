@@ -18,13 +18,15 @@ public class AgentQueue {
 	
 	/**
 	 * 代理事件队列
+	 * key : userID
+     * value : AgentEventThread 事件线程
 	 */
 	public final Map<String, AgentEventThread> eventThreadMap = new ConcurrentHashMap<String, AgentEventThread>();
 	
 	/**
 	 * 用于身份验证的GUID（用于客户机服务器模式）
 	 * key : userID
-     * value : guid
+     * value : guid 鉴权信息
 	 */
 	public final Map<String, String> guidMap = new ConcurrentHashMap<String, String>();
 	

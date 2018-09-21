@@ -1,4 +1,4 @@
-package com.Zackeus.CTI.modules.sys.entity;
+package com.Zackeus.CTI.modules.sys.entity.agent;
 
 import com.Zackeus.CTI.common.entity.DataEntity;
 
