@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.Zackeus.CTI.common.utils.StringUtils;
+import com.Zackeus.CTI.modules.sys.entity.agent.AgentUser;
 
 /**
  * 
@@ -22,6 +23,7 @@ public class Principal implements Serializable {
 	private String loginName; 		// 登录名
 	private String name; 			// 姓名
 	private boolean mobileLogin; 	// 是否手机登录
+	private AgentUser agentUser;	// 坐席账号信息
 	
 	public Principal() {
 		super();
@@ -40,6 +42,7 @@ public class Principal implements Serializable {
 		this.loginName = user.getLoginName();
 		this.name = user.getName();
 		this.mobileLogin = mobileLogin;
+		this.agentUser = user.getAgentUser();
 	}
 
 	public String getId() {
@@ -58,6 +61,14 @@ public class Principal implements Serializable {
 		return mobileLogin;
 	}
 	
+	public AgentUser getAgentUser() {
+		return agentUser;
+	}
+
+	public void setAgentUser(AgentUser agentUser) {
+		this.agentUser = agentUser;
+	}
+
 	public boolean isAdmin() {
 		return isAdmin(this.id);
 	}

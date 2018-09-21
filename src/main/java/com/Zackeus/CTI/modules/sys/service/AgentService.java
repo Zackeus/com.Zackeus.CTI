@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
+import com.Zackeus.CTI.common.entity.HttpClientResult;
 import com.Zackeus.CTI.common.service.BaseService;
+import com.Zackeus.CTI.common.utils.AssertUtil;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
@@ -53,6 +55,7 @@ public class AgentService extends BaseService {
 	}
 	
 	public void login(User user, LoginParam loginParam) throws Exception {
+		assertAgent(user);
 		if (ObjectUtils.isEmpty(loginParam)) {
 			loginParam = defaultAgentParam.getLoginParam();
 		}
@@ -74,6 +77,43 @@ public class AgentService extends BaseService {
 		}
 		throw new MyException(HttpStatus.AS_ERROR.getAjaxStatus(), loginResult.getMessage());
 	}
+	
+	/**
+	 * 
+	 * @Title：resetskill
+	 * @Description: TODO(重置技能队列)
+	 * @see：
+	 * @param user
+	 * @throws Exception
+	 */
+	public void resetskill(User user) throws Exception {
+		AgentClientUtil.post(user, defaultAgentParam.getResetSkillUrl().replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
+	}
+	
+	/**
+	 * 
+	 * @Title：event
+	 * @Description: TODO(坐席事件)
+	 * @see：
+	 * @param user
+	 * @throws Exception
+	 */
+	public HttpClientResult event(User user) throws Exception {
+		return AgentClientUtil.get(user, defaultAgentParam.getAgenteventUrl().replace(AGENT_ID, user.getAgentUser().getWorkno()));
+	}
+	
+	/**
+	 * 
+	 * @Title：logout
+	 * @Description: TODO(座席签出)
+	 * @see：
+	 * @param user
+	 * @throws Exception
+	 */
+	public void logout(User user) throws Exception {
+		assertAgent(user);
+		AgentClientUtil.delete(user, defaultAgentParam.getLogoutUrl().replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
+	}
 
 	/**
 	 * 
@@ -91,7 +131,8 @@ public class AgentService extends BaseService {
 	/**
 	 * 
 	 * @Title：clearResourse
-	 * @Description: TODO(资源清晰) @see：
+	 * @Description: TODO(资源清晰) 
+	 * @see：
 	 * @param user
 	 */
 	public void clearResourse(User user) {
@@ -100,4 +141,18 @@ public class AgentService extends BaseService {
 			agentQueue.eventThreadMap.remove(user.getId());
 		}
 	}
+	
+	/**
+	 * 
+	 * @Title：assertAgent
+	 * @Description: TODO(校验坐席参数)
+	 * @see：
+	 * @param user
+	 */
+	public void assertAgent(User user) {
+		AssertUtil.notEmpty(user.getAgentUser(), "坐席实体不能为空");
+		AssertUtil.notEmpty(user.getAgentUser().getWorkno(), "坐席工号不能为空");
+		AssertUtil.notEmpty(user.getAgentUser().getPhonenumber(), "坐席座机号不能为空");
+	}
+	
 }

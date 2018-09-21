@@ -22,6 +22,15 @@ public class AgentParam {
 	@Value("${agentConfig.forceLoginUrl}")
 	private String forceLoginUrl; 			// 坐席强制签入地址
 	
+	@Value("${agentConfig.logoutUrl}")
+	private String logoutUrl; 				// 坐席签出地址
+	
+	@Value("${agentConfig.agenteventUrl}")
+	private String agenteventUrl; 			// 坐席事件地址
+	
+	@Value("${agentConfig.resetSkillUrl}")
+	private String resetSkillUrl; 			// 重置技能地址
+	
 	@Autowired
 	private LoginParam loginParam;
 	
@@ -39,6 +48,18 @@ public class AgentParam {
 	
 	public String getForceLoginUrl() {
 		return forceLoginUrl;
+	}
+	
+	public String getLogoutUrl() {
+		return logoutUrl;
+	}
+
+	public String getAgenteventUrl() {
+		return agenteventUrl;
+	}
+	
+	public String getResetSkillUrl() {
+		return resetSkillUrl;
 	}
 
 	@Override

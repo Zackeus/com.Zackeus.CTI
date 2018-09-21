@@ -1,12 +1,17 @@
 package com.Zackeus.CTI.modules.sys.utils;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,7 @@ import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.WebUtils;
 import com.Zackeus.CTI.common.utils.httpClient.HttpClientUtil;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
+import com.Zackeus.CTI.common.utils.httpClient.MyHttpDelete;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.AgentQueue;
 
@@ -68,10 +74,87 @@ public class AgentClientUtil extends HttpClientUtil {
 				.setSocketTimeout(SOCKET_TIMEOUT).build();
 		httpPut.setConfig(requestConfig);
 		packageAgentHeade(user, httpPut);
-		packageParam(JSONObject.fromObject(entityParams), httpPut, PARAM_JSON);
+		packageAgentParam(entityParams, httpPut);
 		CloseableHttpResponse httpResponse = null;
 		try {
 			return getAgentClientResult(user, httpResponse, httpClient, httpPut);
+		} finally {
+			release(httpResponse, httpClient);
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：post
+	 * @Description: TODO(POST请求)
+	 * @see：
+	 * @param user
+	 * @param url
+	 * @param entityParams
+	 * @return
+	 * @throws Exception
+	 */
+	public static HttpClientResult post(User user, String url, Object entityParams) throws Exception {
+		CloseableHttpClient httpClient = getHttpClient(url);
+		HttpPost httpPost = new HttpPost(url);
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(CONNECT_TIMEOUT)
+				.setSocketTimeout(SOCKET_TIMEOUT).build();
+		httpPost.setConfig(requestConfig);
+		packageAgentHeade(user, httpPost);
+		packageAgentParam(entityParams, httpPost);
+		CloseableHttpResponse httpResponse = null;
+		try {
+			return getAgentClientResult(user, httpResponse, httpClient, httpPost);
+		} finally {
+			release(httpResponse, httpClient);
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：get
+	 * @Description: TODO(GET请求)
+	 * @see：
+	 * @param user
+	 * @param url
+	 * @param entityParams
+	 * @return
+	 * @throws Exception
+	 */
+	public static HttpClientResult get(User user, String url) throws Exception {
+		CloseableHttpClient httpClient = getHttpClient(url);
+		HttpGet httpGet = new HttpGet(url);
+		packageAgentHeade(user, httpGet);
+		CloseableHttpResponse httpResponse = null;
+		try {
+			return getAgentClientResult(user, httpResponse, httpClient, httpGet);
+		} finally {
+			release(httpResponse, httpClient);
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：delete
+	 * @Description: TODO(DELETE请求)
+	 * @see：
+	 * @param user
+	 * @param url
+	 * @param entityParams
+	 * @return
+	 * @throws Exception
+	 */
+	public static HttpClientResult delete(User user, String url, Object entityParams) throws Exception {
+		CloseableHttpClient httpClient = getHttpClient(url);
+		MyHttpDelete httpDelete = new MyHttpDelete(url);
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(CONNECT_TIMEOUT)
+				.setSocketTimeout(SOCKET_TIMEOUT).build();
+		httpDelete.setConfig(requestConfig);
+		packageAgentHeade(user, httpDelete);
+		packageAgentParam(entityParams, httpDelete);
+		CloseableHttpResponse httpResponse = null;
+		try {
+			return getAgentClientResult(user, httpResponse, httpClient, httpDelete);
 		} finally {
 			release(httpResponse, httpClient);
 		}
@@ -93,6 +176,24 @@ public class AgentClientUtil extends HttpClientUtil {
 		// COOKIE
 		if (StringUtils.isNotBlank(user.getId()) && agentClientUtil.agentQueue.elbSessionMap.containsKey(user.getId())) {
 			httpMethod.setHeader(COOKIE, agentClientUtil.agentQueue.elbSessionMap.get(user.getId()));
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：packageAgentParam
+	 * @Description: TODO(封装请求参数)
+	 * @see：
+	 * @param params
+	 * @param httpMethod
+	 * @throws Exception
+	 */
+	public static void packageAgentParam(Object params, HttpEntityEnclosingRequestBase httpMethod) throws Exception {
+		if (ObjectUtils.isNotEmpty(params)) {
+			StringEntity stringEntity = new StringEntity(JSONObject.fromObject(params).toString(), WebUtils.UTF_ENCODING);
+			stringEntity.setContentEncoding(WebUtils.UTF_ENCODING);
+			stringEntity.setContentType(MediaType.APPLICATION_JSON);
+			httpMethod.setEntity(stringEntity);
 		}
 	}
 	
@@ -155,4 +256,6 @@ public class AgentClientUtil extends HttpClientUtil {
 		    }
 		}
 	}
+	
+	
 }

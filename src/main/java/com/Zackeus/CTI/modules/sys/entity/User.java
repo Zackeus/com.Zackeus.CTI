@@ -78,6 +78,7 @@ public class User extends DataEntity<User> {
 		super(principal.getId());
 		this.name = principal.getName();
 		this.loginName = principal.getLoginName();
+		this.agentUser = principal.getAgentUser();
 	}
 
 	public User(Role role){

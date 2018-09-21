@@ -1,7 +1,11 @@
 package com.Zackeus.CTI.modules.sys.utils;
 
+import com.Zackeus.CTI.common.entity.HttpClientResult;
 import com.Zackeus.CTI.common.utils.Logs;
+import com.Zackeus.CTI.common.utils.SpringContextUtil;
+import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.service.AgentService;
 
 /**
  * 
@@ -13,22 +17,29 @@ import com.Zackeus.CTI.modules.sys.entity.User;
  */
 public class AgentEventThread implements Runnable {
 	
+	private AgentService agentService;
+	
 	private User user;
 	private boolean isAlive = Boolean.TRUE;
 	
 	public AgentEventThread(User user) {
         super();
         this.user = user;
+        this.agentService = SpringContextUtil.getBeanByName(AgentService.class);
 	}
 
 	@Override
 	public void run() {
 		while (isAlive) {
-			Logs.info(user.getName());
-			UserUtils.sendMessageToUser(user, "事件代理：" + user.getName());
 			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
+				HttpClientResult httpClientResult = agentService.event(user);
+				Logs.info(httpClientResult);
+				if (StringUtils.isNotBlank(httpClientResult.getContent())) {
+					Logs.info("事件：" + httpClientResult.getContent());
+				} else {
+					Thread.sleep(500);
+				}
+			} catch (Exception e) {
 				Logs.error("在线代理事件获取异常：" + e.getMessage());
 			}
 		}
