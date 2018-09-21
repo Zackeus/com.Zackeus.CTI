@@ -5,12 +5,11 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.Zackeus.CTI.common.service.BaseService;
-import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
+import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.modules.sys.config.AgentParam;
-import com.Zackeus.CTI.modules.sys.config.AgentResultStatus;
 import com.Zackeus.CTI.modules.sys.config.LoginParam;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpResult;
@@ -60,20 +59,20 @@ public class AgentService extends BaseService {
 		loginParam.setPhonenum(user.getAgentUser().getPhonenumber());
 		AgentHttpResult loginResult = JSON.parseObject(AgentClientUtil.put(user, defaultAgentParam.getLoginUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam).getContent(), AgentHttpResult.class);
-		if (StringUtils.equals(AgentResultStatus.AS_SUCCESS.getAgentStatus(), loginResult.getRetcode())) {
+		if (StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), loginResult.getRetcode())) {
 			// 登录成功
 			return;
 		}
-		if (StringUtils.equals(AgentResultStatus.AS_HAS_LOGIN.getAgentStatus(), loginResult.getRetcode())) {
+		if (StringUtils.equals(HttpStatus.AS_HAS_LOGIN.getAgentStatus(), loginResult.getRetcode())) {
 			// 坐席已登录进行强制登录
 			AgentHttpResult forceLoginResult = JSON.parseObject(AgentClientUtil.put(user, defaultAgentParam.getForceLoginUrl().
 					replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam).getContent(), AgentHttpResult.class);
-			if (StringUtils.equals(AgentResultStatus.AS_SUCCESS.getAgentStatus(), forceLoginResult.getRetcode())) {
+			if (StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), forceLoginResult.getRetcode())) {
 				return;
 			}
-			throw new MyException(HttpStatus.AGENT_ERROR, forceLoginResult.getMessage());
+			throw new MyException(HttpStatus.AS_ERROR.getAjaxStatus(), forceLoginResult.getMessage());
 		}
-		throw new MyException(HttpStatus.AGENT_ERROR, loginResult.getMessage());
+		throw new MyException(HttpStatus.AS_ERROR.getAjaxStatus(), loginResult.getMessage());
 	}
 
 	/**

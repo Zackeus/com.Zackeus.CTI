@@ -4,8 +4,8 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.web.servlet.ShiroHttpSession;
 import org.springframework.web.socket.CloseStatus;
 
-import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.utils.Logs;
+import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 

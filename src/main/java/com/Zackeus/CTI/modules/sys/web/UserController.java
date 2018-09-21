@@ -18,7 +18,7 @@ import com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.entity.Page;
 import com.Zackeus.CTI.common.service.valid.UpdateVaild;
-import com.Zackeus.CTI.common.utils.HttpStatus;
+import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.service.UserService;

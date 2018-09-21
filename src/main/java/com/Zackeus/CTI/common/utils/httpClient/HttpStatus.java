@@ -1,6 +1,9 @@
-package com.Zackeus.CTI.common.utils;
+package com.Zackeus.CTI.common.utils.httpClient;
 
 import org.springframework.web.socket.CloseStatus;
+
+import com.Zackeus.CTI.common.utils.StringUtils;
+import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpStatus;
 
 /**
  * 
@@ -40,7 +43,7 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	/**
 	 * 会话超时
 	 */
-	public static final CloseStatus SC_SESSION_EXPRIES = new CloseStatus(4700, "会话失效！");
+	public static final CloseStatus SC_SESSION_EXPRIES = new CloseStatus(4700, "长时间未操作！");
 	
 	/**
 	 * 数据库异常
@@ -62,8 +65,13 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	/**
 	 * 坐席接口异常
 	 * 3000000范围状态码为坐席接口状态码
-	 * 详情见 AgentResultStatus
+	 * 详情见 AgentHttpStatus
 	 */
-	public static final Integer AGENT_ERROR = 3999999;
+	public static final AgentHttpStatus AS_SUCCESS = new AgentHttpStatus(0, "0", "成功");
+	public static final AgentHttpStatus AS_ERROR = new AgentHttpStatus(3999999, StringUtils.EMPTY, "坐席接口异常");
+	public static final AgentHttpStatus AS_GET_EVENT_ERROR = new AgentHttpStatus(300001, "000-001", "获取Agent事件的方法错误");
+	public static final AgentHttpStatus AS_NO_AUTHORITY = new AgentHttpStatus(300003, "000-003", "没有权限调用接口");
+	public static final AgentHttpStatus AS_LOGIN_INVALID_PARAMTER = new AgentHttpStatus(310001, "100-001", "签入参数为空或者不合法");
+	public static final AgentHttpStatus AS_HAS_LOGIN = new AgentHttpStatus(310002, "100-002", "座席已经登录");
 
 }

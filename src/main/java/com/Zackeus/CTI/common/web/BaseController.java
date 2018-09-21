@@ -32,10 +32,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.utils.DateUtils;
-import com.Zackeus.CTI.common.utils.HttpStatus;
 import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.WebUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
+import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 
 import net.sf.json.JSONObject;
 
