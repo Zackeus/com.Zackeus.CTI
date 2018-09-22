@@ -14,6 +14,7 @@ import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.modules.sys.config.AgentParam;
 import com.Zackeus.CTI.modules.sys.config.LoginParam;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpEvent;
 import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpResult;
 import com.Zackeus.CTI.modules.sys.utils.AgentClientUtil;
 import com.Zackeus.CTI.modules.sys.utils.AgentEventThread;
@@ -62,20 +63,37 @@ public class AgentService extends BaseService {
 		loginParam.setPhonenum(user.getAgentUser().getPhonenumber());
 		AgentHttpResult loginResult = JSON.parseObject(AgentClientUtil.put(user, defaultAgentParam.getLoginUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam).getContent(), AgentHttpResult.class);
+		// 登录成功
 		if (StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), loginResult.getRetcode())) {
-			// 登录成功
+			resetskill(user);
 			return;
 		}
+		// 坐席已登录进行强制登录
 		if (StringUtils.equals(HttpStatus.AS_HAS_LOGIN.getAgentStatus(), loginResult.getRetcode())) {
-			// 坐席已登录进行强制登录
-			AgentHttpResult forceLoginResult = JSON.parseObject(AgentClientUtil.put(user, defaultAgentParam.getForceLoginUrl().
-					replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam).getContent(), AgentHttpResult.class);
-			if (StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), forceLoginResult.getRetcode())) {
-				return;
-			}
-			throw new MyException(HttpStatus.AS_ERROR.getAjaxStatus(), forceLoginResult.getMessage());
+			forceLogin(user, loginParam);
+			resetskill(user);
+			return;
 		}
 		throw new MyException(HttpStatus.AS_ERROR.getAjaxStatus(), loginResult.getMessage());
+	}
+	
+	/**
+	 * 
+	 * @Title：forceLogin
+	 * @Description: TODO(强制签入)
+	 * @see：
+	 * @param user
+	 * @param loginParam
+	 * @throws Exception 
+	 */
+	public void forceLogin(User user, LoginParam loginParam) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getForceLoginUrl().
+				replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam);
+		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
+				"坐席强制签入请求失败：" + httpClientResult.getCode());
+		AgentHttpResult agentHttpResult = JSON.parseObject(httpClientResult.getContent(), AgentHttpResult.class);
+		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
+				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
 	}
 	
 	/**
@@ -87,7 +105,20 @@ public class AgentService extends BaseService {
 	 * @throws Exception
 	 */
 	public void resetskill(User user) throws Exception {
-		AgentClientUtil.post(user, defaultAgentParam.getResetSkillUrl().replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
+		try {
+			HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getResetSkillUrl().
+					replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
+			AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
+					"坐席重置技能队列请求失败：" + httpClientResult.getCode());
+			AgentHttpResult agentHttpResult = JSON.parseObject(httpClientResult.getContent(), AgentHttpResult.class);
+			AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
+					HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
+		} catch (Exception e) {
+			logout(user);
+			// 清除鉴权信息
+			clearGuid(user);
+			throw e;
+		}
 	}
 	
 	/**
@@ -98,8 +129,15 @@ public class AgentService extends BaseService {
 	 * @param user
 	 * @throws Exception
 	 */
-	public HttpClientResult event(User user) throws Exception {
-		return AgentClientUtil.get(user, defaultAgentParam.getAgenteventUrl().replace(AGENT_ID, user.getAgentUser().getWorkno()));
+	public AgentHttpEvent event(User user) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.get(user, defaultAgentParam.getAgenteventUrl().
+				replace(AGENT_ID, user.getAgentUser().getWorkno()));
+		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
+				"坐席事件请求失败：" + httpClientResult.getCode());
+		AgentHttpEvent agentHttpEvent = JSON.parseObject(httpClientResult.getContent(), AgentHttpEvent.class);
+		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpEvent.getRetcode()), 
+				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpEvent.getMessage());
+		return agentHttpEvent;
 	}
 	
 	/**
@@ -112,7 +150,13 @@ public class AgentService extends BaseService {
 	 */
 	public void logout(User user) throws Exception {
 		assertAgent(user);
-		AgentClientUtil.delete(user, defaultAgentParam.getLogoutUrl().replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
+		HttpClientResult httpClientResult = AgentClientUtil.delete(user, defaultAgentParam.getLogoutUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), null);
+		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
+				"坐席签出请求失败：" + httpClientResult.getCode());
+		AgentHttpResult agentHttpResult = JSON.parseObject(httpClientResult.getContent(), AgentHttpResult.class);
+		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
+				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
 	}
 
 	/**
@@ -139,6 +183,19 @@ public class AgentService extends BaseService {
 		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
 			agentQueue.eventThreadMap.get(user.getId()).end();
 			agentQueue.eventThreadMap.remove(user.getId());
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：clearGuid
+	 * @Description: TODO(清除鉴权信息)
+	 * @see：
+	 * @param user
+	 */
+	public void clearGuid(User user) {
+		if (agentQueue.guidMap.containsKey(user.getId())) {
+			agentQueue.guidMap.remove(user.getId());
 		}
 	}
 	

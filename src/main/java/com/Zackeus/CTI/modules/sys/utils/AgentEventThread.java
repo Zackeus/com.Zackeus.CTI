@@ -1,10 +1,10 @@
 package com.Zackeus.CTI.modules.sys.utils;
 
-import com.Zackeus.CTI.common.entity.HttpClientResult;
 import com.Zackeus.CTI.common.utils.Logs;
+import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.SpringContextUtil;
-import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpEvent;
 import com.Zackeus.CTI.modules.sys.service.AgentService;
 
 /**
@@ -18,7 +18,6 @@ import com.Zackeus.CTI.modules.sys.service.AgentService;
 public class AgentEventThread implements Runnable {
 	
 	private AgentService agentService;
-	
 	private User user;
 	private boolean isAlive = Boolean.TRUE;
 	
@@ -32,10 +31,9 @@ public class AgentEventThread implements Runnable {
 	public void run() {
 		while (isAlive) {
 			try {
-				HttpClientResult httpClientResult = agentService.event(user);
-				Logs.info(httpClientResult);
-				if (StringUtils.isNotBlank(httpClientResult.getContent())) {
-					Logs.info("事件：" + httpClientResult.getContent());
+				AgentHttpEvent agentHttpEvent = agentService.event(user);
+				if (ObjectUtils.isNotEmpty(agentHttpEvent.getEvent())) {
+					Logs.info(user.getName() + ",触发事件：" + agentHttpEvent);
 				} else {
 					Thread.sleep(500);
 				}

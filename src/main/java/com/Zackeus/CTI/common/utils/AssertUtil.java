@@ -17,6 +17,12 @@ public class AssertUtil extends Assert {
 	
 	private static String DEFAULT_ASSERT_MSG = "关键参数不能为空";
 	
+	public static void isTrue(boolean expression, Integer code, String message) {
+		if (!expression) {
+			throw new MyException(code, message);
+		}
+	}
+	
 	/**
 	 * 
 	 * @Title：notEmpty
