@@ -31,7 +31,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		socketUsers.put(getUserId(session), session);
-		Logs.info("当前用户：" + socketUsers.size());
 	}
 
 	/**
