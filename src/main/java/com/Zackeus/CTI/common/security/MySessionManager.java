@@ -10,7 +10,6 @@ import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.web.servlet.ShiroHttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -18,6 +17,7 @@ import org.springframework.web.socket.CloseStatus;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.websocket.WebSocketConfig;
+import com.Zackeus.CTI.modules.sys.entity.User;
 
 /**
  * 
@@ -40,6 +40,9 @@ public class MySessionManager {
 	
 	public static MySessionManager sessionManager;
 	
+	public static final String USER_ID = "USERID";
+	public static final String AGENT_ID = "AGENTID";
+	
 	@PostConstruct
 	public void init() {
 		sessionManager = this;
@@ -48,20 +51,15 @@ public class MySessionManager {
 	/**
 	 * 
 	 * @Title：putSession
-	 * @Description: TODO(添加session队列)
+	 * @Description: TODO(注册session信息)
 	 * @see：
-	 * @param id
+	 * @param user
 	 */
-	public static void putSession(String id) {
-		putSession(id, null);
-	}
-	
-	public static void putSession(String id, Session session) {
-		if (ObjectUtils.isEmpty(session)) {
-			session = getSession();
-		}
-		session.setAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME, id);
-		MySessionManager.shiroUsers.put((String) session.getAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME), session);
+	public static void putSession(User user) {
+		Session session = getSession();
+		session.setAttribute(USER_ID, user.getId());
+		session.setAttribute(AGENT_ID, user.getAgentUser().getWorkno());
+		MySessionManager.shiroUsers.put((String) session.getAttribute(USER_ID), session);
 	}
 	
 	/**

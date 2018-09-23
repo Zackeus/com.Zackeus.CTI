@@ -33,8 +33,8 @@ public class AgentUser extends DataEntity<AgentUser> {
 		super();
 	}
 
-	public AgentUser(String id) {
-		super(id);
+	public AgentUser(String workno) {
+		this.workno = workno;
 	}
 
 	public AgentUser(String userNo, String workno, String name, String phonenumber, Integer status, Integer citStatus,

@@ -19,6 +19,7 @@ import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpResult;
 import com.Zackeus.CTI.modules.sys.utils.AgentClientUtil;
 import com.Zackeus.CTI.modules.sys.utils.AgentEventThread;
 import com.Zackeus.CTI.modules.sys.utils.AgentQueue;
+import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -56,7 +57,6 @@ public class AgentService extends BaseService {
 	}
 	
 	public void login(User user, LoginParam loginParam) throws Exception {
-		assertAgent(user);
 		if (ObjectUtils.isEmpty(loginParam)) {
 			loginParam = defaultAgentParam.getLoginParam();
 		}
@@ -114,9 +114,9 @@ public class AgentService extends BaseService {
 			AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
 					HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
 		} catch (Exception e) {
-			logout(user);
-			// 清除鉴权信息
-			clearGuid(user);
+			// 踢出同一账号
+			/*注：重置技能队列是坐席签入成功后执行，因此此方法失败但须踢出先前在线的同一账号*/
+			UserUtils.kickOutUser(user,  HttpStatus.SC_KICK_OUT);
 			throw e;
 		}
 	}
@@ -149,14 +149,18 @@ public class AgentService extends BaseService {
 	 * @throws Exception
 	 */
 	public void logout(User user) throws Exception {
-		assertAgent(user);
-		HttpClientResult httpClientResult = AgentClientUtil.delete(user, defaultAgentParam.getLogoutUrl().replace(AGENT_ID, 
-				user.getAgentUser().getWorkno()), null);
-		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
-				"坐席签出请求失败：" + httpClientResult.getCode());
-		AgentHttpResult agentHttpResult = JSON.parseObject(httpClientResult.getContent(), AgentHttpResult.class);
-		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
-				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
+		try {
+			HttpClientResult httpClientResult = AgentClientUtil.delete(user, defaultAgentParam.getLogoutUrl().replace(AGENT_ID, 
+					user.getAgentUser().getWorkno()), null);
+			AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
+					"坐席签出请求失败：" + httpClientResult.getCode());
+			AgentHttpResult agentHttpResult = JSON.parseObject(httpClientResult.getContent(), AgentHttpResult.class);
+			AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
+					HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
+		} finally {
+			clearAgentEvent(user);
+			clearGuid(user);
+		}
 	}
 
 	/**
@@ -175,11 +179,11 @@ public class AgentService extends BaseService {
 	/**
 	 * 
 	 * @Title：clearResourse
-	 * @Description: TODO(资源清晰) 
+	 * @Description: TODO(清除代理事件) 
 	 * @see：
 	 * @param user
 	 */
-	public void clearResourse(User user) {
+	public void clearAgentEvent(User user) {
 		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
 			agentQueue.eventThreadMap.get(user.getId()).end();
 			agentQueue.eventThreadMap.remove(user.getId());
@@ -197,19 +201,6 @@ public class AgentService extends BaseService {
 		if (agentQueue.guidMap.containsKey(user.getId())) {
 			agentQueue.guidMap.remove(user.getId());
 		}
-	}
-	
-	/**
-	 * 
-	 * @Title：assertAgent
-	 * @Description: TODO(校验坐席参数)
-	 * @see：
-	 * @param user
-	 */
-	public void assertAgent(User user) {
-		AssertUtil.notEmpty(user.getAgentUser(), "坐席实体不能为空");
-		AssertUtil.notEmpty(user.getAgentUser().getWorkno(), "坐席工号不能为空");
-		AssertUtil.notEmpty(user.getAgentUser().getPhonenumber(), "坐席座机号不能为空");
 	}
 	
 }

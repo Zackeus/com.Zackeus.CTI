@@ -62,7 +62,8 @@ public class UserController extends BaseController {
 	 * @param response
 	 */
 	@RequiresRoles(value = { "admin" })
-	@RequestMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	@RequestMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE, 
+		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void userList(@PageRequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 		renderString(response, userService.findPage(new Page<>(request), user));
 	}
@@ -96,7 +97,8 @@ public class UserController extends BaseController {
 	 * @param response
 	 */
 	@RequiresRoles(value = { "admin" })
-	@RequestMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	@RequestMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE, 
+		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void editUser(@Validated({ UpdateVaild.class }) @RequestBody User user, HttpServletRequest request,
 			HttpServletResponse response) {
 		userService.save(user);
@@ -114,7 +116,8 @@ public class UserController extends BaseController {
 	 * @param response
 	 */
 	@RequiresRoles(value = { "admin" })
-	@RequestMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	@RequestMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE, 
+		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void cancelUser(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 		userService.cancelUser(user);
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "注销用户成功"));

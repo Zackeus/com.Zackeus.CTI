@@ -140,7 +140,8 @@ public class LoginAuthenticationFilter extends org.apache.shiro.web.filter.authc
 	protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request,
 			ServletResponse response) throws Exception {
 		// 踢出同一用户
-		UserUtils.kickOutUser(new User(UserUtils.getPrincipal()), HttpStatus.SC_KICK_OUT);
+		UserUtils.kickOutUser(new User(UserUtils.getPrincipal()), HttpStatus.SC_KICK_OUT, Boolean.FALSE);
+		// 注册用户信息
 		UserUtils.addOnlineUser();
 		return super.onLoginSuccess(token, subject, request, response);
 	}

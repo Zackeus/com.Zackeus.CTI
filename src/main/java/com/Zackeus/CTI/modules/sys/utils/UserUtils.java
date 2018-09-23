@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +12,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 
 import com.Zackeus.CTI.common.security.MySessionManager;
+import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.websocket.WebSocketConfig;
@@ -192,25 +192,14 @@ public class UserUtils {
 	 */
 	public static void addOnlineUser() {
 		Principal principal = getPrincipal();
-		if (ObjectUtils.isNotEmpty(principal) && StringUtils.isNotBlank(principal.getId())) {
-			MySessionManager.putSession(principal.getId());
+		if (ObjectUtils.isNotEmpty(principal)) {
+			MySessionManager.putSession(new User(principal));
 			userUtils.agentService.addQueue(new User(principal));
 		}
 	}
 	
-	/**
-	 * 
-	 * @Title：addOnlineUser
-	 * @Description: TODO(添加在线用户)
-	 * @see：
-	 * @param user
-	 * @param session
-	 */
-	public static void addOnlineUser(User user, Session session) {
-		if (ObjectUtils.isNotEmpty(user) && StringUtils.isNotBlank(user.getId())) {
-			MySessionManager.putSession(user.getId(), session);
-			userUtils.agentService.addQueue(user);
-		}
+	public static void kickOutUser(User user, CloseStatus closeStatus) {
+		kickOutUser(user, closeStatus, Boolean.TRUE);
 	}
 	
 	/**
@@ -220,10 +209,16 @@ public class UserUtils {
 	 * @see：
 	 * @param user
 	 */
-	public static void kickOutUser(User user, CloseStatus closeStatus) {
-		if (StringUtils.isNotBlank(user.getId())) {
-			MySessionManager.deleteSession(user.getId(), closeStatus);
-			userUtils.agentService.clearResourse(user);
+	public static void kickOutUser(User user, CloseStatus closeStatus, Boolean isAll) {
+		MySessionManager.deleteSession(user.getId(), closeStatus);
+		if (isAll) {
+			try {
+				userUtils.agentService.logout(user);
+			} catch (Exception e) {
+				Logs.error(user.getId() + " ： 签出坐席异常：" + e.getMessage());
+			}
+			return;
 		}
+		userUtils.agentService.clearAgentEvent(user);
 	}
 }

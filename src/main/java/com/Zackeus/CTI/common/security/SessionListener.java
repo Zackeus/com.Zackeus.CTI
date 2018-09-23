@@ -1,12 +1,12 @@
 package com.Zackeus.CTI.common.security;
 
 import org.apache.shiro.session.Session;
-import org.apache.shiro.web.servlet.ShiroHttpSession;
 import org.springframework.web.socket.CloseStatus;
 
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.entity.agent.AgentUser;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
@@ -33,7 +33,8 @@ public class SessionListener implements org.apache.shiro.session.SessionListener
 	@Override
 	public void onStop(Session session) {
 		Logs.info(session.getId() + ": 退出会话");
-		UserUtils.kickOutUser(new User((String) session.getAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME)), CloseStatus.NORMAL);
+		UserUtils.kickOutUser(new User((String) session.getAttribute(MySessionManager.USER_ID), 
+				new AgentUser((String) session.getAttribute(MySessionManager.AGENT_ID))), CloseStatus.NORMAL);
 	}
 
 	/**
@@ -42,6 +43,7 @@ public class SessionListener implements org.apache.shiro.session.SessionListener
 	@Override
 	public void onExpiration(Session session) {
 		Logs.info(session.getId() + ": 会话过期");
-		UserUtils.kickOutUser(new User((String) session.getAttribute(ShiroHttpSession.DEFAULT_SESSION_ID_NAME)), HttpStatus.SC_SESSION_EXPRIES);
+		UserUtils.kickOutUser(new User((String) session.getAttribute(MySessionManager.USER_ID),
+				new AgentUser((String) session.getAttribute(MySessionManager.AGENT_ID))), HttpStatus.SC_SESSION_EXPRIES);
 	}
 }
