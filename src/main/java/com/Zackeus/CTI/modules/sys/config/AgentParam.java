@@ -28,8 +28,23 @@ public class AgentParam {
 	@Value("${agentConfig.agenteventUrl}")
 	private String agenteventUrl; 			// 坐席事件地址
 	
+	@Value("${agentConfig.agentStatusUrl}")
+	private String agentStatusUrl; 			// 当前座席的状态地址
+	
 	@Value("${agentConfig.resetSkillUrl}")
 	private String resetSkillUrl; 			// 重置技能地址
+	
+	@Value("${agentConfig.sayFreeUrl}")
+	private String sayFreeUrl; 				// 座席示闲地址
+	
+	@Value("${agentConfig.sayBusyUrl}")
+	private String sayBusyUrl; 				// 坐席示忙地址
+	
+	@Value("${agentConfig.workUrl}")
+	private String workUrl; 				// 进入工作地址
+	
+	@Value("${agentConfig.cancelWorkUrl}")
+	private String cancelWorkUrl; 			// 退出工作地址
 	
 	@Autowired
 	private LoginParam loginParam;
@@ -60,6 +75,26 @@ public class AgentParam {
 	
 	public String getResetSkillUrl() {
 		return resetSkillUrl;
+	}
+	
+	public String getAgentStatusUrl() {
+		return agentStatusUrl;
+	}
+	
+	public String getSayFreeUrl() {
+		return sayFreeUrl;
+	}
+
+	public String getSayBusyUrl() {
+		return sayBusyUrl;
+	}
+
+	public String getWorkUrl() {
+		return workUrl;
+	}
+
+	public String getCancelWorkUrl() {
+		return cancelWorkUrl;
 	}
 
 	@Override

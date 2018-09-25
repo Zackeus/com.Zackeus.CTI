@@ -4,12 +4,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.Zackeus.CTI.common.web.BaseController;
+import com.Zackeus.CTI.modules.sys.service.AgentService;
+import com.Zackeus.CTI.modules.sys.utils.AgentEventUtil;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
@@ -24,6 +27,9 @@ import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 @RequestMapping("/sys/area")
 public class AreaController extends BaseController {
 	
+	@Autowired
+	private AgentService agentService;
+	
 	/**
 	 * 
 	 * @Title：sysIndex
@@ -33,6 +39,7 @@ public class AreaController extends BaseController {
 	 * @param response
 	 * @param model
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequiresPermissions("user")
 	@RequestMapping(value = "/index")
@@ -50,10 +57,12 @@ public class AreaController extends BaseController {
 	 * @param response
 	 * @param model
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequiresPermissions("user")
 	@RequestMapping(value = "/main")
-	public String sysMain(HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String sysMain(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+		model.addAttribute("agentState", AgentEventUtil.analyzeState(agentService.getAgentState().getResult()));
 		return "modules/sys/sysMain";
 	}
 	

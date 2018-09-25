@@ -21,19 +21,12 @@ public class Result implements Serializable {
 	private String sipport; 	// 未知
 	private String sipip; 		// 未知
 	private String mediatype; 	// 所签入的媒体服务器，如TTF
-
-	public Result() {
-		super();
-	}
-
-	public Result(String workno, String vdnid, String sipport, String sipip, String mediatype) {
-		super();
-		this.workno = workno;
-		this.vdnid = vdnid;
-		this.sipport = sipport;
-		this.sipip = sipip;
-		this.mediatype = mediatype;
-	}
+	
+	/*坐席状态响应消息*/
+	private Integer agentState;			// 座席状态
+	private Boolean isWorking;			// false表示没有正在通话。true表示正在通话
+	private String agentStateText;		// 状态字段
+	private String agentStateColor;		// 字段颜色
 
 	public String getWorkno() {
 		return workno;
@@ -73,6 +66,38 @@ public class Result implements Serializable {
 
 	public void setMediatype(String mediatype) {
 		this.mediatype = mediatype;
+	}
+	
+	public Integer getAgentState() {
+		return agentState;
+	}
+
+	public void setAgentState(Integer agentState) {
+		this.agentState = agentState;
+	}
+
+	public Boolean getIsWorking() {
+		return isWorking;
+	}
+
+	public void setIsWorking(Boolean isWorking) {
+		this.isWorking = isWorking;
+	}
+	
+	public String getAgentStateText() {
+		return agentStateText;
+	}
+
+	public void setAgentStateText(String agentStateText) {
+		this.agentStateText = agentStateText;
+	}
+
+	public String getAgentStateColor() {
+		return agentStateColor;
+	}
+
+	public void setAgentStateColor(String agentStateColor) {
+		this.agentStateColor = agentStateColor;
 	}
 
 	@Override

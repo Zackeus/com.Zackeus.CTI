@@ -23,11 +23,11 @@ function getLangDate(){
     setTimeout("getLangDate()",1000);
 }
 
-layui.use(['form','element','layer','jquery'],function(){
+layui.use(['form','layer','jquery'],function() {
     var form = layui.form,
         layer = parent.layer === undefined ? layui.layer : top.layer,
-        element = layui.element;
         $ = layui.jquery;
+    
     //上次登录时间【此处应该从接口获取，实际使用中请自行更换】
     $(".loginTime").html(newDate.split("日")[0]+"日</br>"+newDate.split("日")[1]);
     //icon动画
@@ -44,5 +44,4 @@ layui.use(['form','element','layer','jquery'],function(){
     $.get(iconUrl,function(data){
         $(".outIcons span").text(data.split(".icon-").length-1);
     })
-
 })

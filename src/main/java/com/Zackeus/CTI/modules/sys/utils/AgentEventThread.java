@@ -1,5 +1,6 @@
 package com.Zackeus.CTI.modules.sys.utils;
 
+import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.SpringContextUtil;
@@ -33,7 +34,8 @@ public class AgentEventThread implements Runnable {
 			try {
 				AgentHttpEvent agentHttpEvent = agentService.event(user);
 				if (ObjectUtils.isNotEmpty(agentHttpEvent.getEvent())) {
-					Logs.info(user.getName() + ",触发事件：" + agentHttpEvent);
+					Logs.info("触发事件：" + agentHttpEvent.getEvent().getEventType());
+					UserUtils.sendMessageToUser(user, JsonMapper.toJsonString(AgentEventUtil.getAgentSocketMsg(agentHttpEvent)));
 				} else {
 					Thread.sleep(500);
 				}

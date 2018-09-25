@@ -29,11 +29,16 @@
 				</ul>
 			    <!-- 顶部右侧菜单 -->
 			    <ul class="layui-nav top_menu">
-					<li class="layui-nav-item" pc>
-						<a href="javascript:;" class="clearCache"><i class="layui-icon" data-icon="&#xe640;">&#xe640;</i><cite>清除缓存</cite><span class="layui-badge-dot"></span></a>
-					</li>
 					<li class="layui-nav-item lockcms" pc>
 						<a href="javascript:;"><i class="seraph icon-lock"></i><cite>锁屏</cite></a>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;"><i class="seraph layui-icon layui-icon-haoyouqingqiu"></i><cite>坐席状态</cite></a>
+						<dl class="layui-nav-child agentStates">
+							<c:forEach items="${fns:getDictList('agent_state')}" var="obj">
+								<dd data-state="${obj.value}"><a href="javascript:;"><cite>${obj.label}</cite></a></dd>
+							</c:forEach>
+						</dl>
 					</li>
 					<li class="layui-nav-item" id="userInfo">
 						<a href="javascript:;">
@@ -93,7 +98,7 @@
 				</ul>
 				<div class="layui-tab-content clildFrame">
 					<div class="layui-tab-item layui-show">
-						<iframe src="${ctx}/sys/area/main"></iframe>
+						<iframe id="sysMain" src="${ctx}/sys/area/main"></iframe>
 					</div>
 				</div>
 			</div>

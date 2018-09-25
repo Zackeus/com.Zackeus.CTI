@@ -12,13 +12,13 @@
 	</blockquote>
 	<div class="layui-row layui-col-space10 panel_box">
 		<div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
-			<a href="javascript:;" data-url="http://fly.layui.com/case/u/3198216" target="_blank">
-				<div class="panel_icon layui-bg-green">
-					<i class="layui-anim seraph icon-good"></i>
+			<a href="javascript:;">
+				<div class="panel_icon layui-bg-cyan">
+					<i class="layui-anim layui-icon layui-icon-haoyouqingqiu"></i>
 				</div>
-				<div class="panel_word">
-					<span>为我点赞</span>
-					<cite>点赞地址链接</cite>
+				<div id="agentState" class="panel_word">
+					<span style="color: ${agentState.agentStateColor}">${agentState.agentStateText}</span>
+					<cite>坐席状态</cite>
 				</div>
 			</a>
 		</div>

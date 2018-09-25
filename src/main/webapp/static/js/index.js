@@ -1,12 +1,14 @@
 var $,tab,dataStr,layer,websocket;
 layui.extend({
 	bodyTab: '{/}' + ctxStatic + '/js/bodyTab',
-	websocket: '{/}' + ctxStatic + '/layui/lay/modules/websocket'
+	websocket: '{/}' + ctxStatic + '/layui/lay/modules/websocket',
+	layuiRequest: '{/}' + ctxStatic + '/layui/layuiRequest'
 })
 
-layui.use(['bodyTab','form','element','layer','jquery','websocket'],function(){
+layui.use(['bodyTab','form','element','layer','jquery','websocket','layuiRequest'],function(){
 	var form = layui.form,
-		element = layui.element;
+		element = layui.element,
+		layuiRequest = layui.layuiRequest;
 		$ = layui.$;
     	layer = parent.layer === undefined ? layui.layer : top.layer;
 		tab = layui.bodyTab({
@@ -39,6 +41,11 @@ layui.use(['bodyTab','form','element','layer','jquery','websocket'],function(){
 		getData($(this).data("menu"));
 		//渲染顶部窗口
 		tab.tabMove();
+	})
+	
+	// 切换坐席状态
+	$(".agentStates dd").click(function() {
+		layuiRequest.changeAgentState(ctx + '/sys/agent/changeAgentState/' + $(this).data("state"));
 	})
 
 	//隐藏左侧导航
@@ -79,17 +86,6 @@ layui.use(['bodyTab','form','element','layer','jquery','websocket'],function(){
 		}
 		$(this).parent("li").siblings().removeClass("layui-nav-itemed");
 	})
-
-	//清除缓存
-	$(".clearCache").click(function() {
-		window.sessionStorage.clear();
-        window.localStorage.clear();
-        var index = layer.msg('清除缓存中，请稍候',{icon: 16,time:false,shade:0.8});
-        setTimeout(function(){
-            layer.close(index);
-            layer.msg("缓存清除成功！");
-        },1000);
-    })
 
 	//刷新后还原打开的窗口
     if(cacheStr == "true") {
@@ -137,7 +133,17 @@ layui.use(['bodyTab','form','element','layer','jquery','websocket'],function(){
 	
 	// 消息事件的事件监听器
 	websocket.onmessage = function (evnt) {
-		console.log(evnt);
+		var event = $.parseJSON(evnt.data);
+		switch (event.eventCode) {
+		
+		case 1:
+			$(document.getElementById('sysMain').contentWindow.document).find("#agentState").children('span').text(event.object.agentStateText);
+			$(document.getElementById('sysMain').contentWindow.document).find("#agentState").children('span').css('color', event.object.agentStateColor);
+			break;
+
+		default:
+			break;
+		}
 	}
 	
 	// 监听error事件
