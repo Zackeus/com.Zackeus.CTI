@@ -166,49 +166,12 @@ public class AgentService extends BaseService {
 	/**
 	 * 
 	 * @return 
-	 * @Title：changeAgentStatus
-	 * @Description: TODO(切换坐席状态)
-	 * @see：
-	 * @throws Exception
-	 */
-	public AgentHttpResult changeAgentState(Integer agentState) throws Exception {
-		User user = new User(UserUtils.getPrincipal());
-		AssertUtil.isTrue(ObjectUtils.isNotEmpty(user), HttpStatus.SC_FORBIDDEN, "账号未登录！");
-		AgentHttpResult agentHttpResult = new AgentHttpResult(StringUtils.EMPTY, HttpStatus.AS_ERROR.getAgentStatus());
-		switch (agentState) {
-		
-		case AgentConfig.AGENT_STATE_FREE:
-			// 示闲
-			agentHttpResult = ready(user);
-			break;
-			
-		case AgentConfig.AGENT_STATE_BUSY:
-			// 示忙
-			agentHttpResult = busy(user);
-			break;
-			
-		case AgentConfig.AGENT_STATE_WORK:
-			// 工作
-			agentHttpResult = work(user);
-			break;
-
-		default:
-			throw new MyException(HttpStatus.AS_ERROR.getAjaxStatus(), "无效的状态码");
-		}
-		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
-				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
-		return agentHttpResult;
-	}
-	
-	/**
-	 * 
-	 * @return 
 	 * @throws Exception 
 	 * @Title：ready
 	 * @Description: TODO(座席示闲)
 	 * @see：
 	 */
-	private AgentHttpResult ready(User user) throws Exception {
+	public AgentHttpResult ready(User user) throws Exception {
 		AgentHttpResult agentHttpResult = new AgentHttpResult(StringUtils.EMPTY, HttpStatus.AS_ERROR.getAgentStatus());
 		// 当前为工作状态时退出工作态
 		if (AgentConfig.AGENT_STATE_WORK == getAgentState().getResult().getAgentState()) {
@@ -234,7 +197,7 @@ public class AgentService extends BaseService {
 	 * @return
 	 * @throws Exception 
 	 */
-	private AgentHttpResult busy(User user) throws Exception {
+	public AgentHttpResult busy(User user) throws Exception {
 		// 当前为工作状态时先退出工作态，再进入示忙态
 		if (AgentConfig.AGENT_STATE_WORK == getAgentState().getResult().getAgentState()) {
 			outwork(user);
@@ -259,7 +222,7 @@ public class AgentService extends BaseService {
 	 * @return
 	 * @throws Exception 
 	 */
-	private AgentHttpResult work(User user) throws Exception {
+	public AgentHttpResult work(User user) throws Exception {
 		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getWorkUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
 		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
@@ -279,7 +242,7 @@ public class AgentService extends BaseService {
 	 * @return
 	 * @throws Exception
 	 */
-	private AgentHttpResult outwork(User user) throws Exception {
+	public AgentHttpResult outwork(User user) throws Exception {
 		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getCancelWorkUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
 		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),

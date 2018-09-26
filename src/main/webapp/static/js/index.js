@@ -136,6 +136,7 @@ layui.use(['bodyTab','form','element','layer','jquery','websocket','layuiRequest
 		var event = $.parseJSON(evnt.data);
 		switch (event.eventCode) {
 		
+		// 坐席状态切换
 		case 1:
 			$(document.getElementById('sysMain').contentWindow.document).find("#agentState").children('span').text(event.object.agentStateText);
 			$(document.getElementById('sysMain').contentWindow.document).find("#agentState").children('span').css('color', event.object.agentStateColor);
