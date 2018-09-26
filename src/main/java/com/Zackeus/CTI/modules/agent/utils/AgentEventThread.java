@@ -1,12 +1,13 @@
-package com.Zackeus.CTI.modules.sys.utils;
+package com.Zackeus.CTI.modules.agent.utils;
 
 import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.SpringContextUtil;
+import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
+import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
-import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpEvent;
-import com.Zackeus.CTI.modules.sys.service.AgentService;
+import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
  * 

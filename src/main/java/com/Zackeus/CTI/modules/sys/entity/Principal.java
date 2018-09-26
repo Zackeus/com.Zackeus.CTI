@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.Zackeus.CTI.common.utils.StringUtils;
-import com.Zackeus.CTI.modules.sys.entity.agent.AgentUser;
+import com.Zackeus.CTI.modules.agent.entity.AgentUser;
 
 /**
  * 

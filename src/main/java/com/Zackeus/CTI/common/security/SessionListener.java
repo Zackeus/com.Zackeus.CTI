@@ -5,8 +5,8 @@ import org.springframework.web.socket.CloseStatus;
 
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
+import com.Zackeus.CTI.modules.agent.entity.AgentUser;
 import com.Zackeus.CTI.modules.sys.entity.User;
-import com.Zackeus.CTI.modules.sys.entity.agent.AgentUser;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**

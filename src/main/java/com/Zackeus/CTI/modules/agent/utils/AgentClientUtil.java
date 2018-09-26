@@ -1,4 +1,4 @@
-package com.Zackeus.CTI.modules.sys.utils;
+package com.Zackeus.CTI.modules.agent.utils;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.MediaType;
@@ -25,7 +25,6 @@ import com.Zackeus.CTI.common.utils.httpClient.HttpClientUtil;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.utils.httpClient.MyHttpDelete;
 import com.Zackeus.CTI.modules.sys.entity.User;
-import com.Zackeus.CTI.modules.sys.utils.AgentQueue;
 
 import net.sf.json.JSONObject;
 

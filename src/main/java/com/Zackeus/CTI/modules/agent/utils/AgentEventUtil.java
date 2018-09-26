@@ -1,9 +1,9 @@
-package com.Zackeus.CTI.modules.sys.utils;
+package com.Zackeus.CTI.modules.agent.utils;
 
-import com.Zackeus.CTI.modules.sys.config.AgentConfig;
-import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpEvent;
-import com.Zackeus.CTI.modules.sys.entity.agent.AgentSocketMsg;
-import com.Zackeus.CTI.modules.sys.entity.agent.Result;
+import com.Zackeus.CTI.modules.agent.config.AgentConfig;
+import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
+import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
+import com.Zackeus.CTI.modules.agent.entity.Result;
 
 /**
  * 

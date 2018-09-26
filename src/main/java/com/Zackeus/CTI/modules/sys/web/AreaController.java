@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.Zackeus.CTI.common.web.BaseController;
-import com.Zackeus.CTI.modules.sys.service.AgentService;
-import com.Zackeus.CTI.modules.sys.utils.AgentEventUtil;
+import com.Zackeus.CTI.modules.agent.service.AgentService;
+import com.Zackeus.CTI.modules.agent.utils.AgentEventUtil;
+import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
@@ -62,7 +63,7 @@ public class AreaController extends BaseController {
 	@RequiresPermissions("user")
 	@RequestMapping(value = "/main")
 	public String sysMain(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		model.addAttribute("agentState", AgentEventUtil.analyzeState(agentService.getAgentState().getResult()));
+		model.addAttribute("agentState", AgentEventUtil.analyzeState(agentService.getAgentState(new User(UserUtils.getPrincipal())).getResult()));
 		return "modules/sys/sysMain";
 	}
 	

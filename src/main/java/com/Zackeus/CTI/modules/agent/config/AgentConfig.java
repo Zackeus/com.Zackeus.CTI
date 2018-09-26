@@ -1,4 +1,4 @@
-package com.Zackeus.CTI.modules.sys.config;
+package com.Zackeus.CTI.modules.agent.config;
 
 public class AgentConfig {
 	

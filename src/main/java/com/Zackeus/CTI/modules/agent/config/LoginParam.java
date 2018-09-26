@@ -1,4 +1,4 @@
-package com.Zackeus.CTI.modules.sys.config;
+package com.Zackeus.CTI.modules.agent.config;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,12 +25,12 @@ public class LoginParam {
 	
 	private Boolean autoenteridle = Boolean.TRUE;	// 是否自动进入空闲态
 	
-	@Value("${agentConfig.loginConfig.status}")
+	@Value("${agentConfig.LoginParam.status}")
 	private Integer status;							// 签入后的状态
 	
 	private Boolean releasephone = Boolean.TRUE;	// 座席挂机后是否进入非长通态 
 	
-	@Value("${agentConfig.loginConfig.ip}")
+	@Value("${agentConfig.LoginParam.ip}")
 	private String ip;								// 坐席IP
 	
 	public String getPassword() {

@@ -3,7 +3,7 @@ package com.Zackeus.CTI.common.utils.httpClient;
 import org.springframework.web.socket.CloseStatus;
 
 import com.Zackeus.CTI.common.utils.StringUtils;
-import com.Zackeus.CTI.modules.sys.entity.agent.AgentHttpStatus;
+import com.Zackeus.CTI.modules.agent.entity.AgentHttpStatus;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package com.Zackeus.CTI.modules.sys.web;
+package com.Zackeus.CTI.modules.agent.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.Zackeus.CTI.common.entity.AjaxResult;
+import com.Zackeus.CTI.common.utils.Logs;
+import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
-import com.Zackeus.CTI.modules.sys.config.AgentConfig;
+import com.Zackeus.CTI.modules.agent.config.AgentConfig;
+import com.Zackeus.CTI.modules.agent.config.CallParam;
+import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
-import com.Zackeus.CTI.modules.sys.service.AgentService;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
@@ -72,5 +75,26 @@ public class AgentController extends BaseController {
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "状态切换成功"));
 	}
 	
+	/**
+	 * 
+	 * @Title：voiceCallOut
+	 * @Description: TODO(外呼)
+	 * @see：
+	 * @param called
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = {"/voiceCallOut", "/voiceCallOut/{called}"})
+	public String voiceCallOut(@PathVariable(value = "called", required = false) String called, 
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		if (StringUtils.isEmpty(called)) {
+			return "modules/agent/voiceCall/callOut";
+		}
+		Logs.info("外呼参数：" + new CallParam(called));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "外呼成功"));
+		return null;
+	}
 
 }

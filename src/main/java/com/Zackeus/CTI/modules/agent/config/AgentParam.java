@@ -1,4 +1,4 @@
-package com.Zackeus.CTI.modules.sys.config;
+package com.Zackeus.CTI.modules.agent.config;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,15 +46,29 @@ public class AgentParam {
 	@Value("${agentConfig.cancelWorkUrl}")
 	private String cancelWorkUrl; 			// 退出工作地址
 	
+	@Value("${agentConfig.callOutUrl}")
+	private String callOutUrl;				// 外呼地址
+	
 	@Autowired
-	private LoginParam loginParam;
+	private LoginParam loginParam;			// 登录参数
+	
+	@Autowired
+	private CallParam callParam;			// 呼叫参数
 	
 	public LoginParam getLoginParam() {
 		return loginParam;
 	}
-
+	
 	public void setLoginParam(LoginParam loginParam) {
 		this.loginParam = loginParam;
+	}
+	
+	public CallParam getCallParam() {
+		return callParam;
+	}
+
+	public void setCallParam(CallParam callParam) {
+		this.callParam = callParam;
 	}
 
 	public String getLoginUrl() {
@@ -95,6 +109,10 @@ public class AgentParam {
 
 	public String getCancelWorkUrl() {
 		return cancelWorkUrl;
+	}
+	
+	public String getCallOutUrl() {
+		return callOutUrl;
 	}
 
 	@Override
