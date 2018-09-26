@@ -39,6 +39,7 @@ public class AgentConfig {
 	public static final String AGENTEVENT_CUSTOMER_ALERTING = "AgentEvent_Customer_Alerting";				// 对方振铃
 	public static final String AGENTEVENT_CALL_RELEASE = "AgentEvent_Call_Release";                       	// 座席退出呼叫
 	public static final String AGENTEVENT_CUSTOMER_RELEASE = "AgentEvent_Customer_Release";                 // 客户退出呼叫
+	public static final String AGENTEVENT_CALL_OUT_FAIL = "AgentEvent_Call_Out_Fail";						// 外呼失败
 	
 	/*物理话机事件*/
 	public static final String AGENTOTHER_PHONEALERTING = "AgentOther_PhoneAlerting";                       // 座席物理话机振铃
