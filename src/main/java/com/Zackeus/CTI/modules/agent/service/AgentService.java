@@ -17,12 +17,14 @@ import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.config.LoginParam;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpResult;
+import com.Zackeus.CTI.modules.agent.entity.Result;
 import com.Zackeus.CTI.modules.agent.utils.AgentClientUtil;
 import com.Zackeus.CTI.modules.agent.utils.AgentEventThread;
 import com.Zackeus.CTI.modules.agent.utils.AgentQueue;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 
 /**
  * 
@@ -63,8 +65,8 @@ public class AgentService extends BaseService {
 			loginParam = defaultAgentParam.getLoginParam();
 		}
 		loginParam.setPhonenum(user.getAgentUser().getPhonenumber());
-		AgentHttpResult loginResult = JSON.parseObject(AgentClientUtil.put(user, defaultAgentParam.getLoginUrl().
-				replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam).getContent(), AgentHttpResult.class);
+		AgentHttpResult<Result> loginResult = JSON.parseObject(AgentClientUtil.put(user, defaultAgentParam.getLoginUrl().
+				replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam).getContent(), new TypeReference<AgentHttpResult<Result>>(){});
 		// 登录成功
 		if (StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), loginResult.getRetcode())) {
 			resetskill(user);
@@ -91,7 +93,7 @@ public class AgentService extends BaseService {
 	public void forceLogin(User user, LoginParam loginParam) throws Exception {
 		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getForceLoginUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), loginParam);
-		assertAgent(httpClientResult, "坐席强制签入请求失败");
+		assertAgent(httpClientResult, "坐席强制签入请求失败", Result.class);
 	}
 	
 	/**
@@ -106,7 +108,7 @@ public class AgentService extends BaseService {
 		try {
 			HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getResetSkillUrl().
 					replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
-			assertAgent(httpClientResult, "坐席重置技能队列请求失败");
+			assertAgent(httpClientResult, "坐席重置技能队列请求失败", Result.class);
 		} catch (Exception e) {
 			// 踢出同一账号
 			/*注：重置技能队列是坐席签入成功后执行，因此此方法失败但须踢出先前在线的同一账号*/
@@ -143,10 +145,10 @@ public class AgentService extends BaseService {
 	 * @return 
 	 * @throws Exception 
 	 */
-	public AgentHttpResult getAgentState(User user) throws Exception {
+	public AgentHttpResult<Result> getAgentState(User user) throws Exception {
 		HttpClientResult httpClientResult = AgentClientUtil.get(user, defaultAgentParam.getAgentStatusUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()));
-		return assertAgent(httpClientResult, "当前座席状态请求失败");
+		return assertAgent(httpClientResult, "当前座席状态请求失败", Result.class);
 	}
 	
 	/**
@@ -157,7 +159,7 @@ public class AgentService extends BaseService {
 	 * @Description: TODO(座席示闲)
 	 * @see：
 	 */
-	public AgentHttpResult ready(User user) throws Exception {
+	public AgentHttpResult<Result> ready(User user) throws Exception {
 		// 当前为工作状态时退出工作态
 		if (AgentConfig.AGENT_STATE_WORK == getAgentState(user).getResult().getAgentState()) {
 			outwork(user);
@@ -165,7 +167,7 @@ public class AgentService extends BaseService {
 		}
 		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getSayFreeUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
-		return assertAgent(httpClientResult, "进入空闲态请求失败");
+		return assertAgent(httpClientResult, "进入空闲态请求失败", Result.class);
 	}
 	
 	/**
@@ -177,7 +179,7 @@ public class AgentService extends BaseService {
 	 * @return
 	 * @throws Exception 
 	 */
-	public AgentHttpResult busy(User user) throws Exception {
+	public AgentHttpResult<Result> busy(User user) throws Exception {
 		// 当前为工作状态时先退出工作态，再进入示忙态
 		if (AgentConfig.AGENT_STATE_WORK == getAgentState(user).getResult().getAgentState()) {
 			outwork(user);
@@ -185,7 +187,7 @@ public class AgentService extends BaseService {
 		}
 		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getSayBusyUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
-		return assertAgent(httpClientResult, "进入示忙态请求失败");
+		return assertAgent(httpClientResult, "进入示忙态请求失败", Result.class);
 	}
 	
 	/**
@@ -197,10 +199,10 @@ public class AgentService extends BaseService {
 	 * @return
 	 * @throws Exception 
 	 */
-	public AgentHttpResult work(User user) throws Exception {
+	public AgentHttpResult<Result> work(User user) throws Exception {
 		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getWorkUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
-		return assertAgent(httpClientResult, "进入工作态请求失败");
+		return assertAgent(httpClientResult, "进入工作态请求失败", Result.class);
 	}
 	
 	/**
@@ -212,10 +214,10 @@ public class AgentService extends BaseService {
 	 * @return
 	 * @throws Exception
 	 */
-	public AgentHttpResult outwork(User user) throws Exception {
+	public AgentHttpResult<Result> outwork(User user) throws Exception {
 		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getCancelWorkUrl().
 				replace(AGENT_ID, user.getAgentUser().getWorkno()), null);
-		return assertAgent(httpClientResult, "退出工作态请求失败");
+		return assertAgent(httpClientResult, "退出工作态请求失败", Result.class);
 	}
 	
 	/**
@@ -230,11 +232,27 @@ public class AgentService extends BaseService {
 		try {
 			HttpClientResult httpClientResult = AgentClientUtil.delete(user, defaultAgentParam.getLogoutUrl().replace(AGENT_ID, 
 					user.getAgentUser().getWorkno()), null);
-			assertAgent(httpClientResult, "坐席签出请求失败");
+			assertAgent(httpClientResult, "坐席签出请求失败", Result.class);
 		} finally {
 			clearAgentEvent(user);
 			clearGuid(user);
 		}
+	}
+	
+	/**
+	 * 
+	 * @Title：voiceCallOut
+	 * @Description: TODO(外呼(默认外呼参数))
+	 * @see：
+	 * @param user
+	 * @param called
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> voiceCallOut(User user, String called) throws Exception {
+		CallParam defaultCallParam = defaultAgentParam.getCallParam();
+		defaultCallParam.setCalled(called);
+		return voiceCallOut(user, defaultCallParam);
 	}
 	
 	/**
@@ -244,13 +262,14 @@ public class AgentService extends BaseService {
 	 * @see：
 	 * @param user
 	 * @param callParam
+	 * @return 
 	 * @return
 	 * @throws Exception
 	 */
-	public AgentHttpResult voiceCallOut(User user, CallParam callParam) throws Exception {
+	public AgentHttpResult<String> voiceCallOut(User user, CallParam callParam) throws Exception {
 		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getCallOutUrl().replace(AGENT_ID, 
 				user.getAgentUser().getWorkno()), callParam);
-		return assertAgent(httpClientResult, "坐席外呼请求失败");
+		return assertAgent(httpClientResult, "坐席外呼请求失败", String.class);
 	}
 
 	/**
@@ -260,12 +279,13 @@ public class AgentService extends BaseService {
 	 * @see：
 	 * @param httpClientResult
 	 * @param assertMsg
+	 * @param clazz 消息实体类型
 	 * @return
 	 */
-	private AgentHttpResult assertAgent(HttpClientResult httpClientResult, String assertMsg) {
+	private  <T> AgentHttpResult<T> assertAgent(HttpClientResult httpClientResult, String assertMsg, Class<T> clazz) {
 		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
 				assertMsg + ": " + httpClientResult.getCode());
-		AgentHttpResult agentHttpResult = JSON.parseObject(httpClientResult.getContent(), AgentHttpResult.class);
+		AgentHttpResult<T> agentHttpResult = JSON.parseObject(httpClientResult.getContent(), new TypeReference<AgentHttpResult<T>>(clazz){});
 		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
 				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
 		return agentHttpResult;

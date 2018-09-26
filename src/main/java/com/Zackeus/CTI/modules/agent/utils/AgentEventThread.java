@@ -35,7 +35,7 @@ public class AgentEventThread implements Runnable {
 			try {
 				AgentHttpEvent agentHttpEvent = agentService.event(user);
 				if (ObjectUtils.isNotEmpty(agentHttpEvent.getEvent())) {
-					Logs.info("触发事件：" + agentHttpEvent.getEvent().getEventType());
+					Logs.info("触发事件：" + agentHttpEvent.getEvent().getEventType() + " ; " + agentHttpEvent.getEvent().getContent());
 					UserUtils.sendMessageToUser(user, JsonMapper.toJsonString(AgentEventUtil.getAgentSocketMsg(agentHttpEvent)));
 				} else {
 					Thread.sleep(500);

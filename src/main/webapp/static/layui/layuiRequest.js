@@ -119,6 +119,24 @@ layui.define(['jquery','layer'],function(exports){
         			}
         		});
 			},
+			// 外呼
+			callOut: function (url) {
+				$.ajax({
+					type : 'POST',
+					url : url,
+					dataType : 'json',
+					success : function(result) {
+						if (result.code == 0) {
+							layer.msg(result.msg, {icon: 6,time: 1000});
+						} else {
+							layer.msg(result.msg, {icon: 5,time: 2000,shift: 6}, function(){});
+						}
+					},
+					error : function(result) {
+						layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
+					}
+				});
+			},
 			// json提交(按钮提示)
 			jsonPostBtn: function (url, data, btn) {
         		$.ajax({

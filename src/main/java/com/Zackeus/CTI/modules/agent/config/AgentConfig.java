@@ -33,5 +33,20 @@ public class AgentConfig {
 	public static final String AGENTSTATE_CANCELWORK_SUCCESS = "AgentState_CancelWork_Success";				// 退出工作态(进入示闲态)
 	public static final String AGENTSTATE_SETREST_SUCCESS = "AgentState_SetRest_Success";					// 休息成功
 	public static final String AGENTSTATE_CANCELREST_SUCCESS = "AgentState_CancelRest_Success";				// 取消休息成功
-
+	
+	/*语音通话事件*/
+	public static final String AGENTEVENT_TALKING = "AgentEvent_Talking";									// 座席进入Talking
+	public static final String AGENTEVENT_CUSTOMER_ALERTING = "AgentEvent_Customer_Alerting";				// 对方振铃
+	public static final String AGENTEVENT_CALL_RELEASE = "AgentEvent_Call_Release";                       	// 座席退出呼叫
+	public static final String AGENTEVENT_CUSTOMER_RELEASE = "AgentEvent_Customer_Release";                 // 客户退出呼叫
+	
+	/*物理话机事件*/
+	public static final String AGENTOTHER_PHONEALERTING = "AgentOther_PhoneAlerting";                       // 座席物理话机振铃
+	public static final String AGENTOTHER_PHONEOFFHOOK = "AgentOther_PhoneOffhook";                       	// 座席物理话机摘机
+	public static final String AGENTOTHER_PHONERELEASE = "AgentOther_PhoneRelease";                       	// 座席物理话机挂机
+	
+	/*录放音相关*/
+	public static final String AGENTMEDIAEVENT_RECORD = "AgentMediaEvent_Record";                       	// 录音开始
+	public static final String AGENTMEDIAEVENT_STOPRECORDDONE = "AgentMediaEvent_StopRecordDone"; 			// 停止录音成功
+	
 }

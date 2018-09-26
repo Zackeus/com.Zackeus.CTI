@@ -11,12 +11,12 @@
 		<blockquote class="layui-elem-quote quoteBox">
 			<div class="layui-inline">
 				<div class="layui-input-inline">
-					<input type="text" class="layui-input callVal" placeholder="请输入呼叫号码"/>
+					<input id="called" name="called" type="text" class="layui-input" lay-verify="required" placeholder="请输入呼叫号码"/>
 				</div>
-				<button class="layui-btn callOut_btn"><i class="layui-icon">&#xe63b;</i>呼叫</button>
+				<button title="外呼" class="layui-btn" lay-submit lay-filter="collOut"><i class="layui-icon layui-icon-zzphone"></i></button>
 			</div>
 		</blockquote>
 	</form>
-	<script type="text/javascript" src="${ctxStatic}/Layui/js/voiceCall/callOut.js"></script>
+	<script type="text/javascript" src="${ctxStatic}/js/modules/agent/voiceCall/callOut.js"></script>
 </body>
 </html>

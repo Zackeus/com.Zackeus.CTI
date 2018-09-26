@@ -5,18 +5,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.Zackeus.CTI.common.annotation.validator.CallNum;
 import com.Zackeus.CTI.common.entity.AjaxResult;
-import com.Zackeus.CTI.common.utils.Logs;
-import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
-import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
@@ -31,6 +32,7 @@ import com.Zackeus.CTI.modules.sys.utils.UserUtils;
  */
 @Controller
 @RequestMapping("/sys/agent")
+@Validated
 public class AgentController extends BaseController {
 	
 	@Autowired
@@ -86,15 +88,28 @@ public class AgentController extends BaseController {
 	 * @throws Exception
 	 */
 	@RequiresPermissions("user")
-	@RequestMapping(value = {"/voiceCallOut", "/voiceCallOut/{called}"})
-	public String voiceCallOut(@PathVariable(value = "called", required = false) String called, 
+	@RequestMapping(value = {"/voiceCallOut"}, method = RequestMethod.GET)
+	public String voiceCallOutPage(HttpServletRequest request, HttpServletResponse response) {
+		return "modules/agent/voiceCall/callOut";
+	}
+	
+	/**
+	 * 
+	 * @Title：voiceCallOut
+	 * @Description: TODO(外呼)
+	 * @see：
+	 * @param called
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = {"/voiceCallOut/{called}"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void voiceCallOut(@CallNum @PathVariable(value = "called") String called, 
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
-		if (StringUtils.isEmpty(called)) {
-			return "modules/agent/voiceCall/callOut";
-		}
-		Logs.info("外呼参数：" + new CallParam(called));
+		called = called.startsWith("0") ? called : "0" + called;
+		agentService.voiceCallOut(new User(UserUtils.getPrincipal()), called);
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "外呼成功"));
-		return null;
 	}
 
 }

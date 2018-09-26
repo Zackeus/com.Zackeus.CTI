@@ -104,6 +104,14 @@ public class AgentEventUtil {
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_AGENT_STATE, agentHttpEvent.getEvent().getEventType(), 
 					agentHttpEvent.getMessage(), workResult);
 			break;
+			
+		case AgentConfig.AGENTEVENT_TALKING:
+			Result talkResult = new Result();
+			talkResult.setAgentStateText("通话");
+			talkResult.setAgentStateColor("blue");
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_AGENT_STATE, agentHttpEvent.getEvent().getEventType(), 
+					agentHttpEvent.getMessage(), talkResult);
+			break;
 
 		default:
 			Result unKnownResult = new Result();
