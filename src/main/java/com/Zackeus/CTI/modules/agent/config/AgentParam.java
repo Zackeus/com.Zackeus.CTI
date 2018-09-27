@@ -49,6 +49,18 @@ public class AgentParam {
 	@Value("${agentConfig.callOutUrl}")
 	private String callOutUrl;				// 外呼地址
 	
+	@Value("${agentConfig.phonePickUpUrl}")
+	private String phonePickUpUrl;			// 话机联动应答地址
+	
+	@Value("${agentConfig.phoneHangUpUrl}")
+	private String phoneHangUpUrl;			// 话机联动拒接地址
+	
+	@Value("${agentConfig.answerUrl}")
+	private String answerUrl;				// 应答地址
+	
+	@Value("${agentConfig.releaseUrl}")
+	private String releaseUrl;				// 挂断呼叫地址
+	
 	@Autowired
 	private LoginParam loginParam;			// 登录参数
 	
@@ -113,6 +125,22 @@ public class AgentParam {
 	
 	public String getCallOutUrl() {
 		return callOutUrl;
+	}
+	
+	public String getPhonePickUpUrl() {
+		return phonePickUpUrl;
+	}
+	
+	public String getPhoneHangUpUrl() {
+		return phoneHangUpUrl;
+	}
+
+	public String getAnswerUrl() {
+		return answerUrl;
+	}
+
+	public String getReleaseUrl() {
+		return releaseUrl;
 	}
 
 	@Override

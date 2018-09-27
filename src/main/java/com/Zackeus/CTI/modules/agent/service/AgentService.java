@@ -1,11 +1,13 @@
 package com.Zackeus.CTI.modules.agent.service;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.Zackeus.CTI.common.entity.HttpClientResult;
-import com.Zackeus.CTI.common.service.BaseService;
+import com.Zackeus.CTI.common.service.CrudService;
 import com.Zackeus.CTI.common.utils.AssertUtil;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
@@ -15,8 +17,11 @@ import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.config.AgentParam;
 import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.config.LoginParam;
+import com.Zackeus.CTI.modules.agent.dao.AgentDao;
+import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpResult;
+import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
 import com.Zackeus.CTI.modules.agent.entity.Result;
 import com.Zackeus.CTI.modules.agent.utils.AgentClientUtil;
 import com.Zackeus.CTI.modules.agent.utils.AgentEventThread;
@@ -35,7 +40,7 @@ import com.alibaba.fastjson.TypeReference;
  * @date 2018年9月20日 上午11:40:17
  */
 @Service("agentService")
-public class AgentService extends BaseService {
+public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	
 	@Autowired
 	private TaskExecutor taskExecutor;
@@ -267,9 +272,72 @@ public class AgentService extends BaseService {
 	 * @throws Exception
 	 */
 	public AgentHttpResult<String> voiceCallOut(User user, CallParam callParam) throws Exception {
-		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getCallOutUrl().replace(AGENT_ID, 
+		HttpClientResult callResult = AgentClientUtil.put(user, defaultAgentParam.getCallOutUrl().replace(AGENT_ID, 
 				user.getAgentUser().getWorkno()), callParam);
-		return assertAgent(httpClientResult, "坐席外呼请求失败", String.class);
+		AgentHttpResult<String> agentHttpResult = assertAgent(callResult, "坐席外呼请求失败", String.class);
+		// 呼叫成功后将被叫号码注入代理事件中，因为 呼叫振铃事件中没有 Called 返回参数
+		addCalled(user, callParam.getCalled());
+		return agentHttpResult;
+	}
+	
+	/**
+	 * 
+	 * @Title：voiceAnswer
+	 * @Description: TODO(应答)
+	 * @see：
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> voiceAnswer(User user) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getAnswerUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), null);
+		return assertAgent(httpClientResult, "应答请求失败", String.class);
+	}
+	
+	/**
+	 * 
+	 * @Title：phonePickUp
+	 * @Description: TODO(话机联动应答)
+	 * @see：
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> phonePickUp(User user) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getPhonePickUpUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), null);
+		return assertAgent(httpClientResult, "话机联动应答请求失败", String.class);
+	}
+	
+	/**
+	 * 
+	 * @Title：phoneHangUp
+	 * @Description: TODO(话机联动拒接)
+	 * @see：
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> phoneHangUp(User user) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getPhoneHangUpUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), null);
+		return assertAgent(httpClientResult, "话机联动拒接请求失败", String.class);
+	}
+	
+	/**
+	 * 
+	 * @Title：voiceRelease
+	 * @Description: TODO(挂断呼叫)
+	 * @see：
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> voiceCallEnd(User user) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.delete(user, defaultAgentParam.getReleaseUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), null);
+		return assertAgent(httpClientResult, "挂断呼叫请求失败", String.class);
 	}
 
 	/**
@@ -289,6 +357,72 @@ public class AgentService extends BaseService {
 		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
 				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
 		return agentHttpResult;
+	}
+	
+	/**
+	 * 
+	 * @Title：addCalled
+	 * @Description: TODO(注入呼叫流水号)
+	 * @see：
+	 * @param user
+	 */
+	public void addCallId(User user, String callId) {
+		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
+			agentQueue.eventThreadMap.get(user.getId()).setCallId(callId);
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：getCalled
+	 * @Description: TODO(取呼叫流水号)
+	 * @see：
+	 * @param user
+	 */
+	public String getCallId(User user) {
+		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
+			return agentQueue.eventThreadMap.get(user.getId()).getCallId();
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	/**
+	 * 
+	 * @Title：addCalled
+	 * @Description: TODO(注入被叫号码)
+	 * @see：
+	 * @param user
+	 */
+	public void addCalled(User user, String called) {
+		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
+			agentQueue.eventThreadMap.get(user.getId()).setCalled(called);
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：getCalled
+	 * @Description: TODO(取被叫号码)
+	 * @see：
+	 * @param user
+	 */
+	public String getCalled(User user) {
+		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
+			return agentQueue.eventThreadMap.get(user.getId()).getCalled();
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	/**
+	 * 
+	 * @Title：clearCallData
+	 * @Description: TODO(呼叫数据清除)
+	 * @see：
+	 * @param user
+	 */
+	public void clearCallData(User user) {
+		addCallId(user, StringUtils.EMPTY);
+		addCalled(user, StringUtils.EMPTY);
 	}
 	
 	/**
@@ -329,6 +463,72 @@ public class AgentService extends BaseService {
 		if (agentQueue.guidMap.containsKey(user.getId())) {
 			agentQueue.guidMap.remove(user.getId());
 		}
+	}
+	
+	/**
+	 * 
+	 * @Title：insertCallData
+	 * @Description: TODO(呼叫数据记录)
+	 * @see：
+	 * @param user
+	 * @param entity
+	 */
+	public void insertCallData(User user, AgentCallData entity) {
+		entity.setUser(user);
+		entity.setCreateDate(new Date());
+		dao.insert(entity);
+		addCallId(user, entity.getCallid());
+	}
+	
+	/**
+	 * 
+	 * @Title：updateCallData
+	 * @Description: TODO(更新记录)
+	 * @see：
+	 * @param entity
+	 */
+	public void updateCallData(AgentCallData entity) {
+		dao.update(entity);
+	}
+	
+	/**
+	 * 
+	 * @Title：insertRecord
+	 * @Description: TODO(录音保存)
+	 * @see：
+	 * @param user
+	 * @param entity
+	 */
+	public void insertRecord(User user, AgentRecord entity) {
+		String callId = getCallId(user);
+		if (StringUtils.isBlank(callId)) {
+			return;
+		}
+		AgentCallData agentCallData = new AgentCallData(callId);
+		// 更新通话记录
+		updateCallData(agentCallData);
+		entity.setCreateDate(new Date());
+		agentCallData.setAgentRecord(entity);
+		dao.insertRecord(agentCallData);
+	}
+	
+	/**
+	 * 
+	 * @Title：updateRecordEndDate
+	 * @Description: TODO(更新录音结束时间)
+	 * @see：
+	 * @param user
+	 */
+	public void updateRecordEndDate(User user) {
+		String callId = getCallId(user);
+		if (StringUtils.isBlank(callId)) {
+			return;
+		}
+		AgentCallData agentCallData = new AgentCallData(callId);
+		agentCallData.setAgentRecord(new AgentRecord());
+		agentCallData.getAgentRecord().setUpdateDate(new Date());
+		dao.updateRecordEndDate(agentCallData);
+		clearCallData(user);
 	}
 	
 }

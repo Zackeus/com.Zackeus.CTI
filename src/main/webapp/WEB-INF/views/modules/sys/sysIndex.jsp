@@ -114,5 +114,6 @@
 	<div class="site-mobile-shade"></div>
 
 	<script type="text/javascript" src="${ctxStatic}/js/index.js"></script>
+	<script type="text/javascript" src="${ctxStatic}/js/modules/agent/eventHandle.js"></script>
 </body>
 </html>

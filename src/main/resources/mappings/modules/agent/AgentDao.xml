@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Zackeus.CTI.modules.agent.dao.AgentDao">
+
+	<sql id="agentCallColumns">
+		[CALL_ID],
+      	[USER_ID],
+      	[WORK_NO],
+      	[OTHER_PHONE_WORK_NO],
+      	[PHONE_NUMBER],
+      	[OTHER_PHONE],
+      	[TYPE],
+      	[CREATE_DATE],
+      	[RESULT]
+	</sql>
+	
+	<sql id="agentRecordColumns">
+		[RECORD_ID],
+		[CALL_ID],
+      	[RECORD_TITLE],
+      	[FILE_NAME],
+      	[LOCATION_ID],
+      	[START_DATE],
+      	[END_DATE]
+	</sql>
+	
+	<!-- 增加呼叫数据 -->
+	<insert id="insert">
+		INSERT INTO [CTI].[dbo].[AGENT_CALL_DATA]
+		(<include refid="agentCallColumns"/>)
+		VALUES (
+			#{callid},
+			#{userId},
+			#{workNo},
+			#{otherPhoneWorkno},
+			#{phoneNumber},
+			#{otherPhone},
+			#{type},
+			#{createDate},
+			#{result}
+		)
+	</insert>
+	
+	<!-- 更新呼叫数据 -->
+	<update id="update">
+		UPDATE [CTI].[dbo].[AGENT_CALL_DATA]
+		SET [RESULT] = 1 
+		WHERE [CALL_ID] = #{callid}
+	</update>
+	
+	<!-- 插入录音 -->
+	<insert id="insertRecord">
+		INSERT INTO [CTI].[dbo].[AGENT_RECORD]
+		(<include refid="agentRecordColumns"/>)
+		VALUES (
+			#{agentRecord.recordID},
+			#{callid},
+			#{agentRecord.recordID},
+			#{agentRecord.fileName},
+			#{agentRecord.locationId},
+			#{agentRecord.createDate},
+			#{agentRecord.updateDate}
+		)
+	</insert>
+	
+	<!-- 更新录音结束时间 -->
+	<update id="updateRecordEndDate">
+		UPDATE [CTI].[dbo].[AGENT_RECORD]
+		SET [END_DATE] = #{agentRecord.updateDate}
+		WHERE [CALL_ID] = #{callid} AND [END_DATE] IS NULL
+	</update>
+
+</mapper>

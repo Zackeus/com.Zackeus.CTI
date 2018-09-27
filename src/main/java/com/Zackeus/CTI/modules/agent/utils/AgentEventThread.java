@@ -4,6 +4,7 @@ import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.SpringContextUtil;
+import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
@@ -21,6 +22,8 @@ public class AgentEventThread implements Runnable {
 	
 	private AgentService agentService;
 	private User user;
+	private String callId = StringUtils.EMPTY;
+	private String called = StringUtils.EMPTY;
 	private boolean isAlive = Boolean.TRUE;
 	
 	public AgentEventThread(User user) {
@@ -36,7 +39,7 @@ public class AgentEventThread implements Runnable {
 				AgentHttpEvent agentHttpEvent = agentService.event(user);
 				if (ObjectUtils.isNotEmpty(agentHttpEvent.getEvent())) {
 					Logs.info("触发事件：" + agentHttpEvent.getEvent().getEventType() + " ; " + agentHttpEvent.getEvent().getContent());
-					UserUtils.sendMessageToUser(user, JsonMapper.toJsonString(AgentEventUtil.getAgentSocketMsg(agentHttpEvent)));
+					UserUtils.sendMessageToUser(user, JsonMapper.toJsonString(AgentEventUtil.getAgentSocketMsg(agentHttpEvent, user)));
 				} else {
 					Thread.sleep(500);
 				}
@@ -46,7 +49,23 @@ public class AgentEventThread implements Runnable {
 		}
 	}
 	
-    public void end() {
+    public String getCallId() {
+		return callId;
+	}
+
+	public void setCallId(String callId) {
+		this.callId = callId;
+	}
+
+	public String getCalled() {
+		return called;
+	}
+
+	public void setCalled(String called) {
+		this.called = called;
+	}
+
+	public void end() {
         isAlive = Boolean.FALSE;
     }
 }

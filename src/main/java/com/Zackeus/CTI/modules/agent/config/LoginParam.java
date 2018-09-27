@@ -21,7 +21,7 @@ public class LoginParam {
 	
 	private String phonenum;						// 坐席电话
 	
-	private Boolean autoanswer = Boolean.FALSE;		// 是否自动应答
+	private Boolean autoanswer = Boolean.TRUE;		// 是否自动应答
 	
 	private Boolean autoenteridle = Boolean.TRUE;	// 是否自动进入空闲态
 	
@@ -88,7 +88,7 @@ public class LoginParam {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
-
+	
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);

@@ -1,6 +1,8 @@
-layui.define(['jquery'],function(exports) {
-	var $ = layui.jquery;
+layui.define(['jquery','layer'],function(exports) {
+	var $ = layui.jquery,
+		layer = layui.layer;
 	var websocket = {
+			// 初始化
 			init: function (webUrl, sockUrl) {
 				var socket = null;
 				if ('WebSocket' in window) {

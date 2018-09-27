@@ -11,15 +11,11 @@ public class AgentConfig {
 	public static final int AGENT_STATE_CALL = 7;		// 通话态。对应CTT平台状态的2、3、4、5。
 	
 	/*事件类型码*/
-	public static final int EVENT_UNKNOWN = -1; 		// 未知事件
-	public static final int EVENT_AGENT_STATE = 1; 		// 坐席状态类事件
-	public static final int EVENT_VOICE_CALL = 2; 		// 语音通话事件
-	public static final int EVENT_OUTBOUND = 3; 		// 外呼相关事件
-	public static final int EVENT_RECORD = 4; 			// 录放音相关
-	public static final int EVENT_WORD = 5; 			// 文字交谈
-	public static final int EVENT_QUALITY_TESTING = 6; 	// 实时质检事件
-	public static final int EVENT_RMS = 7; 				// RMS相关事件
-	public static final int EVENT_PHYSICAL_PHONE = 8; 	// 物理话机事件
+	public static final int EVENT_UNDEFINED = -1; 		// 未定义事件
+	public static final int EVENT_AGENT_STATE = 1; 		// 坐席状态事件
+	public static final int EVENT_VOICE_CALL = 2; 		// 呼叫请求事件
+	public static final int EVENT_VOICE_RING = 3; 		// 坐席来电事件
+	public static final int EVENT_VOICE_END = 4; 		// 语音通话结束事件
 	
 	/*坐席事件列表*/
 	/*座席状态类事件*/
@@ -40,6 +36,8 @@ public class AgentConfig {
 	public static final String AGENTEVENT_CALL_RELEASE = "AgentEvent_Call_Release";                       	// 座席退出呼叫
 	public static final String AGENTEVENT_CUSTOMER_RELEASE = "AgentEvent_Customer_Release";                 // 客户退出呼叫
 	public static final String AGENTEVENT_CALL_OUT_FAIL = "AgentEvent_Call_Out_Fail";						// 外呼失败
+	public static final String AGENTEVENT_INSIDE_CALL_FAIL = "AgentEvent_Inside_Call_Fail";					// 内部呼叫失败
+	public static final String AGENTEVENT_NO_ANSWER = "AgentEvent_No_Answer";								// 座席久不应答
 	
 	/*物理话机事件*/
 	public static final String AGENTOTHER_PHONEALERTING = "AgentOther_PhoneAlerting";                       // 座席物理话机振铃

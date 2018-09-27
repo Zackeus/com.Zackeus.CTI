@@ -17,21 +17,28 @@ public class AgentSocketMsg implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Integer eventCode; 	// 事件类型码
-	private String eventType; 	// 事件类型
-	private String message; 	// 消息体
-	private Object object; 		// 自定义实体
+	private Integer eventCode; 				// 事件类型码
+	private String eventType; 				// 事件类型
+	private Object content; 				// 事件内容
+	private Object additionalContent; 		// 额外内容
 
 	public AgentSocketMsg() {
 		super();
 	}
 	
-	public AgentSocketMsg(Integer eventCode, String eventType, String message, Object object) {
+	public AgentSocketMsg(Integer eventCode, String eventType, Object content) {
 		super();
 		this.eventCode = eventCode;
 		this.eventType = eventType;
-		this.message = message;
-		this.object = object;
+		this.content = content;
+	}
+	
+	public AgentSocketMsg(Integer eventCode, String eventType, Object content, Object additionalContent) {
+		super();
+		this.eventCode = eventCode;
+		this.eventType = eventType;
+		this.content = content;
+		this.additionalContent = additionalContent;
 	}
 
 	public Integer getEventCode() {
@@ -50,20 +57,20 @@ public class AgentSocketMsg implements Serializable {
 		this.eventType = eventType;
 	}
 
-	public String getMessage() {
-		return message;
+	public Object getContent() {
+		return content;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setContent(Object content) {
+		this.content = content;
+	}
+	
+	public Object getAdditionalContent() {
+		return additionalContent;
 	}
 
-	public Object getObject() {
-		return object;
-	}
-
-	public void setObject(Object object) {
-		this.object = object;
+	public void setAdditionalContent(Object additionalContent) {
+		this.additionalContent = additionalContent;
 	}
 
 	@Override

@@ -8,14 +8,14 @@ layui.extend({
 layui.use(['bodyTab','form','element','layer','jquery','websocket','layuiRequest'],function(){
 	var form = layui.form,
 		element = layui.element,
-		layuiRequest = layui.layuiRequest;
+		layuiRequest = layui.layuiRequest,
+		socket = layui.websocket;
 		$ = layui.$;
     	layer = parent.layer === undefined ? layui.layer : top.layer;
 		tab = layui.bodyTab({
 			openTabNum : "50",  			//最大可打开窗口数量
 			url : ctx + "/sys/menu/list" 	//获取菜单json地址
-		}),
-		websocket = layui.websocket.init(socketUrl + '/websocket/socketsever', socketUrl + '/sockjs/socketsever');
+		});
 	
 	//通过顶部菜单获取左侧二三级菜单   注：此处只做演示之用，实际开发中通过接口传参的方式获取导航数据
 	function getData(json){
@@ -128,73 +128,19 @@ layui.use(['bodyTab','form','element','layer','jquery','websocket','layuiRequest
 		window.sessionStorage.removeItem("curmenu");
 	}
 	
+	// 初始化websocket
+	websocket = socket.init(socketUrl + '/websocket/socketsever', socketUrl + '/sockjs/socketsever');
 	// 连接打开事件的事件监听器
 	websocket.onopen = function (evnt) {};
-	
 	// 消息事件的事件监听器
 	websocket.onmessage = function (evnt) {
-		var event = $.parseJSON(evnt.data);
-		switch (event.eventCode) {
-		
-		// 坐席状态切换
-		case 1:
-			$(document.getElementById('sysMain').contentWindow.document).find("#agentState").children('span').text(event.object.agentStateText);
-			$(document.getElementById('sysMain').contentWindow.document).find("#agentState").children('span').css('color', event.object.agentStateColor);
-			break;
-
-		default:
-			break;
-		}
+		onMessageEvent($.parseJSON(evnt.data));
 	}
-	
 	// 监听error事件
 	websocket.onerror = function (evnt) {};
-	
 	// 监听连接关闭事件
 	websocket.onclose = function (evnt) {
-		var closeMsg;
-		switch (evnt.code) {
-		
-		case 1000:
-		case 1001:
-			break;
-		
-		case 1006:
-			closeMsg = "验证未通过！";
-			openCloseLay(closeMsg);
-			break;
-
-		default:
-			if ($.isEmptyObject(evnt.reason)) {
-				closeMsg = "账号已登出！";
-			}
-			closeMsg = evnt.reason;
-			openCloseLay(closeMsg);
-			break;
-		}
-	}
-	
-	// 信息提示框
-	function openCloseLay(closeMsg) {
-		layer.open({
-			type: 1,
-			title: false,
-			closeBtn: false,
-			area: '300px;',
-			shade: 0.8,
-			id: 'LAY_Onclose',
-			btn: ['确认'],
-			btnAlign: 'c',
-			moveType: 1,
-			zIndex: 999,
-			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300; text-align: center;">' + closeMsg + '请重新登录！</div>',
-			success: function(layero) {
-				var btn = layero.find('.layui-layer-btn');
-				btn.find('.layui-layer-btn0').attr({
-					href : ctx + '/sys/logout'
-				});
-			}
-	    });
+		onCloseEvent(evnt);
 	}
 })
 

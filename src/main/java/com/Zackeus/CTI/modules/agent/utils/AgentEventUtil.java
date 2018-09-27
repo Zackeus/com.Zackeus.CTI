@@ -1,9 +1,16 @@
 package com.Zackeus.CTI.modules.agent.utils;
 
+import com.Zackeus.CTI.common.utils.ObjectUtils;
+import com.Zackeus.CTI.common.utils.SpringContextUtil;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
+import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
+import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
 import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
 import com.Zackeus.CTI.modules.agent.entity.Result;
+import com.Zackeus.CTI.modules.agent.service.AgentService;
+import com.Zackeus.CTI.modules.sys.entity.User;
+import com.alibaba.fastjson.JSON;
 
 /**
  * 
@@ -71,54 +78,102 @@ public class AgentEventUtil {
 	 * @param agentHttpEvent
 	 * @return
 	 */
-	public static AgentSocketMsg getAgentSocketMsg(AgentHttpEvent agentHttpEvent) {
+	public static AgentSocketMsg getAgentSocketMsg(AgentHttpEvent agentHttpEvent, User user) {
 		AgentSocketMsg agentSocketMsg = null;
 		switch (agentHttpEvent.getEvent().getEventType()) {
-		
+		/*坐席状态类事件*/
 		case AgentConfig.AGENTSTATE_READY:
 		case AgentConfig.AGENTSTATE_CANCELNOTREADY_SUCCESS:
 		case AgentConfig.AGENTSTATE_CANCELWORK_SUCCESS:
 		case AgentConfig.AGENTSTATE_CANCELREST_SUCCESS:
 			Result readyResult = new Result();
+			readyResult.setAgentState(AgentConfig.AGENT_STATE_FREE);
 			readyResult.setAgentStateText("示闲");
 			readyResult.setAgentStateColor("green");
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_AGENT_STATE, agentHttpEvent.getEvent().getEventType(), 
-					agentHttpEvent.getMessage(), readyResult);
+					agentHttpEvent.getEvent().getContent(), readyResult);
 			break;
 			
 		case AgentConfig.AGENTSTATE_BUSY:
 		case AgentConfig.AGENTSTATE_SETNOTREADY_SUCCESS:
 		case AgentConfig.AGENTSTATE_FORCE_SETNOTREADY:
 			Result busyResult = new Result();
+			busyResult.setAgentState(AgentConfig.AGENT_STATE_BUSY);
 			busyResult.setAgentStateText("示忙");
 			busyResult.setAgentStateColor("orange");
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_AGENT_STATE, agentHttpEvent.getEvent().getEventType(), 
-					agentHttpEvent.getMessage(), busyResult);
+					agentHttpEvent.getEvent().getContent(), busyResult);
 			break;
 			
 		case AgentConfig.AGENTSTATE_WORK:
 		case AgentConfig.AGENTSTATE_SETWORK_SUCCESS:
 			Result workResult = new Result();
+			workResult.setAgentState(AgentConfig.AGENT_STATE_WORK);
 			workResult.setAgentStateText("工作");
 			workResult.setAgentStateColor("red");
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_AGENT_STATE, agentHttpEvent.getEvent().getEventType(), 
-					agentHttpEvent.getMessage(), workResult);
+					agentHttpEvent.getEvent().getContent(), workResult);
 			break;
 			
 		case AgentConfig.AGENTEVENT_TALKING:
 			Result talkResult = new Result();
+			talkResult.setAgentState(AgentConfig.AGENT_STATE_CALL);
 			talkResult.setAgentStateText("通话");
 			talkResult.setAgentStateColor("blue");
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_AGENT_STATE, agentHttpEvent.getEvent().getEventType(), 
-					agentHttpEvent.getMessage(), talkResult);
+					agentHttpEvent.getEvent().getContent(), talkResult);
 			break;
+			
+		/*座机振铃事件*/
+		case AgentConfig.AGENTOTHER_PHONEALERTING:
+			// 事件消息为空 表明为主动呼叫事件 否则为坐席来电事件
+			if (ObjectUtils.isEmpty(agentHttpEvent.getEvent().getContent())) {
+				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_CALL, agentHttpEvent.getEvent().getEventType(), 
+						agentHttpEvent.getEvent().getContent());
+			} else {
+				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_RING, agentHttpEvent.getEvent().getEventType(), 
+						agentHttpEvent.getEvent().getContent());
+			}
+			break;
+			
+		/*语音通话结束*/
+		case AgentConfig.AGENTEVENT_CALL_OUT_FAIL:
+		case AgentConfig.AGENTEVENT_INSIDE_CALL_FAIL:
+		case AgentConfig.AGENTEVENT_CALL_RELEASE:
+		case AgentConfig.AGENTEVENT_NO_ANSWER:
+		case AgentConfig.AGENTOTHER_PHONERELEASE:
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_END, agentHttpEvent.getEvent().getEventType(), 
+					agentHttpEvent.getEvent().getContent());
+			break;
+			
+		/*对方振铃 插入记录*/
+		case AgentConfig.AGENTEVENT_CUSTOMER_ALERTING:
+			SpringContextUtil.getBeanByName(AgentService.class).insertCallData(user, JSON.parseObject(agentHttpEvent.getEvent().
+					getContent().toString(), AgentCallData.class));
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 
+					agentHttpEvent.getEvent().getContent());
+			break;
+			
+		/*录音开始 插入记录*/
+		case AgentConfig.AGENTMEDIAEVENT_RECORD:
+			SpringContextUtil.getBeanByName(AgentService.class).insertRecord(user, JSON.parseObject(agentHttpEvent.getEvent().
+					getContent().toString(), AgentRecord.class));
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 
+					agentHttpEvent.getEvent().getContent());
+			break;
+			
+		/*录音结束 更新记录*/
+		case AgentConfig.AGENTMEDIAEVENT_STOPRECORDDONE:
+			SpringContextUtil.getBeanByName(AgentService.class).updateRecordEndDate(user);
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 
+					agentHttpEvent.getEvent().getContent());
+			break;
+			
 
+		/*未定义事件*/
 		default:
-			Result unKnownResult = new Result();
-			unKnownResult.setAgentStateText("未知");
-			unKnownResult.setAgentStateColor("black");
-			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNKNOWN, agentHttpEvent.getEvent().getEventType(), 
-					agentHttpEvent.getMessage(), unKnownResult);
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 
+					agentHttpEvent.getEvent().getContent());
 			break;
 		}
 		return agentSocketMsg;

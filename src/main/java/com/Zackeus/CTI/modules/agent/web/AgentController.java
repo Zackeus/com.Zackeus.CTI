@@ -7,6 +7,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,33 @@ public class AgentController extends BaseController {
 	
 	@Autowired
 	private AgentService agentService;
+	
+	/**
+	 * 
+	 * @Title：popUp
+	 * @Description: TODO(弹框页面)
+	 * @see：
+	 * @param eventCode 事件类型码
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = {"/popUp/{eventCode}"}, method = RequestMethod.GET)
+	public String popUp(@PathVariable("eventCode") int eventCode, HttpServletRequest request, HttpServletResponse response, Model model) {
+		User user = new User(UserUtils.getPrincipal());
+		switch (eventCode) {
+		case AgentConfig.EVENT_VOICE_CALL:
+			model.addAttribute("callEvent", "正在呼叫");
+			model.addAttribute("callNum", agentService.getCalled(user));
+			return "modules/agent/voiceCall/callOutPopUp";
+		case AgentConfig.EVENT_VOICE_RING:
+			model.addAttribute("callEvent", "来电振铃");
+			return "modules/agent/voiceCall/callOutPopUp";
+		default:
+			return "error/404";
+		}
+	}
 	
 	/**
 	 * 
@@ -111,5 +139,53 @@ public class AgentController extends BaseController {
 		agentService.voiceCallOut(new User(UserUtils.getPrincipal()), called);
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "外呼成功"));
 	}
-
+	
+	/**
+	 * 
+	 * @Title：voiceCallAnswer
+	 * @Description: TODO(应答)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = {"/voiceCallAnswer"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void voiceCallAnswer(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		agentService.voiceAnswer(new User(UserUtils.getPrincipal()));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "应答成功"));
+	}
+	
+	/**
+	 * 
+	 * @Title：voiceCallRefuse
+	 * @Description: TODO(拒接)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = {"/voiceCallRefuse"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void voiceCallRefuse(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		agentService.phoneHangUp(new User(UserUtils.getPrincipal()));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "拒接成功"));
+	}
+	
+	/**
+	 * 
+	 * @Title：voiceCallEnd
+	 * @Description: TODO(挂断呼叫)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = {"/voiceCallEnd"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void voiceCallEnd(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		agentService.voiceCallEnd(new User(UserUtils.getPrincipal()));
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "挂断呼叫成功"));
+	}
+	
 }
