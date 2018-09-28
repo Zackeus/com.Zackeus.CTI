@@ -46,18 +46,14 @@ layui.use(['layer','layuiRequest'],function(){
 			
 		// 坐席发起呼叫请求
 		case 2:
-			openCallLay(event.eventCode);
-			break;
-			
 		// 坐席来电
 		case 3:
-			openCallLay(event.eventCode);
+			openCallLay(event);
 			break;
 			
 		// 语音通话结束
 		case 4:
 			layer.close(LAY_CALL);
-			layer.close(LAY_RINGING);
 			break;
 
 		default:
@@ -86,7 +82,7 @@ layui.use(['layer','layuiRequest'],function(){
 	}
 	
 	// 呼叫弹屏
-	function openCallLay(eventCode) {
+	function openCallLay(event) {
 		LAY_CALL = layer.open({
 	          type: 2,
 	          title: false, 
@@ -101,7 +97,7 @@ layui.use(['layer','layuiRequest'],function(){
 	          btn: ['挂断'],
 	          btnAlign: 'c',
 	          moveType: 1,
-	          content: [ctx + '/sys/agent/popUp/' + eventCode, 'no'],
+	          content: [ctx + '/sys/agent/popUp/' + event.eventCode + '/' + event.content.caller, 'no'],
 	          success: function(layero) {
 	              var btn = layero.find('.layui-layer-btn');
 	              btn.css('position', 'absolute');

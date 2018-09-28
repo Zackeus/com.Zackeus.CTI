@@ -3,6 +3,7 @@ package com.Zackeus.CTI.modules.agent.utils;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.SpringContextUtil;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
+import com.Zackeus.CTI.modules.agent.entity.AgentAlerting;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
 import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
@@ -128,11 +129,16 @@ public class AgentEventUtil {
 		case AgentConfig.AGENTOTHER_PHONEALERTING:
 			// 事件消息为空 表明为主动呼叫事件 否则为坐席来电事件
 			if (ObjectUtils.isEmpty(agentHttpEvent.getEvent().getContent())) {
+				/*坐席去电事件*/
 				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_CALL, agentHttpEvent.getEvent().getEventType(), 
-						agentHttpEvent.getEvent().getContent());
+						new AgentAlerting(SpringContextUtil.getBeanByName(AgentService.class).getCalled(user)));
 			} else {
-				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_RING, agentHttpEvent.getEvent().getEventType(), 
-						agentHttpEvent.getEvent().getContent());
+				/*坐席来电事件*/
+				AgentAlerting agentAlerting = JSON.parseObject(agentHttpEvent.getEvent().getContent().toString(), AgentAlerting.class);
+				// 标注呼叫类型为来电
+				agentAlerting.setType(AgentConfig.AGENT_CALL_CALLED);
+				SpringContextUtil.getBeanByName(AgentService.class).insertCallData(user, new AgentCallData(agentAlerting));
+				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_RING, agentHttpEvent.getEvent().getEventType(), agentAlerting);
 			}
 			break;
 			

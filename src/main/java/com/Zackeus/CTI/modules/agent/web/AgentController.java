@@ -42,7 +42,7 @@ public class AgentController extends BaseController {
 	/**
 	 * 
 	 * @Title：popUp
-	 * @Description: TODO(弹框页面)
+	 * @Description: TODO(弹屏页面)
 	 * @see：
 	 * @param eventCode 事件类型码
 	 * @param request
@@ -50,13 +50,13 @@ public class AgentController extends BaseController {
 	 * @return
 	 */
 	@RequiresPermissions("user")
-	@RequestMapping(value = {"/popUp/{eventCode}"}, method = RequestMethod.GET)
-	public String popUp(@PathVariable("eventCode") int eventCode, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User user = new User(UserUtils.getPrincipal());
+	@RequestMapping(value = {"/popUp/{eventCode}/{callNum}"}, method = RequestMethod.GET)
+	public String popUp(@PathVariable("eventCode") int eventCode, @PathVariable("callNum") String callNum,
+			HttpServletRequest request, HttpServletResponse response, Model model) {
+		model.addAttribute("callNum", callNum);
 		switch (eventCode) {
 		case AgentConfig.EVENT_VOICE_CALL:
 			model.addAttribute("callEvent", "正在呼叫");
-			model.addAttribute("callNum", agentService.getCalled(user));
 			return "modules/agent/voiceCall/callOutPopUp";
 		case AgentConfig.EVENT_VOICE_RING:
 			model.addAttribute("callEvent", "来电振铃");

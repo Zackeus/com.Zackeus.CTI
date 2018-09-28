@@ -26,19 +26,28 @@
 	
 	<!-- 增加呼叫数据 -->
 	<insert id="insert">
-		INSERT INTO [CTI].[dbo].[AGENT_CALL_DATA]
-		(<include refid="agentCallColumns"/>)
-		VALUES (
-			#{callid},
-			#{userId},
-			#{workNo},
-			#{otherPhoneWorkno},
-			#{phoneNumber},
-			#{otherPhone},
-			#{type},
-			#{createDate},
-			#{result}
-		)
+		<selectKey keyProperty="count" resultType="int" order="BEFORE">
+            SELECT COUNT(*) FROM [CTI].[dbo].[AGENT_CALL_DATA] WHERE [CALL_ID] = #{callid}
+        </selectKey>
+        <if test="count == 0">
+        	INSERT INTO [CTI].[dbo].[AGENT_CALL_DATA]
+			(<include refid="agentCallColumns"/>)
+			VALUES (
+				#{callid},
+				#{userId},
+				#{workNo},
+				#{otherPhoneWorkno},
+				#{phoneNumber},
+				#{otherPhone},
+				#{type},
+				#{createDate},
+				#{result})
+        </if>
+        <if test="count > 0">
+        	UPDATE [CTI].[dbo].[AGENT_CALL_DATA]
+        	SET [OTHER_PHONE_WORK_NO] = #{otherPhoneWorkno}
+        	WHERE [CALL_ID] = #{callid}
+        </if>
 	</insert>
 	
 	<!-- 更新呼叫数据 -->

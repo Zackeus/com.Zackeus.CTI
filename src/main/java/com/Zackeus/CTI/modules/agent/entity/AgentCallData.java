@@ -21,10 +21,12 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 	private String otherPhoneWorkno; 			// 对方座席号
 	private String phoneNumber; 				// 座机号
 	private String otherPhone; 					// 对方电话号码
-	private String type; 						// 呼叫类型
+	private String type; 						// 呼叫类型(main：去电；called：来电)
 	private boolean result = Boolean.FALSE; 	// 结果(未通话false 0,通话 true 1)
 	
 	private AgentRecord agentRecord;			// 录音
+	
+	private Integer count;						// mybatis判断数据是否存在
 
 	public AgentCallData() {
 		super();
@@ -33,6 +35,13 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 	public AgentCallData(String callid) {
 		super();
 		this.callid = callid;
+	}
+	
+	public AgentCallData(AgentAlerting agentAlerting) {
+		super();
+		this.callid = agentAlerting.getCallid();
+		this.otherPhone = agentAlerting.getCaller();
+		this.type = agentAlerting.getType();
 	}
 	
 	public AgentCallData(AgentRecord agentRecord) {
@@ -124,6 +133,14 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 
 	public void setAgentRecord(AgentRecord agentRecord) {
 		this.agentRecord = agentRecord;
+	}
+	
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
 	}
 
 	public void setUser(User user) {

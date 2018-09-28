@@ -2,6 +2,10 @@ package com.Zackeus.CTI.modules.agent.config;
 
 public class AgentConfig {
 	
+	/*呼叫类型*/
+	public static String AGENT_CALL_MAIN = "main";		// 去电
+	public static String AGENT_CALL_CALLED = "called";	// 来电
+	
 	/*AgentGateway状态*/
 	public static final int AGENT_STATE_LOGIN = 1;		// 签入状态。未使用。
 	public static final int AGENT_STATE_LOGOUT = 2;		// 签出状态。对应CTT平台状态的0。
