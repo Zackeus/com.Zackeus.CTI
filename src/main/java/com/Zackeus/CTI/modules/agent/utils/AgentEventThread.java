@@ -1,10 +1,12 @@
 package com.Zackeus.CTI.modules.agent.utils;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.SpringContextUtil;
-import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
@@ -22,14 +24,16 @@ public class AgentEventThread implements Runnable {
 	
 	private AgentService agentService;
 	private User user;
-	private String callId = StringUtils.EMPTY;
-	private String called = StringUtils.EMPTY;
 	private boolean isAlive = Boolean.TRUE;
+	
+	// 代理数据(呼叫流水号，呼叫号码)
+	private Map<String, Object> agentEventMap;
 	
 	public AgentEventThread(User user) {
         super();
         this.user = user;
         this.agentService = SpringContextUtil.getBeanByName(AgentService.class);
+        this.agentEventMap = new ConcurrentHashMap<String, Object>();
 	}
 
 	@Override
@@ -49,20 +53,16 @@ public class AgentEventThread implements Runnable {
 		}
 	}
 	
-    public String getCallId() {
-		return callId;
+	public void setAgentEventData(String key, Object object) {
+		agentEventMap.put(key, object);
 	}
-
-	public void setCallId(String callId) {
-		this.callId = callId;
+	
+	public Object getAgentEventData(String key) {
+		return agentEventMap.get(key);
 	}
-
-	public String getCalled() {
-		return called;
-	}
-
-	public void setCalled(String called) {
-		this.called = called;
+	
+	public void clearAgentEventData() {
+		agentEventMap.clear();
 	}
 
 	public void end() {

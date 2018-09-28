@@ -6,6 +6,11 @@ public class AgentConfig {
 	public static String AGENT_CALL_MAIN = "main";		// 去电
 	public static String AGENT_CALL_CALLED = "called";	// 来电
 	
+	/*代理数据*/
+	public static String AGENT_DATA_CALLID = "CALL_ID";			// 呼叫流水号
+	public static String AGENT_DATA_CALLNUM = "CALL_NUM";		// 呼叫号码
+	
+	
 	/*AgentGateway状态*/
 	public static final int AGENT_STATE_LOGIN = 1;		// 签入状态。未使用。
 	public static final int AGENT_STATE_LOGOUT = 2;		// 签出状态。对应CTT平台状态的0。

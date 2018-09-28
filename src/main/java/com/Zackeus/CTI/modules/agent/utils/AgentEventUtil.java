@@ -131,7 +131,8 @@ public class AgentEventUtil {
 			if (ObjectUtils.isEmpty(agentHttpEvent.getEvent().getContent())) {
 				/*坐席去电事件*/
 				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_CALL, agentHttpEvent.getEvent().getEventType(), 
-						new AgentAlerting(SpringContextUtil.getBeanByName(AgentService.class).getCalled(user)));
+						new AgentAlerting((String) SpringContextUtil.getBeanByName(AgentService.class).
+								getAgentEventData(user, AgentConfig.AGENT_DATA_CALLNUM)));
 			} else {
 				/*坐席来电事件*/
 				AgentAlerting agentAlerting = JSON.parseObject(agentHttpEvent.getEvent().getContent().toString(), AgentAlerting.class);

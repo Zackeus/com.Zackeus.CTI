@@ -275,8 +275,8 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		HttpClientResult callResult = AgentClientUtil.put(user, defaultAgentParam.getCallOutUrl().replace(AGENT_ID, 
 				user.getAgentUser().getWorkno()), callParam);
 		AgentHttpResult<String> agentHttpResult = assertAgent(callResult, "坐席外呼请求失败", String.class);
-		// 呼叫成功后将被叫号码注入代理事件中，因为 呼叫振铃事件中没有 Called 返回参数
-		addCalled(user, callParam.getCalled());
+		// 呼叫成功后将被叫号码注入代理数据中，因为 呼叫振铃事件中没有 Called 返回参数
+		setAgentEventData(user, AgentConfig.AGENT_DATA_CALLNUM, callParam.getCalled());
 		return agentHttpResult;
 	}
 	
@@ -361,68 +361,44 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	
 	/**
 	 * 
-	 * @Title：addCalled
-	 * @Description: TODO(注入呼叫流水号)
+	 * @Title：setAgentEventData
+	 * @Description: TODO(注入代理数据)
 	 * @see：
 	 * @param user
+	 * @param key
+	 * @param object
 	 */
-	public void addCallId(User user, String callId) {
+	public void setAgentEventData(User user, String key, Object object) {
 		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
-			agentQueue.eventThreadMap.get(user.getId()).setCallId(callId);
+			agentQueue.eventThreadMap.get(user.getId()).setAgentEventData(key, object);
 		}
 	}
 	
 	/**
 	 * 
-	 * @Title：getCalled
-	 * @Description: TODO(取呼叫流水号)
+	 * @Title：getAgentEventData
+	 * @Description: TODO(取出代理数据)
 	 * @see：
 	 * @param user
+	 * @param key
+	 * @return
 	 */
-	public String getCallId(User user) {
-		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
-			return agentQueue.eventThreadMap.get(user.getId()).getCallId();
-		}
-		return StringUtils.EMPTY;
+	public Object getAgentEventData(User user, String key) {
+		return agentQueue.eventThreadMap.containsKey(user.getId()) ? 
+				agentQueue.eventThreadMap.get(user.getId()).getAgentEventData(key) : null;
 	}
 	
 	/**
 	 * 
-	 * @Title：addCalled
-	 * @Description: TODO(注入被叫号码)
+	 * @Title：clearAgentEventData
+	 * @Description: TODO(清除代理数据)
 	 * @see：
 	 * @param user
 	 */
-	public void addCalled(User user, String called) {
+	public void clearAgentEventData(User user) {
 		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
-			agentQueue.eventThreadMap.get(user.getId()).setCalled(called);
+			agentQueue.eventThreadMap.get(user.getId()).clearAgentEventData();
 		}
-	}
-	
-	/**
-	 * 
-	 * @Title：getCalled
-	 * @Description: TODO(取被叫号码)
-	 * @see：
-	 * @param user
-	 */
-	public String getCalled(User user) {
-		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
-			return agentQueue.eventThreadMap.get(user.getId()).getCalled();
-		}
-		return StringUtils.EMPTY;
-	}
-	
-	/**
-	 * 
-	 * @Title：clearCallData
-	 * @Description: TODO(呼叫数据清除)
-	 * @see：
-	 * @param user
-	 */
-	public void clearCallData(User user) {
-		addCallId(user, StringUtils.EMPTY);
-		addCalled(user, StringUtils.EMPTY);
 	}
 	
 	/**
@@ -477,7 +453,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		entity.setUser(user);
 		entity.setCreateDate(new Date());
 		dao.insert(entity);
-		addCallId(user, entity.getCallid());
+		setAgentEventData(user, AgentConfig.AGENT_DATA_CALLID, entity.getCallid());
 	}
 	
 	/**
@@ -500,7 +476,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @param entity
 	 */
 	public void insertRecord(User user, AgentRecord entity) {
-		String callId = getCallId(user);
+		String callId = (String) getAgentEventData(user, AgentConfig.AGENT_DATA_CALLID);
 		if (StringUtils.isBlank(callId)) {
 			return;
 		}
@@ -520,7 +496,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @param user
 	 */
 	public void updateRecordEndDate(User user) {
-		String callId = getCallId(user);
+		String callId = (String) getAgentEventData(user, AgentConfig.AGENT_DATA_CALLID);
 		if (StringUtils.isBlank(callId)) {
 			return;
 		}
@@ -528,7 +504,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		agentCallData.setAgentRecord(new AgentRecord());
 		agentCallData.getAgentRecord().setUpdateDate(new Date());
 		dao.updateRecordEndDate(agentCallData);
-		clearCallData(user);
+		clearAgentEventData(user);
 	}
 	
 }
