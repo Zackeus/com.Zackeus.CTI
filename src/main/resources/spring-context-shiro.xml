@@ -26,6 +26,7 @@
                 <!-- 对静态资源设置匿名访问 -->
                 /static/** = anon
                 /test/** = anon
+                /sys/httpAgent/** = agent
                 /sys/login = authc <!-- 未登录请求拦截 -->
                 /** = user
             </value>
@@ -33,11 +34,13 @@
         <!-- 自定义filter -->
         <property name="filters">
             <map>
+            	<entry key="agent" value-ref="httpAgentFilter"/>
                 <entry key="authc" value-ref="formAuthenticationFilter"/>
             </map>
         </property>
     </bean>
     <!-- 定义扩展的filter实例 -->
+    <bean id="httpAgentFilter" class="com.Zackeus.CTI.modules.agent.security.HttpAgentFilter"/>
 	<bean id="formAuthenticationFilter" class="com.Zackeus.CTI.modules.sys.security.LoginAuthenticationFilter">
 		<!-- 自定义登录表单参数 -->
         <property name="usernameParam" value="userName"/>

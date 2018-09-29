@@ -194,7 +194,7 @@ public class UserUtils {
 		Principal principal = getPrincipal();
 		if (ObjectUtils.isNotEmpty(principal)) {
 			MySessionManager.putSession(new User(principal));
-			userUtils.agentService.addQueue(new User(principal));
+			userUtils.agentService.addAgentEvent(new User(principal));
 		}
 	}
 	
@@ -220,5 +220,17 @@ public class UserUtils {
 			return;
 		}
 		userUtils.agentService.clearAgentEvent(user);
+	}
+	
+	/**
+	 * 
+	 * @Title：kickOutSysUser
+	 * @Description: TODO(踢出系统用户)
+	 * @see：此方法只适用于接口登录,当使用接口登录时要踢出系统登录用户
+	 * @param user
+	 * @param closeStatus
+	 */
+	public static void kickOutSysUser(User user, CloseStatus closeStatus) {
+		MySessionManager.deleteSession(user.getId(), closeStatus);
 	}
 }

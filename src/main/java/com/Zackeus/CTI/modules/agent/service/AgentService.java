@@ -78,7 +78,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 			return;
 		}
 		// 坐席已登录进行强制登录
-		if (StringUtils.equals(HttpStatus.AS_HAS_LOGIN.getAgentStatus(), loginResult.getRetcode())) {
+		if (StringUtils.equals(HttpStatus.AS_LOGIN.getAgentStatus(), loginResult.getRetcode())) {
 			forceLogin(user, loginParam);
 			resetskill(user);
 			return;
@@ -136,6 +136,10 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
 				"坐席事件请求失败：" + httpClientResult.getCode());
 		AgentHttpEvent agentHttpEvent = JSON.parseObject(httpClientResult.getContent(), AgentHttpEvent.class);
+		// 坐席已登出 登出账号
+		if (StringUtils.equals(HttpStatus.AS_LOGOUT.getAgentStatus(), agentHttpEvent.getRetcode())) {
+			UserUtils.kickOutUser(user, HttpStatus.SC_SESSION_AGENTLOGOUT);
+		}
 		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpEvent.getRetcode()), 
 				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpEvent.getMessage());
 		return agentHttpEvent;
@@ -403,13 +407,31 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	
 	/**
 	 * 
+	 * @Title：assertAgentEvent
+	 * @Description: TODO(获取代理事件用户对象)
+	 * @see：
+	 * @param user
+	 */
+	public User getAgentEventUser(String userId) {
+		if (agentQueue.eventThreadMap.containsKey(userId)) {
+			return ObjectUtils.isEmpty(agentQueue.eventThreadMap.get(userId)) ? null : agentQueue.eventThreadMap.get(userId).getUser();
+		}
+		return null;
+	}
+	
+	/**
+	 * 
 	 * @Title：addQueue
 	 * @Description: TODO(启动代理队列) 
 	 * @see：
 	 * @param user
 	 */
-	public void addQueue(User user) {
-		AgentEventThread agentEventThread = new AgentEventThread(user);
+	public void addAgentEvent(User user) {
+		addAgentEvent(user, StringUtils.EMPTY);
+	}
+	
+	public void addAgentEvent(User user, String postUrl) {
+		AgentEventThread agentEventThread = new AgentEventThread(user, postUrl);
 		taskExecutor.execute(agentEventThread);
 		agentQueue.eventThreadMap.put(user.getId(), agentEventThread);
 	}

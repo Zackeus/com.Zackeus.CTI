@@ -54,7 +54,7 @@ public class LoginCustomRealm extends AuthorizingRealm {
     	UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
     	User user = systemService.getUserByLoginName(token.getUsername());
     	
-    	if (ObjectUtils.isEmpty(user.getAgentUser()) || StringUtils.isBlank(user.getAgentUser().getWorkno())) {
+    	if (ObjectUtils.isEmpty(user) || ObjectUtils.isEmpty(user.getAgentUser()) || StringUtils.isBlank(user.getAgentUser().getWorkno())) {
     		throw new AuthenticationException("msg:此账号未注册坐席账号");
 		}
     	

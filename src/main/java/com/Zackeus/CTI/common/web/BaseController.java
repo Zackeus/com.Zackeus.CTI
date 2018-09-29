@@ -450,7 +450,6 @@ public abstract class BaseController {
 	public String exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
 		if (WebUtils.isAjaxRequest(request)) {
 			renderString(response, new AjaxResult(HttpStatus.SC_UNKNOWN, "未知的错误：" + e.getMessage()));
-			e.printStackTrace();
 			return null;
 		} else {
 			return "sys/Error";

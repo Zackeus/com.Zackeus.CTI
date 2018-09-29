@@ -1,6 +1,8 @@
 package com.Zackeus.CTI.common.utils;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -85,4 +87,53 @@ public class WebUtils extends org.apache.shiro.web.util.WebUtils {
 		}
 		return ip;
 	}
+	
+    /**
+     * 
+     * @Title：TruncateUrlPage
+     * @Description: TODO(解析出url参数中的键值对)
+     * @see：
+     * @param strURL
+     * @return
+     */
+    public static Map<String, String> truncateUrlPage(String strURL) {
+        String strAllParam = null;
+        String[] arrSplit = null;
+        strURL = strURL.trim();
+        arrSplit = strURL.split("[?]");
+        return getRequestQuery(strURL.length() > 1 && arrSplit.length > 1 && StringUtils.isNotBlank(arrSplit[1]) ?
+        		arrSplit[1] : strAllParam);
+    }
+    
+	/**
+	 * 
+	 * @Title：URLRequest
+	 * @Description: TODO(解析出url参数中的键值对)
+	 * @see：
+	 * @param URL
+	 * @return
+	 */
+    public static Map<String, String> getRequestQuery(String strUrlParam) {
+        Map<String, String> mapRequest = new HashMap<String, String>();
+        String[] arrSplit = null;
+        if (StringUtils.isBlank(strUrlParam)) {
+            return mapRequest;
+        }
+        //每个键值为一组 
+        arrSplit = strUrlParam.split("[&]");
+        for (String strSplit : arrSplit) {
+            String[] arrSplitEqual = null;
+            arrSplitEqual = strSplit.split("[=]");
+            //解析出键值
+            if (arrSplitEqual.length > 1) {
+                //正确解析
+                mapRequest.put(arrSplitEqual[0], arrSplitEqual[1]);
+            } else if (!StringUtils.equals(StringUtils.EMPTY, arrSplitEqual[0])) {
+                //只有参数没有值，不加入
+                mapRequest.put(arrSplitEqual[0], StringUtils.EMPTY);
+            }
+        }
+        return mapRequest;
+    }
+
 }

@@ -27,6 +27,18 @@ public class SystemService extends BaseService {
 	
 	/**
 	 * 
+	 * @Title：getUserById
+	 * @Description: TODO(根据用户id获取用户)
+	 * @see：
+	 * @param id
+	 * @return
+	 */
+	public User getUserById(String id) {
+		return UserUtils.get(id);
+	}
+	
+	/**
+	 * 
 	 * @Title：getUserByLoginName
 	 * @Description: TODO(根据登录名获取用户)
 	 * @see：

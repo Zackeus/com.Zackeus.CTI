@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.Zackeus.CTI.common.annotation.validator.CallNum;
 import com.Zackeus.CTI.common.utils.StringUtils;
 
 /**
@@ -18,6 +19,8 @@ import com.Zackeus.CTI.common.utils.StringUtils;
 public class CallParam {
 	
 	private String caller = StringUtils.EMPTY;		// (可选)主叫号码。内容可为空，为空时为平台默认主叫号码，0-24位数字
+	
+	@CallNum
 	private String called;							// (必选)被叫号码。内容不可为空，1-24位数字或*或#
 	private Integer skillid = null;					// (可选)技能ID。（数字类型，内容可为空，为空时为平台配置默认的技能队列ID
 	private String callappdata = StringUtils.EMPTY;	// (可选)随路数据信息。可为空，最大长度为1024

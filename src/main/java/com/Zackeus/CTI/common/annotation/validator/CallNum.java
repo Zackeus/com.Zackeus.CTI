@@ -9,7 +9,7 @@ import javax.validation.Constraint;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
-import com.Zackeus.CTI.common.config.Pattern;
+import com.Zackeus.CTI.common.utils.PatternUtil;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.basic.BasicValidator;
 
@@ -41,8 +41,8 @@ public @interface CallNum {
 		
 		@Override
 		public boolean isValid(String value, ConstraintValidatorContext context) {
-			return StringUtils.isNotBlank(value) && java.util.regex.Pattern.compile(Pattern.PATTEN_CALL_NUM).
-					matcher(value.replaceFirst("^0+", StringUtils.EMPTY)).matches();
+			return StringUtils.isNotBlank(value) && PatternUtil.check(PatternUtil.PATTEN_CALL_NUM, 
+					value.replaceFirst("^0+", StringUtils.EMPTY));
 		}
 	}
 

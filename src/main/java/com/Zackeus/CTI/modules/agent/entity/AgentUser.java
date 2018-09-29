@@ -1,6 +1,8 @@
 package com.Zackeus.CTI.modules.agent.entity;
 
-import com.Zackeus.CTI.common.entity.DataEntity;
+import java.io.Serializable;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 /**
  * 
@@ -10,7 +12,7 @@ import com.Zackeus.CTI.common.entity.DataEntity;
  * @author zhou.zhang
  * @date 2018年9月12日 下午5:05:28
  */
-public class AgentUser extends DataEntity<AgentUser> {
+public class AgentUser implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -167,6 +169,11 @@ public class AgentUser extends DataEntity<AgentUser> {
 
 	public void setCurrentStateReason(Integer currentStateReason) {
 		this.currentStateReason = currentStateReason;
+	}
+	
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 
 }

@@ -2,6 +2,11 @@ package com.Zackeus.CTI.modules.agent.config;
 
 public class AgentConfig {
 	
+	/*接口参数*/
+	public static String AGENT_HTTP_USERID = "userId";			// 用户编号
+	public static String AGENT_HTTP_LOGINNAME = "loginName";	// 用户登录名
+	public static String AGENT_HTTP_POSTURL = "postUrl";		// 事件推送地址
+	
 	/*呼叫类型*/
 	public static String AGENT_CALL_MAIN = "main";		// 去电
 	public static String AGENT_CALL_CALLED = "called";	// 来电
@@ -9,6 +14,8 @@ public class AgentConfig {
 	/*代理数据*/
 	public static String AGENT_DATA_CALLID = "CALL_ID";			// 呼叫流水号
 	public static String AGENT_DATA_CALLNUM = "CALL_NUM";		// 呼叫号码
+	public static String AGENT_DATA_POSTURL = "POST_URL";		// 事件推送地址
+	public static String AGENT_DATA_EVENTDATE = "EVENT_DATE";	// 最新事件日期
 	
 	
 	/*AgentGateway状态*/

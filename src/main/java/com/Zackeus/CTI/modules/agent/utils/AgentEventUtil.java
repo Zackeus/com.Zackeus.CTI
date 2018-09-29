@@ -10,6 +10,7 @@ import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
 import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
 import com.Zackeus.CTI.modules.agent.entity.Result;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
+import com.Zackeus.CTI.modules.sys.entity.Principal;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.alibaba.fastjson.JSON;
 
@@ -183,6 +184,7 @@ public class AgentEventUtil {
 					agentHttpEvent.getEvent().getContent());
 			break;
 		}
+		agentSocketMsg.setAgentUser(new Principal(user, Boolean.FALSE));
 		return agentSocketMsg;
 	}
 	

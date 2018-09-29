@@ -46,6 +46,16 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	public static final CloseStatus SC_SESSION_EXPRIES = new CloseStatus(4700, "长时间未操作！");
 	
 	/**
+	 * 接口登录
+	 */
+	public static final CloseStatus SC_SESSION_HTTPLOGIN = new CloseStatus(4700, "接口登录！");
+	
+	/**
+	 * 坐席中途登出
+	 */
+	public static final CloseStatus SC_SESSION_AGENTLOGOUT = new CloseStatus(4800, "坐席中途登出！");
+	
+	/**
 	 * 数据库异常
 	 */
 	public static final int SC_SQL_SERROR = 1001;
@@ -72,6 +82,7 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	public static final AgentHttpStatus AS_GET_EVENT_ERROR = new AgentHttpStatus(300001, "000-001", "获取Agent事件的方法错误");
 	public static final AgentHttpStatus AS_NO_AUTHORITY = new AgentHttpStatus(300003, "000-003", "没有权限调用接口");
 	public static final AgentHttpStatus AS_LOGIN_INVALID_PARAMTER = new AgentHttpStatus(310001, "100-001", "签入参数为空或者不合法");
-	public static final AgentHttpStatus AS_HAS_LOGIN = new AgentHttpStatus(310002, "100-002", "座席已经登录");
+	public static final AgentHttpStatus AS_LOGIN = new AgentHttpStatus(310002, "100-002", "座席已经登录");
+	public static final AgentHttpStatus AS_LOGOUT = new AgentHttpStatus(310006, "100-006", "座席没有登录");
 
 }

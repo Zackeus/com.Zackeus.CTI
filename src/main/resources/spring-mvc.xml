@@ -22,6 +22,7 @@
     	<!-- 注入自定义的参数解析器 -->
     	<mvc:argument-resolvers>
         	<bean class="com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody.PageRequestBodyArgumentResolver"/>
+        	<bean class="com.Zackeus.CTI.common.annotation.argumentResolver.RequestAttribute.RequestAttributeArgumentResolver"/>
     	</mvc:argument-resolvers>
     	<mvc:message-converters register-defaults="true">
     		<!-- 将StringHttpMessageConverter的默认编码设为UTF-8 -->
