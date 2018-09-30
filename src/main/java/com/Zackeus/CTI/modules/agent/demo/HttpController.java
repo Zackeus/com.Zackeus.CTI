@@ -14,6 +14,7 @@ import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
+import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 @Controller
 @RequestMapping("/sys/demo")
@@ -23,6 +24,7 @@ public class HttpController extends BaseController {
 			method = RequestMethod.POST)
 	public void test(@RequestBody AgentSocketMsg agentSocketMsg, HttpServletRequest request, HttpServletResponse response) {
 		Logs.info(agentSocketMsg);
+		Logs.info("当前用户：" + UserUtils.getPrincipal());
 		renderString(response, new AjaxResult(HttpStatus.SC_OK, "成功"));
 	}
 

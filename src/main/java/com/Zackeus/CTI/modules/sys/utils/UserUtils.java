@@ -15,7 +15,6 @@ import com.Zackeus.CTI.common.security.MySessionManager;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
-import com.Zackeus.CTI.common.websocket.WebSocketConfig;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.Menu;
 import com.Zackeus.CTI.modules.sys.entity.Principal;
@@ -49,7 +48,7 @@ public class UserUtils {
 	private MenuService menuService;
 	
 	@Autowired
-	private WebSocketConfig webSocketConfig;
+	private MySessionManager mySessionManager;
 	
 	public static UserUtils userUtils;
 	
@@ -166,7 +165,7 @@ public class UserUtils {
 	public static void sendMessageToUser(User user, String meg) {
 		if (ObjectUtils.isNotEmpty(user) && StringUtils.isNotBlank(user.getId()) 
 				&& StringUtils.isNotBlank(meg)) {
-			userUtils.webSocketConfig.webSocketHandler().sendMessageToUser(user.getId(), 
+			userUtils.mySessionManager.webSocketConfig.webSocketHandler().sendMessageToUser(user.getId(), 
 					new TextMessage(meg));
 		}
 	}
@@ -180,7 +179,7 @@ public class UserUtils {
 	 */
 	public static void sendMessageToUsers(String meg) {
 		if (StringUtils.isNotBlank(meg)) {
-			userUtils.webSocketConfig.webSocketHandler().sendMessageToUsers(new TextMessage(meg));
+			userUtils.mySessionManager.webSocketConfig.webSocketHandler().sendMessageToUsers(new TextMessage(meg));
 		}
 	}
 	
@@ -193,7 +192,7 @@ public class UserUtils {
 	public static void addOnlineUser() {
 		Principal principal = getPrincipal();
 		if (ObjectUtils.isNotEmpty(principal)) {
-			MySessionManager.putSession(new User(principal));
+			userUtils.mySessionManager.putSession(new User(principal));
 			userUtils.agentService.addAgentEvent(new User(principal));
 		}
 	}
@@ -210,7 +209,7 @@ public class UserUtils {
 	 * @param user
 	 */
 	public static void kickOutUser(User user, CloseStatus closeStatus, Boolean isAll) {
-		MySessionManager.deleteSession(user.getId(), closeStatus);
+		userUtils.mySessionManager.deleteSession(user.getId(), closeStatus);
 		if (isAll) {
 			try {
 				userUtils.agentService.logout(user);
@@ -231,6 +230,6 @@ public class UserUtils {
 	 * @param closeStatus
 	 */
 	public static void kickOutSysUser(User user, CloseStatus closeStatus) {
-		MySessionManager.deleteSession(user.getId(), closeStatus);
+		userUtils.mySessionManager.deleteSession(user.getId(), closeStatus);
 	}
 }

@@ -11,7 +11,6 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
-import com.Zackeus.CTI.common.security.MySessionManager;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.WebUtils;
@@ -117,7 +116,7 @@ public class LoginAuthenticationFilter extends org.apache.shiro.web.filter.authc
 		
 		// 如果 isAuthenticated 为 false 证明不是登录过的，同时 isRememberd 为true 证明是没登陆直接通过记住我功能进来的
         if(!subject.isAuthenticated() && subject.isRemembered()) {
-        	Logs.info("是没登陆直接通过记住我功能进来的:" + MySessionManager.getSession().getId());
+        	Logs.info("是没登陆直接通过记住我功能进来的:" + WebUtils.toHttp(request).getSession().getId());
         }
         
         //这个方法本来只返回 subject.isAuthenticated() 现在我们加上 subject.isRemembered() 让它同时也兼容remember这种情况

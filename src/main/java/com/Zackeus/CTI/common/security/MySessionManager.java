@@ -3,13 +3,12 @@ package com.Zackeus.CTI.common.security;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -28,25 +27,18 @@ import com.Zackeus.CTI.modules.sys.entity.User;
  * @date 2018年9月19日 下午1:06:35
  */
 @Component
-public class MySessionManager {
+public class MySessionManager extends DefaultWebSessionManager {
 	
 	@Autowired
-	private SessionDAO sessionDAO;
+	public SessionDAO sessionDAO;
 	
 	@Autowired
-	private WebSocketConfig webSocketConfig;
+	public WebSocketConfig webSocketConfig;
 	
-	public static final Map<String, Session> shiroUsers = new ConcurrentHashMap<String, Session>();
-	
-	public static MySessionManager sessionManager;
+	public final Map<String, Session> shiroUsers = new ConcurrentHashMap<String, Session>();
 	
 	public static final String USER_ID = "USERID";
 	public static final String AGENT_ID = "AGENTID";
-	
-	@PostConstruct
-	public void init() {
-		sessionManager = this;
-	}
 	
 	/**
 	 * 
@@ -55,11 +47,11 @@ public class MySessionManager {
 	 * @see：
 	 * @param user
 	 */
-	public static void putSession(User user) {
+	public void putSession(User user) {
 		Session session = getSession();
 		session.setAttribute(USER_ID, user.getId());
 		session.setAttribute(AGENT_ID, user.getAgentUser().getWorkno());
-		MySessionManager.shiroUsers.put((String) session.getAttribute(USER_ID), session);
+		shiroUsers.put((String) session.getAttribute(USER_ID), session);
 	}
 	
 	/**
@@ -69,7 +61,7 @@ public class MySessionManager {
 	 * @see：
 	 * @return
 	 */
-	public static Session getSession(){
+	public Session getSession(){
 		try {
 			Subject subject = SecurityUtils.getSubject();
 			Session session = subject.getSession(false);
@@ -92,7 +84,7 @@ public class MySessionManager {
 	 * @param id
 	 * @return
 	 */
-	public static Session getSession(String id) {
+	public Session getSession(String id) {
 		return shiroUsers.containsKey(id) ? shiroUsers.get(id) : null;
 	}
 	
@@ -103,13 +95,13 @@ public class MySessionManager {
 	 * @see：
 	 * @param session
 	 */
-	public static void deleteSession(String id, CloseStatus closeStatus) {
+	public void deleteSession(String id, CloseStatus closeStatus) {
 		Session session = getSession(id);
 		if (shiroUsers.containsKey(id)) {
-			sessionManager.sessionDAO.delete(session);
+			sessionDAO.delete(session);
 			shiroUsers.remove(id);
 		}
-		sessionManager.webSocketConfig.webSocketHandler().kickOutUser(id, closeStatus);
+		webSocketConfig.webSocketHandler().kickOutUser(id, closeStatus);
 	}
 
 }
