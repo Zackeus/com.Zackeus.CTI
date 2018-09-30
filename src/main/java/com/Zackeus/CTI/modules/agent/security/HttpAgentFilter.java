@@ -22,7 +22,6 @@ import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.MyHttpServletRequestWrapper;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
-import com.Zackeus.CTI.modules.sys.entity.Principal;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.service.SystemService;
 import com.Zackeus.CTI.modules.sys.service.UserService;
@@ -48,7 +47,7 @@ public class HttpAgentFilter extends BaseFilter {
 	AgentService agentService;
 	
 	protected void executeChain(User user, ServletRequest request, ServletResponse response, FilterChain chain) throws Exception {
-		request.setAttribute("agentUser", new Principal(user, Boolean.FALSE));
+		request.setAttribute("user", user);
 		super.executeChain(request, response, chain);
 	}
 	
@@ -89,6 +88,8 @@ public class HttpAgentFilter extends BaseFilter {
 			agentService.setAgentEventData(user, AgentConfig.AGENT_DATA_POSTURL, urlParam.get(AgentConfig.AGENT_HTTP_POSTURL));
 			// 更新事件时间
 			agentService.setAgentEventData(user, AgentConfig.AGENT_DATA_EVENTDATE, new Date());
+			// 更改登录标志为接口登录
+			agentService.setAgentEventData(user, AgentConfig.AGENT_DATA_ISHTTP, Boolean.TRUE);
 			executeChain(user, request, response, chain);
 			return user;
 		}
@@ -107,7 +108,7 @@ public class HttpAgentFilter extends BaseFilter {
     		throw new MyException(HttpStatus.SC_LOGIN_ERROR, "座机号:" + user.getAgentUser().getPhonenumber() + "已被多个用户占用，请联系管理员");
 		}
     	agentService.login(user);
-    	agentService.addAgentEvent(user, urlParam.get(AgentConfig.AGENT_HTTP_POSTURL));
+    	agentService.addAgentEvent(user, urlParam.get(AgentConfig.AGENT_HTTP_POSTURL), Boolean.TRUE);
 		executeChain(user, request, response, chain);
 		return user;
 	}

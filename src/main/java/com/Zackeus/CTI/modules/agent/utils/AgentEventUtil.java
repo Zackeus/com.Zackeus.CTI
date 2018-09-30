@@ -1,7 +1,9 @@
 package com.Zackeus.CTI.modules.agent.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.Zackeus.CTI.common.utils.ObjectUtils;
-import com.Zackeus.CTI.common.utils.SpringContextUtil;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.entity.AgentAlerting;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
@@ -22,7 +24,11 @@ import com.alibaba.fastjson.JSON;
  * @author zhou.zhang
  * @date 2018年9月25日 下午1:09:24
  */
+@Component
 public class AgentEventUtil {
+	
+	@Autowired
+	private AgentService agentService;
 	
 	/**
 	 * 
@@ -31,7 +37,7 @@ public class AgentEventUtil {
 	 * @see：
 	 * @param result
 	 */
-	public static Result analyzeState(Result result) {
+	public Result analyzeState(Result result) {
 		switch (result.getAgentState()) {
 		
 		case AgentConfig.AGENT_STATE_LOGIN:
@@ -80,7 +86,7 @@ public class AgentEventUtil {
 	 * @param agentHttpEvent
 	 * @return
 	 */
-	public static AgentSocketMsg getAgentSocketMsg(AgentHttpEvent agentHttpEvent, User user) {
+	public AgentSocketMsg getAgentSocketMsg(AgentHttpEvent agentHttpEvent, User user) {
 		AgentSocketMsg agentSocketMsg = null;
 		switch (agentHttpEvent.getEvent().getEventType()) {
 		/*坐席状态类事件*/
@@ -132,14 +138,13 @@ public class AgentEventUtil {
 			if (ObjectUtils.isEmpty(agentHttpEvent.getEvent().getContent())) {
 				/*坐席去电事件*/
 				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_CALL, agentHttpEvent.getEvent().getEventType(), 
-						new AgentAlerting((String) SpringContextUtil.getBeanByName(AgentService.class).
-								getAgentEventData(user, AgentConfig.AGENT_DATA_CALLNUM)));
+						new AgentAlerting((String) agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_CALLNUM)));
 			} else {
 				/*坐席来电事件*/
 				AgentAlerting agentAlerting = JSON.parseObject(agentHttpEvent.getEvent().getContent().toString(), AgentAlerting.class);
 				// 标注呼叫类型为来电
 				agentAlerting.setType(AgentConfig.AGENT_CALL_CALLED);
-				SpringContextUtil.getBeanByName(AgentService.class).insertCallData(user, new AgentCallData(agentAlerting));
+				agentService.insertCallData(user, new AgentCallData(agentAlerting));
 				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_RING, agentHttpEvent.getEvent().getEventType(), agentAlerting);
 			}
 			break;
@@ -156,28 +161,25 @@ public class AgentEventUtil {
 			
 		/*对方振铃 插入记录*/
 		case AgentConfig.AGENTEVENT_CUSTOMER_ALERTING:
-			SpringContextUtil.getBeanByName(AgentService.class).insertCallData(user, JSON.parseObject(agentHttpEvent.getEvent().
-					getContent().toString(), AgentCallData.class));
+			agentService.insertCallData(user, JSON.parseObject(agentHttpEvent.getEvent().getContent().toString(), AgentCallData.class));
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 
 					agentHttpEvent.getEvent().getContent());
 			break;
 			
 		/*录音开始 插入记录*/
 		case AgentConfig.AGENTMEDIAEVENT_RECORD:
-			SpringContextUtil.getBeanByName(AgentService.class).insertRecord(user, JSON.parseObject(agentHttpEvent.getEvent().
-					getContent().toString(), AgentRecord.class));
-			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 
+			agentService.insertRecord(user, JSON.parseObject(agentHttpEvent.getEvent().getContent().toString(), AgentRecord.class));
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_RECORD_START, agentHttpEvent.getEvent().getEventType(), 
 					agentHttpEvent.getEvent().getContent());
 			break;
 			
 		/*录音结束 更新记录*/
 		case AgentConfig.AGENTMEDIAEVENT_STOPRECORDDONE:
-			SpringContextUtil.getBeanByName(AgentService.class).updateRecordEndDate(user);
-			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 
-					agentHttpEvent.getEvent().getContent());
+			AgentRecord agentRecord = agentService.updateRecordEndDate(user);
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_RECORD_END, agentHttpEvent.getEvent().getEventType(), 
+					agentRecord);
 			break;
 			
-
 		/*未定义事件*/
 		default:
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 

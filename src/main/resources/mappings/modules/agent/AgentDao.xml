@@ -57,6 +57,14 @@
 		WHERE [CALL_ID] = #{callid}
 	</update>
 	
+	<!-- 根据呼叫流水号查询录音 -->
+	<select id="getRecordByCallId" resultType="AgentRecord">
+		SELECT 
+		<include refid="agentRecordColumns"/>
+		FROM [CTI].[dbo].[AGENT_RECORD]
+		WHERE [CALL_ID] = #{callid}
+	</select>
+	
 	<!-- 插入录音 -->
 	<insert id="insertRecord">
 		INSERT INTO [CTI].[dbo].[AGENT_RECORD]
@@ -76,7 +84,7 @@
 	<update id="updateRecordEndDate">
 		UPDATE [CTI].[dbo].[AGENT_RECORD]
 		SET [END_DATE] = #{agentRecord.updateDate}
-		WHERE [CALL_ID] = #{callid} AND [END_DATE] IS NULL
+		WHERE [RECORD_ID] = #{agentRecord.recordID} AND [END_DATE] IS NULL
 	</update>
 
 </mapper>

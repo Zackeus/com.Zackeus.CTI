@@ -31,6 +31,9 @@ public class AreaController extends BaseController {
 	@Autowired
 	private AgentService agentService;
 	
+	@Autowired
+	private AgentEventUtil agentEventUtil;
+	
 	/**
 	 * 
 	 * @Title：sysIndex
@@ -63,7 +66,7 @@ public class AreaController extends BaseController {
 	@RequiresPermissions("user")
 	@RequestMapping(value = "/main")
 	public String sysMain(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		model.addAttribute("agentState", AgentEventUtil.analyzeState(agentService.getAgentState(new User(UserUtils.getPrincipal())).getResult()));
+		model.addAttribute("agentState", agentEventUtil.analyzeState(agentService.getAgentState(new User(UserUtils.getPrincipal())).getResult()));
 		return "modules/sys/sysMain";
 	}
 	

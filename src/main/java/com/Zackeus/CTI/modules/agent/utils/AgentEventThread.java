@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.Zackeus.CTI.common.security.MySessionManager;
 import com.Zackeus.CTI.common.utils.DateUtils;
+import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.SpringContextUtil;
@@ -14,11 +14,10 @@ import com.Zackeus.CTI.common.utils.httpClient.HttpClientUtil;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
+import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
-
-import net.sf.json.JSONObject;
 
 /**
  * 
@@ -31,19 +30,22 @@ import net.sf.json.JSONObject;
 public class AgentEventThread implements Runnable {
 	
 	private AgentService agentService;
+	private AgentEventUtil agentEventUtil;
 	private User user;
 	private boolean isAlive = Boolean.TRUE;
 	
 	// 代理数据(呼叫流水号，呼叫号码，推送地址)
 	private Map<String, Object> agentEventMap;
 	
-	public AgentEventThread(User user, String postUrl) {
+	public AgentEventThread(User user, String postUrl, Boolean isHttp) {
         super();
         this.user = user;
         this.agentService = SpringContextUtil.getBeanByName(AgentService.class);
+        this.agentEventUtil = SpringContextUtil.getBeanByName(AgentEventUtil.class);
         this.agentEventMap = new ConcurrentHashMap<String, Object>();
         setAgentEventData(AgentConfig.AGENT_DATA_POSTURL, postUrl);
         setAgentEventData(AgentConfig.AGENT_DATA_EVENTDATE, new Date());
+        setAgentEventData(AgentConfig.AGENT_DATA_ISHTTP, isHttp);
 	}
 
 	@Override
@@ -51,21 +53,26 @@ public class AgentEventThread implements Runnable {
 		while (isAlive) {
 			try {
 				// 接口登录 超过一小时未操作登出用户
-				if (DateUtils.pastHour((Date) getAgentEventData(AgentConfig.AGENT_DATA_EVENTDATE)) >= 1
-						&& !MySessionManager.shiroUsers.containsKey(user.getId())) {
+				if ((Boolean) getAgentEventData(AgentConfig.AGENT_DATA_ISHTTP) 
+						&& DateUtils.pastHour((Date) getAgentEventData(AgentConfig.AGENT_DATA_EVENTDATE)) >= 1) {
 					UserUtils.kickOutUser(user, HttpStatus.SC_SESSION_EXPRIES);
 				}
 				
 				AgentHttpEvent agentHttpEvent = agentService.event(user);
 				if (ObjectUtils.isNotEmpty(agentHttpEvent.getEvent())) {
 					// 事件触发
-					JSONObject eventJson = JSONObject.fromObject(AgentEventUtil.getAgentSocketMsg(agentHttpEvent, user));
-					//推送地址不为空 则进行事件信息推送并更新事件日期
-					if (StringUtils.isNotBlank((String) getAgentEventData(AgentConfig.AGENT_DATA_POSTURL))) {
+					// 接口登录更新事件日期
+					if ((Boolean) getAgentEventData(AgentConfig.AGENT_DATA_ISHTTP)) {
 						setAgentEventData(AgentConfig.AGENT_DATA_EVENTDATE, new Date());
-						HttpClientUtil.doPostJson((String) getAgentEventData(AgentConfig.AGENT_DATA_POSTURL), eventJson);
 					}
-					UserUtils.sendMessageToUser(user, eventJson.toString());
+					
+					AgentSocketMsg agentSocketMsg = agentEventUtil.getAgentSocketMsg(agentHttpEvent, user);
+					//推送地址不为空 则进行事件信息推送
+					if (StringUtils.isNotBlank((String) getAgentEventData(AgentConfig.AGENT_DATA_POSTURL))) {
+						HttpClientUtil.doPostJson((String) getAgentEventData(AgentConfig.AGENT_DATA_POSTURL), agentSocketMsg);
+					}
+					
+					UserUtils.sendMessageToUser(user, JsonMapper.toJsonString(agentSocketMsg));
 				} else {
 					Thread.sleep(500);
 				}

@@ -40,12 +40,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.Zackeus.CTI.common.entity.HttpClientResult;
+import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.WebUtils;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * 
@@ -89,7 +87,7 @@ public class HttpClientUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static HttpClientResult doGet(String url, Map<String, String> params) throws Exception {
+	public static HttpClientResult doGet(String url, Map<String, Object> params) throws Exception {
 		return doGet(url, null, params);
 	}
 
@@ -103,16 +101,16 @@ public class HttpClientUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static HttpClientResult doGet(String url, Map<String, String> headers, Map<String, String> params)
+	public static HttpClientResult doGet(String url, Map<String, String> headers, Map<String, Object> params)
 			throws Exception {
 		CloseableHttpClient httpClient = getHttpClient(url);
 
 		// 创建访问的地址
 		URIBuilder uriBuilder = new URIBuilder(url);
 		if (params != null) {
-			Set<Entry<String, String>> entrySet = params.entrySet();
-			for (Entry<String, String> entry : entrySet) {
-				uriBuilder.setParameter(entry.getKey(), entry.getValue());
+			Set<Entry<String, Object>> entrySet = params.entrySet();
+			for (Entry<String, Object> entry : entrySet) {
+				uriBuilder.setParameter(entry.getKey(), (String) entry.getValue());
 			}
 		}
 
@@ -160,7 +158,7 @@ public class HttpClientUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static HttpClientResult doPostMap(String url, Map<String, String> params) throws Exception {
+	public static HttpClientResult doPostMap(String url, Map<String, Object> params) throws Exception {
 		return doPost(url, null, params, PARAM_MAP);
 	}
 
@@ -173,20 +171,7 @@ public class HttpClientUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static HttpClientResult doPostJson(String url, JSONObject params) throws Exception {
-		return doPost(url, null, params, PARAM_JSON);
-	}
-
-	/**
-	 * 
-	 * @Title:doPost
-	 * @Description: TODO(发送post请求；带请求参数 JSONArray)
-	 * @param url
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public static HttpClientResult doPostJson(String url, JSONArray params) throws Exception {
+	public static HttpClientResult doPostJson(String url, Object params) throws Exception {
 		return doPost(url, null, params, PARAM_JSON);
 	}
 
@@ -271,20 +256,7 @@ public class HttpClientUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static HttpClientResult doPutJson(String url, JSONObject params) throws Exception {
-		return doPut(url, params, PARAM_JSON);
-	}
-
-	/**
-	 * 
-	 * @Title:doPut
-	 * @Description: TODO(发送put请求；带请求参数 JSONArray)
-	 * @param url
-	 * @param params
-	 * @return
-	 * @throws Exception
-	 */
-	public static HttpClientResult doPutJson(String url, JSONArray params) throws Exception {
+	public static HttpClientResult doPutJson(String url, Object params) throws Exception {
 		return doPut(url, params, PARAM_JSON);
 	}
 
@@ -347,9 +319,9 @@ public class HttpClientUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static HttpClientResult doDelete(String url, Map<String, String> params) throws Exception {
+	public static HttpClientResult doDelete(String url, Map<String, Object> params) throws Exception {
 		if (params == null) {
-			params = new HashMap<String, String>();
+			params = new HashMap<String, Object>();
 		}
 
 		params.put("_method", "delete");
@@ -466,7 +438,7 @@ public class HttpClientUtil {
 
 			case PARAM_JSON:
 				// Json数据
-				StringEntity stringEntity = new StringEntity(params.toString(), WebUtils.UTF_ENCODING);// 解决中文乱码问题
+				StringEntity stringEntity = new StringEntity(JsonMapper.toJsonString(params), WebUtils.UTF_ENCODING);// 解决中文乱码问题
 				stringEntity.setContentEncoding(WebUtils.UTF_ENCODING);
 				stringEntity.setContentType(MediaType.APPLICATION_JSON);
 				// 设置到请求的http对象中
@@ -532,10 +504,10 @@ public class HttpClientUtil {
 	 */
 	public static void release(CloseableHttpResponse httpResponse, CloseableHttpClient httpClient) throws IOException {
 		// 释放资源
-		if (httpResponse != null) {
+		if (ObjectUtils.isNotEmpty(httpResponse)) {
 			httpResponse.close();
 		}
-		if (httpClient != null) {
+		if (ObjectUtils.isNotEmpty(httpClient)) {
 			httpClient.close();
 		}
 	}

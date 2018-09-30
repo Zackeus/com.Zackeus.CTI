@@ -16,6 +16,7 @@ public class AgentConfig {
 	public static String AGENT_DATA_CALLNUM = "CALL_NUM";		// 呼叫号码
 	public static String AGENT_DATA_POSTURL = "POST_URL";		// 事件推送地址
 	public static String AGENT_DATA_EVENTDATE = "EVENT_DATE";	// 最新事件日期
+	public static String AGENT_DATA_ISHTTP = "IS_HTTP";			// 是否为接口登录
 	
 	
 	/*AgentGateway状态*/
@@ -32,6 +33,8 @@ public class AgentConfig {
 	public static final int EVENT_VOICE_CALL = 2; 		// 呼叫请求事件
 	public static final int EVENT_VOICE_RING = 3; 		// 坐席来电事件
 	public static final int EVENT_VOICE_END = 4; 		// 语音通话结束事件
+	public static final int EVENT_RECORD_START = 5; 	// 录音开始事件
+	public static final int EVENT_RECORD_END = 6; 		// 录音束事件
 	
 	/*坐席事件列表*/
 	/*座席状态类事件*/

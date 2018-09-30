@@ -17,7 +17,6 @@ import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseHttpController;
 import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
-import com.Zackeus.CTI.modules.sys.entity.Principal;
 import com.Zackeus.CTI.modules.sys.entity.User;
 
 /**
@@ -47,10 +46,10 @@ public class AgentHttpController extends BaseHttpController {
 	 */
 	@RequestMapping(value = {"/voiceCallOut"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, 
 			method = RequestMethod.POST)
-	public void voiceCallOut(@RequestAttribute(name = "agentUser") Principal agentUser, @Validated @RequestBody CallParam callParam, 
+	public void voiceCallOut(@RequestAttribute(name = "user") User user, @Validated @RequestBody CallParam callParam, 
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		callParam.setCalled(callParam.getCalled().startsWith("0") ? callParam.getCalled() : "0" + callParam.getCalled());
-		agentService.voiceCallOut(new User(agentUser), callParam);
+		agentService.voiceCallOut(user, callParam);
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "外呼成功"));
 	}
 

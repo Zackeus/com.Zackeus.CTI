@@ -427,11 +427,11 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @param user
 	 */
 	public void addAgentEvent(User user) {
-		addAgentEvent(user, StringUtils.EMPTY);
+		addAgentEvent(user, StringUtils.EMPTY, Boolean.FALSE);
 	}
 	
-	public void addAgentEvent(User user, String postUrl) {
-		AgentEventThread agentEventThread = new AgentEventThread(user, postUrl);
+	public void addAgentEvent(User user, String postUrl, Boolean isHttp) {
+		AgentEventThread agentEventThread = new AgentEventThread(user, postUrl, isHttp);
 		taskExecutor.execute(agentEventThread);
 		agentQueue.eventThreadMap.put(user.getId(), agentEventThread);
 	}
@@ -491,6 +491,17 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	
 	/**
 	 * 
+	 * @Title：getRecordByCallId
+	 * @Description: TODO(根据呼叫流水号查询录音)
+	 * @see：
+	 * @param callId
+	 */
+	public AgentRecord getRecordByCallId(String callId) {
+		return dao.getRecordByCallId(callId);
+	}
+	
+	/**
+	 * 
 	 * @Title：insertRecord
 	 * @Description: TODO(录音保存)
 	 * @see：
@@ -517,16 +528,19 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @see：
 	 * @param user
 	 */
-	public void updateRecordEndDate(User user) {
-		String callId = (String) getAgentEventData(user, AgentConfig.AGENT_DATA_CALLID);
-		if (StringUtils.isBlank(callId)) {
-			return;
+	public AgentRecord updateRecordEndDate(User user) {
+		try {
+			String callId = (String) getAgentEventData(user, AgentConfig.AGENT_DATA_CALLID);
+			if (StringUtils.isBlank(callId)) {
+				return null;
+			}
+			AgentRecord agentRecord = getRecordByCallId(callId);
+			agentRecord.setUpdateDate(new Date());
+			dao.updateRecordEndDate(new AgentCallData(agentRecord));
+			return agentRecord;
+		} finally {
+			clearAgentEventData(user);
 		}
-		AgentCallData agentCallData = new AgentCallData(callId);
-		agentCallData.setAgentRecord(new AgentRecord());
-		agentCallData.getAgentRecord().setUpdateDate(new Date());
-		dao.updateRecordEndDate(agentCallData);
-		clearAgentEventData(user);
 	}
 	
 }
