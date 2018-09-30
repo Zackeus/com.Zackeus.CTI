@@ -15,8 +15,6 @@ import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
 
-import net.sf.json.JSONObject;
-
 @Controller
 @RequestMapping("/sys/demo")
 public class HttpController extends BaseController {
@@ -24,7 +22,7 @@ public class HttpController extends BaseController {
 	@RequestMapping(value = {"/receive"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, 
 			method = RequestMethod.POST)
 	public void test(@RequestBody AgentSocketMsg agentSocketMsg, HttpServletRequest request, HttpServletResponse response) {
-		Logs.info(JSONObject.fromObject(agentSocketMsg).toString(2));
+		Logs.info(agentSocketMsg);
 		renderString(response, new AjaxResult(HttpStatus.SC_OK, "成功"));
 	}
 

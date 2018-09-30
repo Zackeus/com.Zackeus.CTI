@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.security.BaseFilter;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
+import com.Zackeus.CTI.common.utils.PatternUtil;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.WebUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
@@ -78,14 +79,20 @@ public class HttpAgentFilter extends BaseFilter {
 		if (ObjectUtils.isEmpty(urlParam) || StringUtils.isBlank(urlParam.get(AgentConfig.AGENT_HTTP_USERID))) {
 			throw new MyException(HttpStatus.SC_LOGIN_ERROR, "用户凭证不能为空");
 		}
-		if (StringUtils.isBlank(urlParam.get(AgentConfig.AGENT_HTTP_POSTURL))) {
-			throw new MyException(HttpStatus.SC_LOGIN_ERROR, "推送地址不能为空");
+		
+		//	事件推送地址
+		String postUrl = StringUtils.EMPTY;
+		if (StringUtils.isNotBlank(urlParam.get(AgentConfig.AGENT_HTTP_POSTURL))) {
+			if (!PatternUtil.check(PatternUtil.PATTEN_URL, urlParam.get(AgentConfig.AGENT_HTTP_POSTURL))) {
+				throw new MyException(HttpStatus.SC_LOGIN_ERROR, "无效的推送格式");
+			}
+			postUrl = urlParam.get(AgentConfig.AGENT_HTTP_POSTURL);
 		}
 		// 账号已经在线
 		user = agentService.getAgentEventUser(urlParam.get(AgentConfig.AGENT_HTTP_USERID));
 		if (ObjectUtils.isNotEmpty(user)) {
 			// 更新推送地址
-			agentService.setAgentEventData(user, AgentConfig.AGENT_DATA_POSTURL, urlParam.get(AgentConfig.AGENT_HTTP_POSTURL));
+			agentService.setAgentEventData(user, AgentConfig.AGENT_DATA_POSTURL, postUrl);
 			// 更新事件时间
 			agentService.setAgentEventData(user, AgentConfig.AGENT_DATA_EVENTDATE, new Date());
 			// 更改登录标志为接口登录
@@ -108,7 +115,7 @@ public class HttpAgentFilter extends BaseFilter {
     		throw new MyException(HttpStatus.SC_LOGIN_ERROR, "座机号:" + user.getAgentUser().getPhonenumber() + "已被多个用户占用，请联系管理员");
 		}
     	agentService.login(user);
-    	agentService.addAgentEvent(user, urlParam.get(AgentConfig.AGENT_HTTP_POSTURL), Boolean.TRUE);
+    	agentService.addAgentEvent(user, postUrl, Boolean.TRUE);
 		executeChain(user, request, response, chain);
 		return user;
 	}
