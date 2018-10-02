@@ -52,5 +52,5 @@ public class AgentHttpController extends BaseHttpController {
 		agentService.voiceCallOut(user, callParam);
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "外呼成功"));
 	}
-
+	
 }

@@ -161,7 +161,7 @@ public class HttpClientUtil {
 	public static HttpClientResult doPostMap(String url, Map<String, Object> params) throws Exception {
 		return doPost(url, null, params, PARAM_MAP);
 	}
-
+	
 	/**
 	 * 
 	 * @Title:doPost
@@ -174,7 +174,22 @@ public class HttpClientUtil {
 	public static HttpClientResult doPostJson(String url, Object params) throws Exception {
 		return doPost(url, null, params, PARAM_JSON);
 	}
-
+	
+	/**
+	 * 
+	 * @Title：doPostJson
+	 * @Description: TODO(发送post请求；带请求头，请求参数 JSONObject)
+	 * @see：
+	 * @param url
+	 * @param headers
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	public static HttpClientResult doPostJson(String url,Map<String, String> headers, Object params) throws Exception {
+		return doPost(url, headers, params, PARAM_JSON);
+	}
+	
 	/**
 	 * 
 	 * @Title:doPost
@@ -189,10 +204,7 @@ public class HttpClientUtil {
 	 */
 	public static HttpClientResult doPost(String url, Map<String, String> headers, Object params, String paramType)
 			throws Exception {
-		// 创建httpClient对象
 		CloseableHttpClient httpClient = getHttpClient(url);
-
-		// 创建http对象
 		HttpPost httpPost = new HttpPost(url);
 		/**
 		 * setConnectTimeout：设置连接超时时间，单位毫秒。
@@ -206,18 +218,12 @@ public class HttpClientUtil {
 		httpPost.setConfig(requestConfig);
 		// 设置请求头
 		packageHeader(headers, httpPost);
-
 		// 封装请求参数
 		packageParam(params, httpPost, paramType);
-
-		// 创建httpResponse对象
 		CloseableHttpResponse httpResponse = null;
-
 		try {
-			// 执行请求并获得响应结果
 			return getHttpClientResult(httpResponse, httpClient, httpPost);
 		} finally {
-			// 释放资源
 			release(httpResponse, httpClient);
 		}
 	}

@@ -13,4 +13,10 @@ layui.use(['layuiRequest','form','layer'],function(){
     	layuiRequest.callOut(ctx + '/sys/agent/voiceCallOut/' + data.field.called);
     	return false;
     });
+    
+    // 接口语音外呼
+    form.on('submit(collOutDemo)', function(data) {
+    	layuiRequest.callOut(ctx + '/sys/demo/voiceCallTest/' + data.field.calledDemo);
+    	return false;
+    });
 })
