@@ -241,7 +241,15 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		try {
 			HttpClientResult httpClientResult = AgentClientUtil.delete(user, defaultAgentParam.getLogoutUrl().replace(AGENT_ID, 
 					user.getAgentUser().getWorkno()), null);
-			assertAgent(httpClientResult, "坐席签出请求失败", Result.class);
+			AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
+					"坐席签出请求失败: " + httpClientResult.getCode());
+			AgentHttpResult<Result> agentHttpResult = JSON.parseObject(httpClientResult.getContent(), new TypeReference<AgentHttpResult<Result>>(Result.class){});
+			// 无权限调用接口 表明坐席没有登录 
+			if (StringUtils.equals(HttpStatus.AS_NO_AUTHORITY.getAgentStatus(), agentHttpResult.getRetcode())) {
+				return;
+			}
+			AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
+					HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
 		} finally {
 			clearAgentEvent(user);
 			clearGuid(user);
@@ -427,11 +435,11 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @param user
 	 */
 	public void addAgentEvent(User user) {
-		addAgentEvent(user, StringUtils.EMPTY, Boolean.FALSE);
+		addAgentEvent(user, StringUtils.EMPTY, StringUtils.EMPTY, Boolean.FALSE);
 	}
 	
-	public void addAgentEvent(User user, String postUrl, Boolean isHttp) {
-		AgentEventThread agentEventThread = new AgentEventThread(user, postUrl, isHttp);
+	public void addAgentEvent(User user, String cookie, String postUrl, Boolean isHttp) {
+		AgentEventThread agentEventThread = new AgentEventThread(user, cookie, postUrl, isHttp);
 		taskExecutor.execute(agentEventThread);
 		agentQueue.eventThreadMap.put(user.getId(), agentEventThread);
 	}

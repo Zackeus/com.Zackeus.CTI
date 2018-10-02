@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.Zackeus.CTI.common.service.CrudService;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
+import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.modules.sys.dao.UserDao;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
  * 
@@ -72,6 +74,8 @@ public class UserService extends CrudService<UserDao, User> {
 			dao.update(user);
 		}
 		dao.updatePhone(user);
+		// 踢出更新账户
+		UserUtils.kickOutUser(user, HttpStatus.SC_SESSION_AGENTUPDATE);
 	}
 	
 	/**

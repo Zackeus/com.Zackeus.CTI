@@ -56,6 +56,11 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	public static final CloseStatus SC_SESSION_AGENTLOGOUT = new CloseStatus(4800, "坐席中途登出！");
 	
 	/**
+	 * 坐席中途登出
+	 */
+	public static final CloseStatus SC_SESSION_AGENTUPDATE = new CloseStatus(4900, "坐席账号更新！");
+	
+	/**
 	 * 数据库异常
 	 */
 	public static final int SC_SQL_SERROR = 1001;

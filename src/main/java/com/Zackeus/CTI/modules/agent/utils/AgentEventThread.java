@@ -18,6 +18,7 @@ import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * 
@@ -34,15 +35,23 @@ public class AgentEventThread implements Runnable {
 	private User user;
 	private boolean isAlive = Boolean.TRUE;
 	
-	// 代理数据(呼叫流水号，呼叫号码，推送地址)
+	// 代理数据(请求cookie， 呼叫流水号，呼叫号码，推送地址)
 	private Map<String, Object> agentEventMap;
 	
-	public AgentEventThread(User user, String postUrl, Boolean isHttp) {
+	/**
+	 * 
+	 * @param user 用户实体
+	 * @param cookie 请求cookie
+	 * @param postUrl 推送地址
+	 * @param isHttp 是否为接口登录
+	 */
+	public AgentEventThread(User user, String cookie, String postUrl, Boolean isHttp) {
         super();
         this.user = user;
         this.agentService = SpringContextUtil.getBeanByName(AgentService.class);
         this.agentEventUtil = SpringContextUtil.getBeanByName(AgentEventUtil.class);
         this.agentEventMap = new ConcurrentHashMap<String, Object>();
+        setAgentEventData(AgentConfig.AGENT_DATA_COOKIE, cookie);
         setAgentEventData(AgentConfig.AGENT_DATA_POSTURL, postUrl);
         setAgentEventData(AgentConfig.AGENT_DATA_EVENTDATE, new Date());
         setAgentEventData(AgentConfig.AGENT_DATA_ISHTTP, isHttp);
@@ -65,13 +74,13 @@ public class AgentEventThread implements Runnable {
 					if ((Boolean) getAgentEventData(AgentConfig.AGENT_DATA_ISHTTP)) {
 						setAgentEventData(AgentConfig.AGENT_DATA_EVENTDATE, new Date());
 					}
-					
 					AgentSocketMsg agentSocketMsg = agentEventUtil.getAgentSocketMsg(agentHttpEvent, user);
 					//推送地址不为空 则进行事件信息推送
 					if (StringUtils.isNotBlank((String) getAgentEventData(AgentConfig.AGENT_DATA_POSTURL))) {
-						HttpClientUtil.doPostJson((String) getAgentEventData(AgentConfig.AGENT_DATA_POSTURL), agentSocketMsg);
+						HttpClientUtil.doPostJson((String) getAgentEventData(AgentConfig.AGENT_DATA_POSTURL), 
+								ImmutableMap.<String, String>builder().put(AgentConfig.AGENT_DATA_COOKIE, 
+										(String) getAgentEventData(AgentConfig.AGENT_DATA_COOKIE)).build(), agentSocketMsg);
 					}
-					
 					UserUtils.sendMessageToUser(user, JsonMapper.toJsonString(agentSocketMsg));
 				} else {
 					Thread.sleep(500);

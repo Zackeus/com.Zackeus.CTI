@@ -8,9 +8,9 @@ layui.use(['layuiRequest','form','layer'],function(){
         $ = layui.jquery,
         layuiRequest = layui.layuiRequest;
     
-    //语音外呼
-    form.on('submit(collOut)', function(data) {
-    	layuiRequest.callOut(ctx + '/sys/agent/voiceCallOut/' + data.field.called);
+    // 接口语音外呼
+    form.on('submit(collOutDemo)', function(data) {
+    	layuiRequest.callOut(ctx + '/sys/demo/voiceCallTest/' + data.field.calledDemo);
     	return false;
     });
 })

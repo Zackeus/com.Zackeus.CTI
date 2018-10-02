@@ -36,6 +36,20 @@ public abstract class BaseFilter extends AdviceFilter {
 		}
 		super.doFilterInternal(request, response, chain);
 	}
+	
+	/**
+	 * 
+	 * @Title：analysisHeader
+	 * @Description: TODO(解析请求头信息)
+	 * @see：
+	 * @param request
+	 * @param headerName
+	 * @return
+	 */
+	public String analysisHeader(ServletRequest request, String headerName) {
+		return StringUtils.isBlank(WebUtils.toHttp(request).getHeader(headerName)) ? 
+				StringUtils.EMPTY : WebUtils.toHttp(request).getHeader(headerName);
+	}
 
 	/**
 	 * 

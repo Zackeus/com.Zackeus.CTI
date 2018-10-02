@@ -21,6 +21,7 @@ import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
+import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
 /**
  * 
@@ -34,6 +35,21 @@ import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
 @RequestMapping("/sys/demo")
 public class DemoController extends BaseController {
 	
+	/**
+	 * 
+	 * @Title：voiceTest
+	 * @Description: TODO(外呼)
+	 * @see：
+	 * @param agentSocketMsg
+	 * @param request
+	 * @param response
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = {"/voiceCallOut"}, method = RequestMethod.GET)
+	public String voiceCallOutPage(HttpServletRequest request, HttpServletResponse response) {
+		return "modules/demo/callOut";
+	}
+	
 	/***
 	 * 
 	 * @Title：test
@@ -46,6 +62,7 @@ public class DemoController extends BaseController {
 	@RequestMapping(value = {"/receive"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, 
 			method = RequestMethod.POST)
 	public void test(@RequestBody AgentSocketMsg agentSocketMsg, HttpServletRequest request, HttpServletResponse response) {
+		Logs.info("当前用户：" + UserUtils.getPrincipal());
 		Logs.info(agentSocketMsg);
 		renderString(response, new AjaxResult(HttpStatus.SC_OK, "成功"));
 	}
@@ -64,8 +81,7 @@ public class DemoController extends BaseController {
 	public void voiceTest( @PathVariable(value = "called") String called, HttpServletRequest request, HttpServletResponse response) 
 			throws Exception {
 		Map<String, String> heads = new HashMap<>();
-		heads.put("sid", "111");
-		heads.put("jid", "222");
+		heads.put("cookie", request.getHeader("cookie"));
 		
 		called = called.startsWith("0") ? called : "0" + called;
 		String url = "http://10.5.133.244:8008/com.Zackeus.CTI/sys/httpAgent/voiceCallOut?userId=c69866984eb942f3a67a9ca91ce70953&postUrl=http://10.5.133.244:8008/com.Zackeus.CTI/sys/demo/receive";

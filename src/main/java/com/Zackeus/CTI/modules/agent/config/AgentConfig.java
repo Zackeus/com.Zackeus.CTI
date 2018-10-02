@@ -12,6 +12,7 @@ public class AgentConfig {
 	public static String AGENT_CALL_CALLED = "called";	// 来电
 	
 	/*代理数据*/
+	public static String AGENT_DATA_COOKIE = "cookie";			// cookie
 	public static String AGENT_DATA_CALLID = "CALL_ID";			// 呼叫流水号
 	public static String AGENT_DATA_CALLNUM = "CALL_NUM";		// 呼叫号码
 	public static String AGENT_DATA_POSTURL = "POST_URL";		// 事件推送地址

@@ -74,6 +74,7 @@ public class HttpAgentFilter extends BaseFilter {
 	 * 前置通知
 	 */
 	protected User preHandle(ServletRequest request, ServletResponse response, FilterChain chain) throws Exception {
+		String cookie = analysisHeader(request, AgentConfig.AGENT_DATA_COOKIE);
 		User user = new User();
 		Map<String, String> urlParam = WebUtils.getRequestQuery(WebUtils.toHttp(request).getQueryString());
 		if (ObjectUtils.isEmpty(urlParam) || StringUtils.isBlank(urlParam.get(AgentConfig.AGENT_HTTP_USERID))) {
@@ -91,6 +92,8 @@ public class HttpAgentFilter extends BaseFilter {
 		// 账号已经在线
 		user = agentService.getAgentEventUser(urlParam.get(AgentConfig.AGENT_HTTP_USERID));
 		if (ObjectUtils.isNotEmpty(user)) {
+			// 更新COOKIE
+			agentService.setAgentEventData(user, AgentConfig.AGENT_DATA_COOKIE, cookie);
 			// 更新推送地址
 			agentService.setAgentEventData(user, AgentConfig.AGENT_DATA_POSTURL, postUrl);
 			// 更新事件时间
@@ -115,7 +118,7 @@ public class HttpAgentFilter extends BaseFilter {
     		throw new MyException(HttpStatus.SC_LOGIN_ERROR, "座机号:" + user.getAgentUser().getPhonenumber() + "已被多个用户占用，请联系管理员");
 		}
     	agentService.login(user);
-    	agentService.addAgentEvent(user, postUrl, Boolean.TRUE);
+    	agentService.addAgentEvent(user, cookie, postUrl, Boolean.TRUE);
 		executeChain(user, request, response, chain);
 		return user;
 	}
