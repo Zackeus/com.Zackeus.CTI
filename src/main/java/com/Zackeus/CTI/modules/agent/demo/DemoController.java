@@ -84,7 +84,7 @@ public class DemoController extends BaseController {
 		heads.put("cookie", request.getHeader("cookie"));
 		
 		called = called.startsWith("0") ? called : "0" + called;
-		String url = "http://10.5.133.244:8008/com.Zackeus.CTI/sys/httpAgent/voiceCallOut?userId=c69866984eb942f3a67a9ca91ce70953&postUrl=http://10.5.133.244:8008/com.Zackeus.CTI/sys/demo/receive";
+		String url = "http://10.5.60.66:8989/com.Zackeus.CTI/sys/httpAgent/voiceCallOut?userId=c69866984eb942f3a67a9ca91ce70953&postUrl=http://10.5.133.244:8008/com.Zackeus.CTI/sys/demo/receive";
 		CallParam callParam = new CallParam();
 		callParam.setCalled(called);
 		HttpClientResult  httpClientResult = HttpClientUtil.doPostJson(url, heads, callParam);
