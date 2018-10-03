@@ -53,4 +53,20 @@ public class AgentHttpController extends BaseHttpController {
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "外呼成功"));
 	}
 	
+	/**
+	 * 
+	 * @Title：voiceCallEnd
+	 * @Description: TODO(挂断)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = {"/voiceCallEnd"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void voiceCallEnd(@RequestAttribute(name = "user") User user, HttpServletRequest request, 
+			HttpServletResponse response) throws Exception {
+		agentService.voiceCallEnd(user);
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "挂断呼叫成功"));
+	}
+	
 }

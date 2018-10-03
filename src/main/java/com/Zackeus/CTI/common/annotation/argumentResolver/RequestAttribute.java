@@ -6,10 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -17,7 +15,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
-import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.basic.BasicArgumentResolver;
 import com.alibaba.fastjson.JSON;
 
@@ -54,9 +51,6 @@ public @interface RequestAttribute {
 		public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 				NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 			HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-			if (!StringUtils.equals(MediaType.APPLICATION_JSON, httpServletRequest.getContentType())) {
-				throw new HttpMediaTypeNotSupportedException("注解仅支持 " + MediaType.APPLICATION_JSON);
-			}
 			final Object parameterJson = httpServletRequest.getAttribute(parameter.getParameterAnnotation(RequestAttribute.class).name());
 			if (ObjectUtils.isEmpty(parameterJson)) {
 				if (parameter.getParameterAnnotation(RequestAttribute.class).required()) {

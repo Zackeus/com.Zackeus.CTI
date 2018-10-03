@@ -11,6 +11,12 @@
 		<blockquote class="layui-elem-quote quoteBox">
 			<div class="layui-inline">
 				<div class="layui-input-inline">
+					<input id="userId" name="userId" type="text" class="layui-input" lay-verify="required" placeholder="请输入用户编号"/>
+				</div>
+				<div class="layui-input-inline">
+					<input id="postUrl" name="postUrl" type="text" class="layui-input" placeholder="请输入推送地址"/>
+				</div>
+				<div class="layui-input-inline">
 					<input id="calledDemo" name="calledDemo" type="text" class="layui-input" lay-verify="required" placeholder="请输入呼叫号码"/>
 				</div>
 				<button title="外呼" class="layui-btn" lay-submit lay-filter="collOutDemo"><i class="layui-icon layui-icon-zzphone"></i></button>
