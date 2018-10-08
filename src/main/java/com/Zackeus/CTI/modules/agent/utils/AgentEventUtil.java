@@ -186,7 +186,7 @@ public class AgentEventUtil {
 					agentHttpEvent.getEvent().getContent());
 			break;
 		}
-		agentSocketMsg.setAgentUser(new Principal(user, Boolean.FALSE));
+		agentSocketMsg.setUser(new Principal(user, Boolean.FALSE));
 		return agentSocketMsg;
 	}
 	

@@ -23,7 +23,7 @@ public class AgentSocketMsg implements Serializable {
 	private String eventType; 				// 事件类型
 	private Object content; 				// 事件内容
 	private Object additionalContent; 		// 额外内容
-	private Principal agentUser;			// 用户坐席
+	private Principal user;					// 用户坐席
 
 	public AgentSocketMsg() {
 		super();
@@ -45,13 +45,13 @@ public class AgentSocketMsg implements Serializable {
 	}
 	
 	public AgentSocketMsg(Integer eventCode, String eventType, Object content, Object additionalContent,
-			Principal agentUser) {
+			Principal user) {
 		super();
 		this.eventCode = eventCode;
 		this.eventType = eventType;
 		this.content = content;
 		this.additionalContent = additionalContent;
-		this.agentUser = agentUser;
+		this.user = user;
 	}
 
 	public Integer getEventCode() {
@@ -86,12 +86,12 @@ public class AgentSocketMsg implements Serializable {
 		this.additionalContent = additionalContent;
 	}
 	
-	public Principal getAgentUser() {
-		return agentUser;
+	public Principal getUser() {
+		return user;
 	}
 
-	public void setAgentUser(Principal agentUser) {
-		this.agentUser = agentUser;
+	public void setUser(Principal user) {
+		this.user = user;
 	}
 
 	@Override
