@@ -24,6 +24,8 @@ import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 
+import net.sf.json.JSONObject;
+
 /**
  * 
  * @Title:HttpController
@@ -68,7 +70,7 @@ public class DemoController extends BaseController {
 			method = RequestMethod.POST)
 	public void test(@RequestBody AgentSocketMsg agentSocketMsg, HttpServletRequest request, HttpServletResponse response) {
 		Logs.info("当前用户：" + UserUtils.getPrincipal());
-		Logs.info(agentSocketMsg);
+		Logs.info(JSONObject.fromObject(agentSocketMsg).toString(2));
 		renderString(response, new AjaxResult(HttpStatus.SC_OK, "成功"));
 	}
 	

@@ -43,22 +43,22 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	/**
 	 * 会话超时
 	 */
-	public static final CloseStatus SC_SESSION_EXPRIES = new CloseStatus(4700, "长时间未操作！");
+	public static final CloseStatus SC_SESSION_EXPRIES = new CloseStatus(4610, "长时间未操作！");
 	
 	/**
 	 * 接口登录
 	 */
-	public static final CloseStatus SC_SESSION_HTTPLOGIN = new CloseStatus(4700, "接口登录！");
+	public static final CloseStatus SC_SESSION_HTTPLOGIN = new CloseStatus(4620, "接口登录！");
 	
 	/**
 	 * 坐席中途登出
 	 */
-	public static final CloseStatus SC_SESSION_AGENTLOGOUT = new CloseStatus(4800, "坐席中途登出！");
+	public static final CloseStatus SC_SESSION_AGENTLOGOUT = new CloseStatus(4630, "坐席中途登出！");
 	
 	/**
 	 * 坐席中途登出
 	 */
-	public static final CloseStatus SC_SESSION_AGENTUPDATE = new CloseStatus(4900, "坐席账号更新！");
+	public static final CloseStatus SC_SESSION_AGENTUPDATE = new CloseStatus(4640, "坐席账号更新！");
 	
 	/**
 	 * 数据库异常
@@ -71,23 +71,15 @@ public class HttpStatus implements org.apache.http.HttpStatus {
 	public static final int SC_UNKNOWN = 999;
 	
 	/**
-	 * 自定义异常
-	 */
-	public static final int SC_CUSTOM_A = -100;
-	public static final int SC_CUSTOM_B = -200;
-	public static final int SC_CUSTOM_C = -300;
-	
-	/**
 	 * 坐席接口异常
-	 * 3000000范围状态码为坐席接口状态码
 	 * 详情见 AgentHttpStatus
 	 */
 	public static final AgentHttpStatus AS_SUCCESS = new AgentHttpStatus(0, "0", "成功");
-	public static final AgentHttpStatus AS_ERROR = new AgentHttpStatus(3999999, StringUtils.EMPTY, "坐席接口异常");
-	public static final AgentHttpStatus AS_GET_EVENT_ERROR = new AgentHttpStatus(300001, "000-001", "获取Agent事件的方法错误");
-	public static final AgentHttpStatus AS_NO_AUTHORITY = new AgentHttpStatus(300003, "000-003", "没有权限调用接口");
-	public static final AgentHttpStatus AS_LOGIN_INVALID_PARAMTER = new AgentHttpStatus(310001, "100-001", "签入参数为空或者不合法");
-	public static final AgentHttpStatus AS_LOGIN = new AgentHttpStatus(310002, "100-002", "座席已经登录");
-	public static final AgentHttpStatus AS_LOGOUT = new AgentHttpStatus(310006, "100-006", "座席没有登录");
+	public static final AgentHttpStatus AS_ERROR = new AgentHttpStatus(999999, StringUtils.EMPTY, "坐席接口异常");
+	public static final AgentHttpStatus AS_GET_EVENT_ERROR = new AgentHttpStatus(1, "000-001", "获取Agent事件的方法错误");
+	public static final AgentHttpStatus AS_NO_AUTHORITY = new AgentHttpStatus(3, "000-003", "没有权限调用接口");
+	public static final AgentHttpStatus AS_LOGIN_INVALID_PARAMTER = new AgentHttpStatus(100001, "100-001", "签入参数为空或者不合法");
+	public static final AgentHttpStatus AS_LOGIN = new AgentHttpStatus(100002, "100-002", "座席已经登录");
+	public static final AgentHttpStatus AS_LOGOUT = new AgentHttpStatus(100006, "100-006", "座席没有登录");
 
 }

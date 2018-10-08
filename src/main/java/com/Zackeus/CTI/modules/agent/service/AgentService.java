@@ -83,7 +83,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 			resetskill(user);
 			return;
 		}
-		throw new MyException(HttpStatus.AS_ERROR.getAjaxStatus(), loginResult.getMessage());
+		throw new MyException(retcodeToAjaxcode(loginResult.getRetcode()), loginResult.getMessage());
 	}
 	
 	/**
@@ -141,7 +141,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 			UserUtils.kickOutUser(user, HttpStatus.SC_SESSION_AGENTLOGOUT);
 		}
 		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpEvent.getRetcode()), 
-				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpEvent.getMessage());
+				retcodeToAjaxcode(agentHttpEvent.getRetcode()), agentHttpEvent.getMessage());
 		return agentHttpEvent;
 	}
 	
@@ -249,7 +249,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 				return;
 			}
 			AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
-					HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
+					retcodeToAjaxcode(agentHttpResult.getRetcode()), agentHttpResult.getMessage());
 		} finally {
 			clearAgentEvent(user);
 			clearGuid(user);
@@ -362,13 +362,26 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @param clazz 消息实体类型
 	 * @return
 	 */
-	private  <T> AgentHttpResult<T> assertAgent(HttpClientResult httpClientResult, String assertMsg, Class<T> clazz) {
+	private <T> AgentHttpResult<T> assertAgent(HttpClientResult httpClientResult, String assertMsg, Class<T> clazz) {
 		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), HttpStatus.AS_ERROR.getAjaxStatus(),
-				assertMsg + ": " + httpClientResult.getCode());
+				httpClientResult.getCode() + " : " + assertMsg);
 		AgentHttpResult<T> agentHttpResult = JSON.parseObject(httpClientResult.getContent(), new TypeReference<AgentHttpResult<T>>(clazz){});
 		AssertUtil.isTrue(StringUtils.equals(HttpStatus.AS_SUCCESS.getAgentStatus(), agentHttpResult.getRetcode()), 
-				HttpStatus.AS_ERROR.getAjaxStatus(), agentHttpResult.getMessage());
+				retcodeToAjaxcode(agentHttpResult.getRetcode()), agentHttpResult.getMessage());
 		return agentHttpResult;
+	}
+	
+	/**
+	 * 
+	 * @Title：retcodeToAjaxcode
+	 * @Description: TODO(坐席状态吗转HTTP状态吗)
+	 * @see：
+	 * @param retcode
+	 * @return
+	 */
+	private int retcodeToAjaxcode(String retcode) {
+		return StringUtils.isBlank(retcode) ? HttpStatus.AS_ERROR.getAjaxStatus() : 
+			Integer.parseInt(retcode.replace(String.valueOf(StringUtils.SEPARATOR_FIRST), StringUtils.EMPTY));
 	}
 	
 	/**

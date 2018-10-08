@@ -23,6 +23,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	
     public static final char SEPARATOR = '_';
     
+    public static final char SEPARATOR_FIRST = '-';
+    
     public static final char SEPARATOR_SECOND = ';';
     
     public static final String UNKNOWN = "unknown";
