@@ -1,8 +1,11 @@
 package com.Zackeus.CTI.modules.agent.utils;
 
+import java.io.FileOutputStream;
+
 import javax.annotation.PostConstruct;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -157,6 +160,31 @@ public class AgentClientUtil extends HttpClientUtil {
 		} finally {
 			release(httpResponse, httpClient);
 		}
+	}
+	
+	/**
+	 * 
+	 * @Title：download
+	 * @Description: TODO(下载文件)
+	 * @see：
+	 * @param user
+	 * @param url
+	 * @param filepath
+	 * @throws Exception
+	 */
+	public static void download(User user, String url, String filepath) throws Exception {
+		CloseableHttpClient httpClient = getHttpClient(url);
+		HttpGet httpget = new HttpGet(url);
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(CONNECT_TIMEOUT)
+				.setSocketTimeout(SOCKET_TIMEOUT).build();
+		httpget.setConfig(requestConfig);
+		packageAgentHeade(user, httpget);
+		CloseableHttpResponse httpResponse = httpClient.execute(httpget);
+		FileOutputStream out = new FileOutputStream(filepath);
+		IOUtils.copy(httpResponse.getEntity().getContent(), out);
+		out.flush();
+		out.close();
+		return;
 	}
 	
 	/**

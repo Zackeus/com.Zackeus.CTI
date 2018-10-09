@@ -351,7 +351,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 				user.getAgentUser().getWorkno()), null);
 		return assertAgent(httpClientResult, "挂断呼叫请求失败", String.class);
 	}
-
+	
 	/**
 	 * 
 	 * @Title：assertAgent

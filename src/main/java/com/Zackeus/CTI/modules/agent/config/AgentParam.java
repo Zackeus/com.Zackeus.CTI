@@ -142,7 +142,7 @@ public class AgentParam {
 	public String getReleaseUrl() {
 		return releaseUrl;
 	}
-
+	
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
