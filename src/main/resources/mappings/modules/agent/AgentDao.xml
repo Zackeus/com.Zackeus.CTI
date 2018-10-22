@@ -3,15 +3,15 @@
 <mapper namespace="com.Zackeus.CTI.modules.agent.dao.AgentDao">
 
 	<sql id="agentCallColumns">
-		[CALL_ID],
-      	[USER_ID],
-      	[WORK_NO],
-      	[OTHER_PHONE_WORK_NO],
-      	[PHONE_NUMBER],
-      	[OTHER_PHONE],
-      	[TYPE],
-      	[CREATE_DATE],
-      	[RESULT]
+		ACD.[CALL_ID],
+      	ACD.[USER_ID],
+      	ACD.[WORK_NO],
+      	ACD.[OTHER_PHONE_WORK_NO],
+      	ACD.[PHONE_NUMBER],
+      	ACD.[OTHER_PHONE],
+      	ACD.[TYPE],
+      	ACD.[CREATE_DATE],
+      	ACD.[RESULT]
 	</sql>
 	
 	<sql id="agentRecordColumns">
@@ -86,5 +86,28 @@
 		SET [END_DATE] = #{agentRecord.updateDate}
 		WHERE [RECORD_ID] = #{agentRecord.recordID} AND [END_DATE] IS NULL
 	</update>
+
+	<!-- 分页查询通话记录信息 -->
+	<select id="findCallRecordList" resultType="AgentCallData">
+		SELECT
+			<include refid="agentCallColumns"/>,
+			SY.[NAME] AS "userName",
+			AR.[RECORD_ID] AS "agentRecord.recordID"
+		FROM [CTI].[dbo].[AGENT_CALL_DATA] ACD
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] SY ON ACD.[USER_ID] = SY.[ID]
+		LEFT JOIN [CTI].[dbo].[AGENT_RECORD] AR ON ACD.[CALL_ID] = AR.[CALL_ID]
+		<where>
+			<if test="callid != null and callid != ''">
+				AND ACD.[CALL_ID] = #{callid}
+			</if>
+			<if test="userName != null and userName != ''">
+				AND SY.[NAME] LIKE '%'+#{userName}+'%'
+			</if>
+			<if test="type != null and type != ''">
+				AND ACD.[TYPE] = #{type}
+			</if>
+		</where>
+		ORDER BY ACD.[CREATE_DATE] DESC
+	</select>
 
 </mapper>

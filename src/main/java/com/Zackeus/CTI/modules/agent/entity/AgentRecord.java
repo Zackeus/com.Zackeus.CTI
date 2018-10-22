@@ -19,6 +19,7 @@ public class AgentRecord extends DataEntity<AgentRecord> {
 	private String recordTitle; 	// 录音标题
 	private String fileName; 		// 录音文件地址
 	private String locationId; 		// 录音对应的中心节点ID
+	private String controlSign; 	// 控制标识
 
 	public AgentRecord() {
 		super();
@@ -77,4 +78,12 @@ public class AgentRecord extends DataEntity<AgentRecord> {
 		this.locationId = locationId;
 	}
 
+	public String getControlSign() {
+		return controlSign;
+	}
+
+	public void setControlSign(String controlSign) {
+		this.controlSign = controlSign;
+	}
+	
 }

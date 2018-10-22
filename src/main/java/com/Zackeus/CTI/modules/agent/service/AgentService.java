@@ -7,6 +7,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.Zackeus.CTI.common.entity.HttpClientResult;
+import com.Zackeus.CTI.common.entity.Page;
 import com.Zackeus.CTI.common.service.CrudService;
 import com.Zackeus.CTI.common.utils.AssertUtil;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
@@ -562,6 +563,21 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		} finally {
 			clearAgentEventData(user);
 		}
+	}
+	
+	/**
+	 * 
+	 * @Title：findCallRecordPage
+	 * @Description: TODO(通话记录分页查询)
+	 * @see：
+	 * @param page
+	 * @param agentCallData
+	 * @return
+	 */
+	public Page<AgentCallData> findCallRecordPage(Page<AgentCallData> page, AgentCallData agentCallData) {
+		agentCallData.setPage(page);
+		page.setList(dao.findCallRecordList(agentCallData));
+		return page;
 	}
 	
 }

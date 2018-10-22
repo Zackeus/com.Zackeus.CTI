@@ -105,7 +105,6 @@
 			[SPREAD] = #{spread},
 			[UPDATE_DATE] = #{updateDate},
 			[UPDATE_BY] = #{updateBy.id},
-			[SYS_ID] = #{sysId},
 			[REMARKS] = #{remarks}
 		WHERE [ID] = #{id}
 	</update>

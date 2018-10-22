@@ -10,15 +10,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody;
 import com.Zackeus.CTI.common.annotation.validator.CallNum;
 import com.Zackeus.CTI.common.entity.AjaxResult;
+import com.Zackeus.CTI.common.entity.Page;
+import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.exception.MyException;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
+import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
@@ -186,6 +191,56 @@ public class AgentController extends BaseController {
 	public void voiceCallEnd(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		agentService.voiceCallEnd(new User(UserUtils.getPrincipal()));
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "挂断呼叫成功"));
+	}
+	
+	/**
+	 * 
+	 * @Title：recordList
+	 * @Description: TODO(通话记录列表页面)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "/callRecordManage", method = RequestMethod.GET)
+	public String callRecordManagePage(HttpServletRequest request, HttpServletResponse response) {
+		return "modules/agent/voiceCall/callRecordManage";
+	}
+	
+	/**
+	 * 
+	 * @Title：recordManage
+	 * @Description: TODO(通话记录分页查询)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "/callRecordManage", consumes = MediaType.APPLICATION_JSON_VALUE, 
+		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void callRecordManage(@PageRequestBody AgentCallData agentCallData, 
+			HttpServletRequest request, HttpServletResponse response) {
+		renderString(response, agentService.findCallRecordPage(new Page<>(request), agentCallData));
+	}
+	
+	/**
+	 * 
+	 * @Title：recordPlay
+	 * @Description: TODO(录音回放)
+	 * @see：
+	 * @param agentCallData
+	 * @param request
+	 * @param response
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "/recordPlay", consumes = MediaType.APPLICATION_JSON_VALUE, 
+		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void recordPlay(@RequestBody AgentCallData agentCallData, 
+			HttpServletRequest request, HttpServletResponse response) {
+		Logs.info(agentCallData.getAgentRecord().getControlSign());
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "成功"));
 	}
 	
 }

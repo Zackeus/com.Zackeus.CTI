@@ -1,5 +1,7 @@
 package com.Zackeus.CTI.modules.agent.dao;
 
+import java.util.List;
+
 import com.Zackeus.CTI.common.annotation.MyBatisDao;
 import com.Zackeus.CTI.common.dao.CrudDao;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
@@ -21,5 +23,7 @@ public interface AgentDao extends CrudDao<AgentCallData> {
 	public void updateRecordEndDate(AgentCallData agentCallData);
 	
 	public AgentRecord getRecordByCallId(String callId);
+	
+	public List<AgentCallData> findCallRecordList(AgentCallData agentCallData);
 
 }

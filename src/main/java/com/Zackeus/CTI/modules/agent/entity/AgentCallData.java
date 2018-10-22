@@ -1,5 +1,7 @@
 package com.Zackeus.CTI.modules.agent.entity;
 
+import java.util.Date;
+
 import com.Zackeus.CTI.common.entity.DataEntity;
 import com.Zackeus.CTI.modules.sys.entity.User;
 
@@ -17,11 +19,13 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 
 	private String callid; 						// 呼叫流水号
 	private String userId; 						// 员工号
+	private String userName;					// 当前受理人
 	private String workNo; 						// 坐席号
 	private String otherPhoneWorkno; 			// 对方座席号
 	private String phoneNumber; 				// 座机号
 	private String otherPhone; 					// 对方电话号码
 	private String type; 						// 呼叫类型(main：去电；called：来电)
+	private Date createDate;					// 发生时间
 	private boolean result = Boolean.FALSE; 	// 结果(未通话false 0,通话 true 1)
 	
 	private AgentRecord agentRecord;			// 录音
@@ -79,6 +83,14 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 		this.userId = userId;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 	public String getWorkNo() {
 		return workNo;
 	}
@@ -127,6 +139,14 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 		this.result = result;
 	}
 	
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
 	public AgentRecord getAgentRecord() {
 		return agentRecord;
 	}
