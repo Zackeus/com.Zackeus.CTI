@@ -59,9 +59,7 @@ layui.use(['layer','layuiRequest'],function(){
 			
 		// 录音播放成功
 		case 8:
-        	var record = {};
-        	record.title = event.content.recordTitle;
-        	record.album = event.content.recordID + '.v3';
+        	var record = event.content;
         	record.recordTime = (new Date(event.content.endDate) - new Date(event.content.startDate)) / 1000 + 2;
 			window.sessionStorage.setItem("record", JSON.stringify(record));
 			openRecordLay(event.content);
@@ -69,12 +67,14 @@ layui.use(['layer','layuiRequest'],function(){
 		
 		// 录音播放失败
 		case 9:
+			window.sessionStorage.removeItem("record");
 			layer.close(LAY_RecordPlay);
 			layer.msg('录音播放失败', {icon: 5,time: 2000,shift: 6}, function(){});
 			break;
 			
 		// 录音播放停止
 		case 10:
+			window.sessionStorage.removeItem("record");
 			layer.close(LAY_RecordPlay);
 			break;
 
@@ -133,7 +133,7 @@ layui.use(['layer','layuiRequest'],function(){
 	}
 	
 	// 录音回放弹屏
-	function openRecordLay(event) {
+	function openRecordLay(record) {
 		LAY_RecordPlay = layer.open({
             type: 2,
             title: '录音回放', 		// 不显示标题栏
@@ -148,9 +148,10 @@ layui.use(['layer','layuiRequest'],function(){
             maxmin: true, 			// 最大最小化
             id: 'LAY_RecordPlay', 	// 用于控制弹层唯一标识
             moveType: 1,
-            content: [ctx + '/sys/agent/recordPlayPage', 'no'],
+            content: [ctx + '/sys/agent/recordPlayPage/' + record.recordID + '/' + record.recordTitle, 'no'],
             cancel: function(index, layero) {
             	// 停止录音播放
+            	console.log('关闭弹窗');
             } 
     	});
 		

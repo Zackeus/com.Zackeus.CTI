@@ -23,8 +23,8 @@
 	<div class="ctrl">
 		<div class="tag">
 			<strong>${recordTitle}</strong>
-			<span class="artist">Artist</span>
-			<span class="album">Album</span>
+<%-- 			<span class="artist">${artist}</span> --%>
+			<span class="album">${album}</span>
 		</div>
 		<div class="control">
 			<div class="left">

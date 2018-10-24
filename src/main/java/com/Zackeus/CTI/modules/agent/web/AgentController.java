@@ -236,8 +236,11 @@ public class AgentController extends BaseController {
 	 * @return
 	 */
 	@RequiresPermissions("user")
-	@RequestMapping(value = "/recordPlayPage", method = RequestMethod.GET)
-	public String recordPlayPage(HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/recordPlayPage/{recordID}/{recordTitle}", method = RequestMethod.GET)
+	public String recordPlayPage(@PathVariable("recordID") String recordID, @PathVariable("recordTitle") String recordTitle,
+			HttpServletRequest request, HttpServletResponse response, Model model) {
+		model.addAttribute("recordTitle", recordTitle);
+		model.addAttribute("album", recordID + ".v3");
 		return "modules/agent/record/recordPlay";
 	}
 	
