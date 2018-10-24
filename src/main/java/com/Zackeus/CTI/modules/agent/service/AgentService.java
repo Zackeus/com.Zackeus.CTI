@@ -18,6 +18,7 @@ import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.config.AgentParam;
 import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.config.LoginParam;
+import com.Zackeus.CTI.modules.agent.config.RecordPlayParam;
 import com.Zackeus.CTI.modules.agent.dao.AgentDao;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
@@ -355,6 +356,41 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	
 	/**
 	 * 
+	 * @Title：recordPlay
+	 * @Description: TODO(录音回放(默认参数))
+	 * @see：
+	 * @param user
+	 * @param agentRecord
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> recordPlay(User user, AgentRecord agentRecord) throws Exception {
+		RecordPlayParam defaultRecordPlayParam = defaultAgentParam.getRecordPlayParam();
+		defaultRecordPlayParam.setVoicepath(agentRecord.getFileName());
+		return recordPlay(user, agentRecord, defaultRecordPlayParam);
+	}
+	
+	/**
+	 * 
+	 * @Title：recordPlay
+	 * @Description: TODO(录音回放)
+	 * @see：
+	 * @param user
+	 * @param recordPlayParam
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> recordPlay(User user, AgentRecord agentRecord, RecordPlayParam recordPlayParam) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getRecordPlayUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), recordPlayParam);
+		AgentHttpResult<String> agentHttpResult = assertAgent(httpClientResult, "录音回放请求失败", String.class);
+		// 回放成功后将回放录音数据注入代理数据中，供推送和事件判断使用
+		setAgentEventData(user, AgentConfig.AGENT_DATA_RECORD, agentRecord);
+		return agentHttpResult;
+	}
+	
+	/**
+	 * 
 	 * @Title：assertAgent
 	 * @Description: TODO(断言接口请求)
 	 * @see：
@@ -395,6 +431,8 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @param object
 	 */
 	public void setAgentEventData(User user, String key, Object object) {
+		// 注入前清理代理数据
+		clearAgentEventData(user);
 		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
 			agentQueue.eventThreadMap.get(user.getId()).setAgentEventData(key, object);
 		}
@@ -520,6 +558,25 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 */
 	public AgentRecord getRecordByCallId(String callId) {
 		return dao.getRecordByCallId(callId);
+	}
+	
+	/**
+	 * 
+	 * @Title：getAgentRecord
+	 * @Description: TODO(根据呼叫或录音流水号查询录音)
+	 * @see：
+	 * @param agentCallData
+	 * @return
+	 */
+	public AgentRecord getAgentRecord(AgentRecord agentCallDataData) {
+		AgentRecord agentRecord = dao.getRecordByCallId(agentCallDataData.getCallid());
+		if (ObjectUtils.isEmpty(agentRecord)) {
+			if (StringUtils.isBlank(agentCallDataData.getRecordID())) {
+				return null;
+			}
+			return dao.getRecordByRecordID(agentCallDataData.getRecordID());
+		}
+		return agentRecord;
 	}
 	
 	/**

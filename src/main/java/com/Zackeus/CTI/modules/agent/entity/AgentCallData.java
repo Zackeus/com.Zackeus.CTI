@@ -2,7 +2,14 @@ package com.Zackeus.CTI.modules.agent.entity;
 
 import java.util.Date;
 
+import javax.validation.GroupSequence;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.Zackeus.CTI.common.entity.DataEntity;
+import com.Zackeus.CTI.common.service.valid.First;
+import com.Zackeus.CTI.common.service.valid.Second;
+import com.Zackeus.CTI.common.service.valid.Third;
 import com.Zackeus.CTI.modules.sys.entity.User;
 
 /**
@@ -13,6 +20,7 @@ import com.Zackeus.CTI.modules.sys.entity.User;
  * @author zhou.zhang
  * @date 2018年9月27日 下午4:15:30
  */
+@GroupSequence({AgentCallData.class, First.class, Second.class, Third.class})
 public class AgentCallData extends DataEntity<AgentCallData> {
 
 	private static final long serialVersionUID = 1L;
@@ -27,7 +35,9 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 	private String type; 						// 呼叫类型(main：去电；called：来电)
 	private Date createDate;					// 发生时间
 	private boolean result = Boolean.FALSE; 	// 结果(未通话false 0,通话 true 1)
-	
+
+	@Valid
+	@NotNull(message = "{agentCallData.agentRecord.NotNull}")
 	private AgentRecord agentRecord;			// 录音
 	
 	private Integer count;						// mybatis判断数据是否存在

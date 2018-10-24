@@ -3,16 +3,14 @@ layui.extend({
 	customerFrom: '{/}' + ctxStatic + '/layui/lay/custom/from'
 })
 
-layui.use(['form','layer','table','laytpl','tree','layuiRequest','customerFrom'],function(){
+layui.use(['form','layer','table','laytpl','layuiRequest','customerFrom'],function(){
     var form = layui.form,
         layer = parent.layer === undefined ? layui.layer : top.layer,
         $ = layui.jquery,
         laytpl = layui.laytpl,
-        tree = layui.tree,
         table = layui.table,
         layuiRequest = layui.layuiRequest,
-        customerFrom = layui.customerFrom,
-        treeSelectData;
+        customerFrom = layui.customerFrom;
 
     layer.load();
     var callRecordListtIns =  table.render({
@@ -65,7 +63,7 @@ layui.use(['form','layer','table','laytpl','tree','layuiRequest','customerFrom']
 		
 		case "play":
 			obj.data.agentRecord.controlSign = obj.event;
-			recordPlay(obj.data);
+			recordPlay(obj.data.agentRecord);
 			break;
 			
 		default:
@@ -87,7 +85,23 @@ layui.use(['form','layer','table','laytpl','tree','layuiRequest','customerFrom']
     
     // 录音回放
     function recordPlay(data) {
-    	console.log(data);
+    	layuiRequest.doPost(
+    			data, 
+    			ctx + '/sys/agent/recordPlay', 
+    			beforeSend = function() {
+    				layer.load();
+    			},
+    			success = function(result) {
+    				layer.closeAll('loading');
+    				if (result.code != "0") {
+    					layer.msg(result.msg, {icon: 5,time: 2000,shift: 6}, function(){});
+    				} 
+    			},
+    			error = function(event) {
+    				// 错误信息
+    				layer.closeAll('loading');
+    				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
+    			});
     }
     
     //控制表格编辑时文本的位置【跟随渲染时的位置】

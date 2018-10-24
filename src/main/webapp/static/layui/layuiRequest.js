@@ -248,6 +248,25 @@ layui.define(['jquery','layer'],function(exports){
         				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
         			}
         		});
+			},
+			// JSON post提交
+			doPost: function (data, url, before, success, error) {
+        		$.ajax({
+        			method: 'POST',
+        			url : url,
+        			data : JSON.stringify(data),
+        			contentType : 'application/json',
+        			dataType : 'json',
+        			beforeSend: function() {
+        				before && before();
+        			},
+        			success : function(result) {
+        				success && success(result);
+        			},
+        			error : function(event) {
+        				error && error(event);
+        			}
+        		});
 			}
 	};
 	exports('layuiRequest', layuiRequest);

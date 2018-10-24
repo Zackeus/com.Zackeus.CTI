@@ -61,26 +61,28 @@ public class AgentParam {
 	@Value("${agentConfig.releaseUrl}")
 	private String releaseUrl;				// 挂断呼叫地址
 	
+	@Value("${agentConfig.recordPlayUrl}")
+	private String recordPlayUrl;			// 录音开始放音地址
+	
 	@Autowired
 	private LoginParam loginParam;			// 登录参数
 	
 	@Autowired
 	private CallParam callParam;			// 呼叫参数
 	
+	@Autowired
+	private RecordPlayParam recordPlayParam;	// 录音回放参数
+	
 	public LoginParam getLoginParam() {
 		return loginParam;
-	}
-	
-	public void setLoginParam(LoginParam loginParam) {
-		this.loginParam = loginParam;
 	}
 	
 	public CallParam getCallParam() {
 		return callParam;
 	}
-
-	public void setCallParam(CallParam callParam) {
-		this.callParam = callParam;
+	
+	public RecordPlayParam getRecordPlayParam() {
+		return recordPlayParam;
 	}
 
 	public String getLoginUrl() {
@@ -143,6 +145,10 @@ public class AgentParam {
 		return releaseUrl;
 	}
 	
+	public String getRecordPlayUrl() {
+		return recordPlayUrl;
+	}
+
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);

@@ -1,6 +1,16 @@
 package com.Zackeus.CTI.modules.agent.entity;
 
+import java.util.Date;
+
+import javax.validation.GroupSequence;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.Zackeus.CTI.common.annotation.validator.AgentRecordValidator;
 import com.Zackeus.CTI.common.entity.DataEntity;
+import com.Zackeus.CTI.common.service.valid.First;
+import com.Zackeus.CTI.common.service.valid.Second;
+import com.Zackeus.CTI.common.service.valid.Third;
 
 /**
  * 
@@ -10,6 +20,8 @@ import com.Zackeus.CTI.common.entity.DataEntity;
  * @author zhou.zhang
  * @date 2018年9月27日 下午5:16:34
  */
+@GroupSequence({AgentRecord.class, First.class, Second.class, Third.class})
+@AgentRecordValidator(groups = { Third.class })
 public class AgentRecord extends DataEntity<AgentRecord> {
 
 	private static final long serialVersionUID = 1L;
@@ -19,6 +31,10 @@ public class AgentRecord extends DataEntity<AgentRecord> {
 	private String recordTitle; 	// 录音标题
 	private String fileName; 		// 录音文件地址
 	private String locationId; 		// 录音对应的中心节点ID
+	private Date startDate;			// 录音起始时间
+	private Date endDate;			// 录音结束时间
+	
+	@NotBlank(message = "{agentRecord.controlSign.NotBlank}")
 	private String controlSign; 	// 控制标识
 
 	public AgentRecord() {
@@ -76,6 +92,22 @@ public class AgentRecord extends DataEntity<AgentRecord> {
 
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
+	}
+	
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public String getControlSign() {

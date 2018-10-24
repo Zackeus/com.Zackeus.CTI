@@ -65,6 +65,14 @@
 		WHERE [CALL_ID] = #{callid}
 	</select>
 	
+	<!-- 根据录音流水号查询录音 -->
+	<select id="getRecordByRecordID" resultType="AgentRecord">
+		SELECT 
+		<include refid="agentRecordColumns"/>
+		FROM [CTI].[dbo].[AGENT_RECORD]
+		WHERE [RECORD_ID] = #{recordID}
+	</select>
+	
 	<!-- 插入录音 -->
 	<insert id="insertRecord">
 		INSERT INTO [CTI].[dbo].[AGENT_RECORD]

@@ -106,6 +106,7 @@ public class AgentEventThread implements Runnable {
 	public void clearAgentEventData() {
 		agentEventMap.remove(AgentConfig.AGENT_DATA_CALLID);
 		agentEventMap.remove(AgentConfig.AGENT_DATA_CALLNUM);
+		agentEventMap.remove(AgentConfig.AGENT_DATA_RECORD);
 	}
 
 	public void end() {

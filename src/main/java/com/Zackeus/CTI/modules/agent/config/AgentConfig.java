@@ -11,6 +11,14 @@ public class AgentConfig {
 	public static String AGENT_CALL_MAIN = "main";		// 去电
 	public static String AGENT_CALL_CALLED = "called";	// 来电
 	
+	/*录音控制标识*/
+	public static final String AGENT_RECORD_PLAY = "play"; 					// 回放
+	public static final String AGENT_RECORD_STOP_PLAY = "stopplay"; 		// 停止
+	public static final String AGENT_RECORD_PAUSE_RECORD = "pauserecord"; 	// 暂停
+	public static final String AGENT_RECORD_RESUME_RECORD = "resumerecord"; // 恢复
+	public static final String AGENT_RECORD_FORE_FAST = "forefast"; 		// 快进
+	public static final String AGENT_RECORD_BACK_FAST = "backfast"; 		// 快退
+	
 	/*代理数据*/
 	public static String AGENT_DATA_COOKIE = "cookie";			// cookie
 	public static String AGENT_DATA_CALLID = "CALL_ID";			// 呼叫流水号
@@ -18,6 +26,7 @@ public class AgentConfig {
 	public static String AGENT_DATA_POSTURL = "POST_URL";		// 事件推送地址
 	public static String AGENT_DATA_EVENTDATE = "EVENT_DATE";	// 最新事件日期
 	public static String AGENT_DATA_ISHTTP = "IS_HTTP";			// 是否为接口登录
+	public static String AGENT_DATA_RECORD = "RECORD";			// 录音数据
 	
 	
 	/*AgentGateway状态*/
@@ -36,6 +45,10 @@ public class AgentConfig {
 	public static final int EVENT_VOICE_END = 4; 		// 语音通话结束事件
 	public static final int EVENT_RECORD_START = 5; 	// 录音开始事件
 	public static final int EVENT_RECORD_END = 6; 		// 录音束事件
+	public static final int EVENT_RECORD_PLAY = 7; 		// 录音播放开始事件
+	public static final int EVENT_RECORD_PLAY_SUCC = 8; // 录音播放成功事件
+	public static final int EVENT_RECORD_PLAY_FAIL = 9; // 录音播放失败事件
+	public static final int EVENT_RECORD_DONE = 10;  	// 录音播放停止事件
 	
 	/*坐席事件列表*/
 	/*座席状态类事件*/
@@ -67,5 +80,9 @@ public class AgentConfig {
 	/*录放音相关*/
 	public static final String AGENTMEDIAEVENT_RECORD = "AgentMediaEvent_Record";                       	// 录音开始
 	public static final String AGENTMEDIAEVENT_STOPRECORDDONE = "AgentMediaEvent_StopRecordDone"; 			// 停止录音成功
+	public static final String AGENTMEDIAEVENT_PLAY = "AgentMediaEvent_Play";								// 录音播放开始
+	public static final String AGENTMEDIAEVENT_PLAY_SUCC = "AgentMediaEvent_Play_Succ";						// 录音播放成功
+	public static final String AGENTMEDIAEVENT_PLAY_FAIL = "AgentMediaEvent_Play_Fail";						// 录音播放失败
+	public static final String AGENTMEDIAEVENT_STOPPLAYDONE = "AgentMediaEvent_StopPlayDone";				// 录音播放停止
 	
 }

@@ -136,9 +136,15 @@ public class AgentEventUtil {
 		case AgentConfig.AGENTOTHER_PHONEALERTING:
 			// 事件消息为空 表明为主动呼叫事件 否则为坐席来电事件
 			if (ObjectUtils.isEmpty(agentHttpEvent.getEvent().getContent())) {
-				/*坐席去电事件*/
-				agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_CALL, agentHttpEvent.getEvent().getEventType(), 
-						new AgentAlerting((String) agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_CALLNUM)));
+				if (ObjectUtils.isEmpty(agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_RECORD))) {
+					/*坐席去电事件*/
+					agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_CALL, agentHttpEvent.getEvent().getEventType(), 
+							new AgentAlerting((String) agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_CALLNUM)));
+				} else {
+					/*录音回放事件(未定义)*/
+					agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_UNDEFINED, agentHttpEvent.getEvent().getEventType(), 
+							agentHttpEvent.getEvent().getContent());
+				}
 			} else {
 				/*坐席来电事件*/
 				AgentAlerting agentAlerting = JSON.parseObject(agentHttpEvent.getEvent().getContent().toString(), AgentAlerting.class);
@@ -178,6 +184,31 @@ public class AgentEventUtil {
 			AgentRecord agentRecord = agentService.updateRecordEndDate(user);
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_RECORD_END, agentHttpEvent.getEvent().getEventType(), 
 					agentRecord);
+			break;
+			
+		/*录音播放开始*/
+		case AgentConfig.AGENTMEDIAEVENT_PLAY:
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_RECORD_PLAY, agentHttpEvent.getEvent().getEventType(), 
+					agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_RECORD));
+			break;
+			
+		/*录音播放成功*/
+		case AgentConfig.AGENTMEDIAEVENT_PLAY_SUCC:
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_RECORD_PLAY_SUCC, agentHttpEvent.getEvent().getEventType(), 
+					agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_RECORD));
+			break;
+			
+		/*录音播放失败*/
+		case AgentConfig.AGENTMEDIAEVENT_PLAY_FAIL:
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_RECORD_PLAY_FAIL, agentHttpEvent.getEvent().getEventType(), 
+					agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_RECORD));
+			break;
+			
+		/*录音播放停止*/
+		case AgentConfig.AGENTMEDIAEVENT_STOPPLAYDONE:
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_RECORD_DONE, agentHttpEvent.getEvent().getEventType(), 
+					agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_RECORD));
+			agentService.clearAgentEventData(user);
 			break;
 			
 		/*未定义事件*/

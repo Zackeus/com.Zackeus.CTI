@@ -1,6 +1,7 @@
 var onCloseEvent,
 	onMessageEvent,
-	LAY_CALL;
+	LAY_CALL,
+	LAY_RecordPlay;
 
 layui.use(['layer','layuiRequest'],function(){
     var layer = parent.layer === undefined ? layui.layer : top.layer,
@@ -55,6 +56,27 @@ layui.use(['layer','layuiRequest'],function(){
 		case 4:
 			layer.close(LAY_CALL);
 			break;
+			
+		// 录音播放成功
+		case 8:
+        	var record = {};
+        	record.title = event.content.recordTitle;
+        	record.album = event.content.recordID + '.v3';
+        	record.recordTime = (new Date(event.content.endDate) - new Date(event.content.startDate)) / 1000 + 2;
+			window.sessionStorage.setItem("record", JSON.stringify(record));
+			openRecordLay(event.content);
+			break;
+		
+		// 录音播放失败
+		case 9:
+			layer.close(LAY_RecordPlay);
+			layer.msg('录音播放失败', {icon: 5,time: 2000,shift: 6}, function(){});
+			break;
+			
+		// 录音播放停止
+		case 10:
+			layer.close(LAY_RecordPlay);
+			break;
 
 		default:
 			break;
@@ -108,5 +130,29 @@ layui.use(['layer','layuiRequest'],function(){
 	        	  layuiRequest.callEnd(ctx + '/sys/agent/voiceCallEnd', layero.find('.layui-layer-btn0'));
 	          }
 	   });
+	}
+	
+	// 录音回放弹屏
+	function openRecordLay(event) {
+		LAY_RecordPlay = layer.open({
+            type: 2,
+            title: '录音回放', 		// 不显示标题栏
+            closeBtn: 1,			// 关闭按钮
+            area: ['600px', '220px'],
+            shade: 0, 				// 遮罩
+            shadeClose: false, 		// 是否点击遮罩关闭
+            offset: 'b',
+            anim: 0, 				// 弹出动画
+            isOutAnim: true, 		// 关闭动画
+            scrollbar: false, 		// 是否允许浏览器出现滚动条
+            maxmin: true, 			// 最大最小化
+            id: 'LAY_RecordPlay', 	// 用于控制弹层唯一标识
+            moveType: 1,
+            content: [ctx + '/sys/agent/recordPlayPage', 'no'],
+            cancel: function(index, layero) {
+            	// 停止录音播放
+            } 
+    	});
+		
 	}
 })

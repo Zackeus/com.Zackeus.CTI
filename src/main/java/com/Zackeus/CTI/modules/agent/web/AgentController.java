@@ -18,12 +18,13 @@ import com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody;
 import com.Zackeus.CTI.common.annotation.validator.CallNum;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.entity.Page;
-import com.Zackeus.CTI.common.utils.Logs;
+import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
+import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
@@ -227,20 +228,54 @@ public class AgentController extends BaseController {
 	
 	/**
 	 * 
+	 * @Title：recordPlayPage
+	 * @Description: TODO(录音回放页面)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "/recordPlayPage", method = RequestMethod.GET)
+	public String recordPlayPage(HttpServletRequest request, HttpServletResponse response) {
+		return "modules/agent/record/recordPlay";
+	}
+	
+	/**
+	 * 
 	 * @Title：recordPlay
 	 * @Description: TODO(录音回放)
 	 * @see：
 	 * @param agentCallData
 	 * @param request
 	 * @param response
+	 * @throws Exception 
 	 */
 	@RequiresPermissions("user")
 	@RequestMapping(value = "/recordPlay", consumes = MediaType.APPLICATION_JSON_VALUE, 
 		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
-	public void recordPlay(@RequestBody AgentCallData agentCallData, 
-			HttpServletRequest request, HttpServletResponse response) {
-		Logs.info(agentCallData.getAgentRecord().getControlSign());
-		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "成功"));
+	public void recordPlay(@Validated @RequestBody AgentRecord agentRecordData, 
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		AjaxResult ajaxResult = new AjaxResult(HttpStatus.SC_SUCCESS, "录音操作成功");
+		
+		switch (agentRecordData.getControlSign()) {
+		case AgentConfig.AGENT_RECORD_PLAY:
+			// 录音回放
+			AgentRecord agentRecord = agentService.getAgentRecord(agentRecordData);
+			if (ObjectUtils.isEmpty(agentRecord)) {
+				ajaxResult.setCode(HttpStatus.SC_UNKNOWN);
+				ajaxResult.setMsg("查无此数据");
+			}  else {
+				agentService.recordPlay(new User(UserUtils.getPrincipal()), agentRecord);
+				ajaxResult.setMsg("录音回放成功");
+			}
+			break;
+
+		default:
+			ajaxResult = new AjaxResult(HttpStatus.SC_BAD_REQUEST, "无效的录音控制标识");
+			break;
+		}
+		renderString(response, ajaxResult);
 	}
 	
 }

@@ -24,6 +24,9 @@ public interface AgentDao extends CrudDao<AgentCallData> {
 	
 	public AgentRecord getRecordByCallId(String callId);
 	
+	public AgentRecord getRecordByRecordID(String recordID);
+	
 	public List<AgentCallData> findCallRecordList(AgentCallData agentCallData);
+	
 
 }
