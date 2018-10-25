@@ -48,9 +48,10 @@
 		</div>
 	</div>
 </div>
-	<script src="${ctxStatic}/jquery/jquery-1.7.2/jquery-1.7.2.min.js"></script>
+
+	<script src="${ctxStatic}/jquery/jquery-ui-1.12.1/jquery.js"></script>
 	<script src="${ctxStatic}/layui/layui.js"></script>
-	<script src="${ctxStatic}/jquery/jquery-1.7.2/jquery-ui-1.8.17.custom.min.js"></script>
+	<script src="${ctxStatic}/jquery/jquery-ui-1.12.1/jquery-ui.min.js"></script>
 	<script src="${ctxStatic}/js/modules/agent/record/recordPlay.js"></script>
 </body>
 </html>

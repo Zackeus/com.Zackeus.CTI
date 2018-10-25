@@ -54,6 +54,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	private AgentQueue agentQueue;
 	
 	private static String AGENT_ID = "{agentid}";
+	private static String FAST_TIME = "{fasttime}";
 	
 	/**
 	 * 
@@ -387,6 +388,83 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		// 回放成功后将回放录音数据注入代理数据中，供推送和事件判断使用
 		setAgentEventData(user, AgentConfig.AGENT_DATA_RECORD, agentRecord);
 		return agentHttpResult;
+	}
+	
+	/**
+	 * 
+	 * @Title：recordStopPlay
+	 * @Description: TODO(停止放音)
+	 * @see：
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> recordStopPlay(User user) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.delete(user, defaultAgentParam.getRecordStopPlayUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), null);
+		return assertAgent(httpClientResult, "停止放音请求失败", String.class);
+	}
+	
+	/**
+	 * 
+	 * @Title：recordPausePlay
+	 * @Description: TODO(暂停放音)
+	 * @see：
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> recordPausePlay(User user) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getRecordPausePlayUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), null);
+		return assertAgent(httpClientResult, "暂停放音请求失败", String.class);
+	}
+	
+	/**
+	 * 
+	 * @Title：recordResumePlay
+	 * @Description: TODO(恢复放音)
+	 * @see：
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> recordResumePlay(User user) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getRecordResumePlayUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()), null);
+		return assertAgent(httpClientResult, "恢复放音请求失败", String.class);
+	}
+	
+	/**
+	 * 
+	 * @Title：recordForeFast
+	 * @Description: TODO(放音快进)
+	 * @see：
+	 * @param user
+	 * @param fastTime
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> recordForeFast(User user, String fastTime) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getRecordForeFastUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()).replace(FAST_TIME, fastTime), null);
+		return assertAgent(httpClientResult, "放音快进请求失败", String.class);
+	}
+	
+	/**
+	 * 
+	 * @Title：recordBackFast
+	 * @Description: TODO(放音快退)
+	 * @see：
+	 * @param user
+	 * @param fastTime
+	 * @return
+	 * @throws Exception
+	 */
+	public AgentHttpResult<String> recordBackFast(User user, String fastTime) throws Exception {
+		HttpClientResult httpClientResult = AgentClientUtil.post(user, defaultAgentParam.getRecordBackFastUrl().replace(AGENT_ID, 
+				user.getAgentUser().getWorkno()).replace(FAST_TIME, fastTime), null);
+		return assertAgent(httpClientResult, "放音快退请求失败", String.class);
 	}
 	
 	/**

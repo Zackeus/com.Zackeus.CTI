@@ -13,6 +13,7 @@ layui.use(['layuiRequest','layer','jquery'],function() {
 	var currentTrack = shuffle === 'true' ? time.getTime() % playlist.length : 0,
 		timeout,
 		nowTime = 0, // 当前播放时间
+		sliderTime = 0, // 滑动时间
 		contrastTime,
 		isPlaying = true;
 	var volume = localStorage.volume || 0.5;
@@ -78,26 +79,100 @@ layui.use(['layuiRequest','layer','jquery'],function() {
 		}
 	});
 	
+	// 进度栏滑动监听
+	$('.progress .slider').slider({step: 0.1, slide: function(event, ui) {
+		$(this).addClass('enable');
+		sliderTime = record.recordTime * ui.value / 100; 
+	}, stop: function(event, ui) {
+		var fastTime = contrastTime - sliderTime;
+		if (!isPlaying) {
+			//当为暂停状态时先改变为恢复态再进行快进 快退
+			record.controlSign = 'resumerecord';
+	    	layuiRequest.doPost(record, ctx + '/sys/agent/recordPlay', 
+	    			beforeSend = function() {},
+	    			success = function(result) {
+	    				if (result.code == "0") {
+	    					$('.playback').addClass('playing');
+	    					timeout = setInterval(updateProgress, 1000);
+	    					isPlaying = true;
+	    					recordfast(sliderTime, fastTime);
+	    				} else {
+	    					layer.msg(result.msg, {icon: 5,time: 2000,shift: 6}, function(){});
+	    				}
+	    			},
+	    			error = function(event) {
+	    				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
+	    			});
+		} else {
+			recordfast(sliderTime, fastTime);
+		}
+	}});
+	
 	// 播放
 	var play = function(){
-		var recordData = {};
-		recordData.type = 'RESUMEPLAY';
-		layuiRequest.record(recordData);
-		
-		$('.playback').addClass('playing');
-		timeout = setInterval(updateProgress, 1000);
-		isPlaying = true;
+		record.controlSign = 'resumerecord';
+    	layuiRequest.doPost(record, ctx + '/sys/agent/recordPlay', 
+    			beforeSend = function() {},
+    			success = function(result) {
+    				if (result.code == "0") {
+    					$('.playback').addClass('playing');
+    					timeout = setInterval(updateProgress, 1000);
+    					isPlaying = true;
+    				} else {
+    					layer.msg(result.msg, {icon: 5,time: 2000,shift: 6}, function(){});
+    				}
+    			},
+    			error = function(event) {
+    				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
+    			});
 	}
 	
 	// 暂停
 	var pause = function(){
-		var recordData = {};
-		recordData.type = 'PAUSEPLAY';
-		layuiRequest.record(recordData);
-		
-		$('.playback').removeClass('playing');
-		clearInterval(timeout);
-		isPlaying = false;
+		record.controlSign = 'pauserecord';
+		layuiRequest.doPost(record, ctx + '/sys/agent/recordPlay', 
+    			beforeSend = function() {},
+    			success = function(result) {
+    				if (result.code == "0") {
+    					$('.playback').removeClass('playing');
+    					clearInterval(timeout);
+    					isPlaying = false;
+    				} else {
+    					layer.msg(result.msg, {icon: 5,time: 2000,shift: 6}, function(){});
+    				}
+    			},
+    			error = function(event) {
+    				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
+    			});
+	}
+	
+	// 录音快进 快退
+	var recordfast = function (sliderTime, fastTime) {
+		record.fastTime = Math.abs(parseInt(fastTime));
+		if (fastTime < 0) {
+			// 快进
+			record.controlSign = 'forefast';
+		} else {
+			// 快退
+			record.controlSign = 'backfast';
+		}
+		layuiRequest.doPost(record, ctx + '/sys/agent/recordPlay',
+    			beforeSend = function() {},
+    			success = function(result) {
+    				if (result.code == "0") {
+    					nowTime = sliderTime; // 更新播放时长
+        				setProgress(nowTime);
+        				clearInterval(timeout);
+        				contrastTime = nowTime;
+        				$(this).removeClass('enable');
+        				timeout = setInterval(updateProgress, 1000);
+    				} else {
+    					layer.msg(result.msg, {icon: 5,time: 2000,shift: 6}, function(){});
+    				}
+    			},
+    			error = function(event) {
+    				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
+    			});
 	}
 	
 	// 上一首
@@ -109,38 +184,6 @@ layui.use(['layuiRequest','layer','jquery'],function() {
 	$('.fastforward').on('click', function(){
 		layer.msg('功能尚未完善');
 	});
-	
-	// 进度栏滑动监听
-	$('.progress .slider').slider({step: 0.1, slide: function(event, ui) {
-		$(this).addClass('enable');
-		nowTime = record.recordTime * ui.value / 100; // 更新播放时长
-		setProgress(nowTime);
-		clearInterval(timeout);
-	}, stop: function(event, ui) {
-		var fastTime = contrastTime - nowTime;
-		var recordData = {};
-		if (!isPlaying) {
-			isPlaying = true;
-			recordData.type = 'RESUMEPLAY';
-			layuiRequest.record(recordData);
-		}
-		if (fastTime < 0) {
-			// 快进
-			console.log('快进 ' +  Math.abs(parseInt(fastTime)) + 's');
-			recordData.type = 'RECORDFOREFAST';
-			recordData.fastTime = Math.abs(parseInt(fastTime));
-			layuiRequest.record(recordData);
-		} else {
-			// 快退
-			console.log('快退 ' + Math.abs(parseInt(fastTime)) + 's');
-			recordData.type = 'RECORDBACKFAST';
-			recordData.fastTime = Math.abs(parseInt(fastTime));
-			layuiRequest.record(recordData);
-		}
-		contrastTime = nowTime;
-		$(this).removeClass('enable');
-		timeout = setInterval(updateProgress, 1000);
-	}});
 	
 	// 加载录音
 	var loadMusic = function(record){

@@ -64,6 +64,21 @@ public class AgentParam {
 	@Value("${agentConfig.recordPlayUrl}")
 	private String recordPlayUrl;			// 录音开始放音地址
 	
+	@Value("${agentConfig.recordStopPlayUrl}")
+	private String recordStopPlayUrl;		// 录音停止放音地址
+	
+	@Value("${agentConfig.recordPausePlayUrl}")
+	private String recordPausePlayUrl;		// 录音暂停放音地址
+	
+	@Value("${agentConfig.recordResumePlayUrl}")
+	private String recordResumePlayUrl;		// 录音恢复放音地址
+	
+	@Value("${agentConfig.recordForeFastUrl}")
+	private String recordForeFastUrl;		// 录音放音快进地址
+	
+	@Value("${agentConfig.recordBackFastUrl}")
+	private String recordBackFastUrl;		// 录音放音快退地址
+	
 	@Autowired
 	private LoginParam loginParam;			// 登录参数
 	
@@ -147,6 +162,26 @@ public class AgentParam {
 	
 	public String getRecordPlayUrl() {
 		return recordPlayUrl;
+	}
+	
+	public String getRecordStopPlayUrl() {
+		return recordStopPlayUrl;
+	}
+	
+	public String getRecordPausePlayUrl() {
+		return recordPausePlayUrl;
+	}
+	
+	public String getRecordResumePlayUrl() {
+		return recordResumePlayUrl;
+	}
+	
+	public String getRecordForeFastUrl() {
+		return recordForeFastUrl;
+	}
+	
+	public String getRecordBackFastUrl() {
+		return recordBackFastUrl;
 	}
 
 	@Override

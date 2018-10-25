@@ -9,8 +9,10 @@ import javax.validation.Constraint;
 import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 
+import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.StringUtils;
 import com.Zackeus.CTI.common.utils.basic.BasicValidator;
+import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
 
 /**
@@ -33,7 +35,7 @@ public @interface AgentRecordValidator {
 	Class<? extends Payload>[] payload() default {};
 
 	public class Validator extends BasicValidator<AgentRecordValidator, AgentRecord> {
-
+		
 		@Override
 		public void initialize(AgentRecordValidator constraintAnnotation) {
 			// TODO Auto-generated method stub
@@ -41,8 +43,30 @@ public @interface AgentRecordValidator {
 		
 		@Override
 		public boolean isValid(AgentRecord agentRecord, ConstraintValidatorContext context) {
-			return StringUtils.isAllBlank(agentRecord.getCallid(), agentRecord.getRecordID()) ?
-					sendErrorMsg(context, "{agentCallData.agentRecord.primaryKey.NotBlank}") : Boolean.TRUE;
+			if (StringUtils.isBlank(agentRecord.getControlSign())) {
+				return sendErrorMsg(context, "{agentRecord.controlSign.NotBlank}");
+			}
+			
+			switch (agentRecord.getControlSign()) {
+			case AgentConfig.AGENT_RECORD_PLAY:
+				// 录音回放
+				if (StringUtils.isAllBlank(agentRecord.getCallid(), agentRecord.getRecordID())) {
+					return sendErrorMsg(context, "{agentRecord.primaryKey.NotBlank}");
+				}
+				break;
+				
+			case AgentConfig.AGENT_RECORD_FORE_FAST:
+			case AgentConfig.AGENT_RECORD_BACK_FAST:
+				// 放音快进 快退
+				if (ObjectUtils.isEmpty(agentRecord.getFastTime())) {
+					return sendErrorMsg(context, "{agentRecord.fastTime.Invalid}");
+				}
+				break;
+
+			default:
+				break;
+			}
+			return Boolean.TRUE;
 		}
 	}
 

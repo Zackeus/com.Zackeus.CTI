@@ -151,7 +151,17 @@ layui.use(['layer','layuiRequest'],function(){
             content: [ctx + '/sys/agent/recordPlayPage/' + record.recordID + '/' + record.recordTitle, 'no'],
             cancel: function(index, layero) {
             	// 停止录音播放
-            	console.log('关闭弹窗');
+            	record.controlSign = 'stopplay';
+            	layuiRequest.doPost(record, ctx + '/sys/agent/recordPlay', 
+            			beforeSend = function() {},
+            			success = function(result) {
+            				if (result.code != "0") {
+            					layer.msg(result.msg, {icon: 5,time: 2000,shift: 6}, function(){});
+            				} 
+            			},
+            			error = function(event) {
+            				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
+            			});
             } 
     	});
 		

@@ -36,6 +36,7 @@ public class AgentRecord extends DataEntity<AgentRecord> {
 	
 	@NotBlank(message = "{agentRecord.controlSign.NotBlank}")
 	private String controlSign; 	// 控制标识
+	private Long fastTime;			// 偏移时间(单位：s)
 
 	public AgentRecord() {
 		super();
@@ -116,6 +117,14 @@ public class AgentRecord extends DataEntity<AgentRecord> {
 
 	public void setControlSign(String controlSign) {
 		this.controlSign = controlSign;
+	}
+
+	public Long getFastTime() {
+		return fastTime;
+	}
+
+	public void setFastTime(Long fastTime) {
+		this.fastTime = fastTime;
 	}
 	
 }

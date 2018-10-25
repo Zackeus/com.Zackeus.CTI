@@ -273,6 +273,36 @@ public class AgentController extends BaseController {
 				ajaxResult.setMsg("录音回放成功");
 			}
 			break;
+			
+		case AgentConfig.AGENT_RECORD_STOP_PLAY:
+			// 停止放音
+			agentService.recordStopPlay(new User(UserUtils.getPrincipal()));
+			ajaxResult.setMsg("停止放音成功");
+			break;
+			
+		case AgentConfig.AGENT_RECORD_PAUSE_RECORD:
+			// 暂停放音
+			agentService.recordPausePlay(new User(UserUtils.getPrincipal()));
+			ajaxResult.setMsg("暂停放音成功");
+			break;
+			
+		case AgentConfig.AGENT_RECORD_RESUME_RECORD:
+			// 恢复放音
+			agentService.recordResumePlay(new User(UserUtils.getPrincipal()));
+			ajaxResult.setMsg("恢复放音成功");
+			break;
+			
+		case AgentConfig.AGENT_RECORD_FORE_FAST:
+			// 放音快进
+			agentService.recordForeFast(new User(UserUtils.getPrincipal()), String.valueOf(agentRecordData.getFastTime()));
+			ajaxResult.setMsg("放音快进成功");
+			break;
+			
+		case AgentConfig.AGENT_RECORD_BACK_FAST:
+			// 放音快退
+			agentService.recordBackFast(new User(UserUtils.getPrincipal()), String.valueOf(agentRecordData.getFastTime()));
+			ajaxResult.setMsg("放音快退成功");
+			break;
 
 		default:
 			ajaxResult = new AjaxResult(HttpStatus.SC_BAD_REQUEST, "无效的录音控制标识");
