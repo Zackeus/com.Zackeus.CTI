@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody;
 import com.Zackeus.CTI.common.annotation.argumentResolver.RequestAttribute;
 import com.Zackeus.CTI.common.entity.AjaxResult;
+import com.Zackeus.CTI.common.entity.Page;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseHttpController;
 import com.Zackeus.CTI.modules.agent.config.CallParam;
+import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
 
@@ -67,6 +70,25 @@ public class AgentHttpController extends BaseHttpController {
 			HttpServletResponse response) throws Exception {
 		agentService.voiceCallEnd(user);
 		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "挂断呼叫成功"));
+	}
+	
+	/**
+	 * 
+	 * @Title：callRecordManage
+	 * @Description: TODO(通话记录分页查询)
+	 * @see：
+	 * @param user
+	 * @param agentCallData
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = {"/callRecordManage"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void callRecordManage(@RequestAttribute(name = "user") User user, @PageRequestBody AgentCallData agentCallData,
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		agentCallData.setCurrentUser(user);
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "通话记录分页查询成功", 
+				agentService.findCallRecordPage(new Page<>(request), agentCallData)));
 	}
 	
 }

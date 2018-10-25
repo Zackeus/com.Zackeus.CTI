@@ -114,6 +114,10 @@
 			<if test="type != null and type != ''">
 				AND ACD.[TYPE] = #{type}
 			</if>
+			<!-- 如果不是超级管理员，则只显示自己的呼叫记录 -->
+			<if test="!currentUser.admin">
+				AND ACD.[USER_ID] = #{currentUser.id}
+			</if>
 		</where>
 		ORDER BY ACD.[CREATE_DATE] DESC
 	</select>

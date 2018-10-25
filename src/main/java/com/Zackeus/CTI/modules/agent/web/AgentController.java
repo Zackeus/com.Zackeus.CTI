@@ -223,6 +223,7 @@ public class AgentController extends BaseController {
 		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
 	public void callRecordManage(@PageRequestBody AgentCallData agentCallData, 
 			HttpServletRequest request, HttpServletResponse response) {
+		agentCallData.setCurrentUser(new User(UserUtils.getPrincipal()));
 		renderString(response, agentService.findCallRecordPage(new Page<>(request), agentCallData));
 	}
 	
