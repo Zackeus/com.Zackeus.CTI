@@ -8,7 +8,7 @@
   
   <properties>
 		<!-- spring版本号 -->
-		<spring.version>4.3.8.RELEASE</spring.version>
+		<spring.version>4.3.15.RELEASE</spring.version>
 		<validator.version>5.2.4.Final</validator.version>
 		<javax.version>2.2.4</javax.version>
 		<!-- mybatis版本号 -->
@@ -22,7 +22,7 @@
 		<log4j.version>1.2.17</log4j.version>
 		<quartz.version>2.3.0</quartz.version>
 		<sitemesh.version>2.4.2</sitemesh.version>
-		<jackson.version>2.7.0</jackson.version>
+		<jackson.version>2.8.11</jackson.version>
 		<jython.version>2.5.3</jython.version>
 		<guava.version>17.0</guava.version>
 		
