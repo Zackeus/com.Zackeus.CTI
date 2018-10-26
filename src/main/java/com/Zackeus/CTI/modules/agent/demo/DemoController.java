@@ -49,7 +49,7 @@ public class DemoController extends BaseController {
 //	private String URL = "http://10.5.60.66:8989/com.Zackeus.CTI/sys/httpAgent/{mapping}?userId={userId}&postUrl={postUrl}";
 	private String URL = "http://10.5.133.244:8008/com.Zackeus.CTI/sys/httpAgent/{mapping}?userId={userId}&postUrl={postUrl}";
 	private String userId = StringUtils.EMPTY;
-	private String postUrl = StringUtils.EMPTY;
+	private String postUrl = "http://10.5.133.244:8008/com.Zackeus.CTI/sys/demo/receive";
 	
 	/**
 	 * 
@@ -79,7 +79,7 @@ public class DemoController extends BaseController {
 			method = RequestMethod.POST)
 	public void test(@RequestBody AgentSocketMsg agentSocketMsg, HttpServletRequest request, HttpServletResponse response) {
 		Logs.info("当前用户：" + UserUtils.getPrincipal());
-		Logs.info(JSONObject.fromObject(agentSocketMsg).toString(2));
+		Logs.info(JsonMapper.toJsonString(agentSocketMsg));
 		renderString(response, new AjaxResult(HttpStatus.SC_OK, "成功"));
 	}
 	
@@ -199,7 +199,7 @@ public class DemoController extends BaseController {
 	public void recordPlay(@PathVariable("userId") String userId, @RequestBody AgentRecord agentRecord, 
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		this.userId = userId;
-		String recordPlayUrl = URL.replace("{mapping}", "recordPlay").replace("{userId}", this.userId).replace("{postUrl}", StringUtils.EMPTY);
+		String recordPlayUrl = URL.replace("{mapping}", "recordPlay").replace("{userId}", this.userId).replace("{postUrl}", this.postUrl);
 		
 		HttpClientResult httpClientResult  = HttpClientUtil.doPostJson(recordPlayUrl, agentRecord);
 		Logs.info("结果：" + httpClientResult.getCode());

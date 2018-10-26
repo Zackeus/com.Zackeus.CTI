@@ -208,7 +208,6 @@ public class AgentEventUtil {
 		case AgentConfig.AGENTMEDIAEVENT_STOPPLAYDONE:
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_RECORD_DONE, agentHttpEvent.getEvent().getEventType(), 
 					agentService.getAgentEventData(user, AgentConfig.AGENT_DATA_RECORD));
-			agentService.clearAgentEventData(user);
 			break;
 			
 		/*未定义事件*/

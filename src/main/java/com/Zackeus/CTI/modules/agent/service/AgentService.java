@@ -290,6 +290,8 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		HttpClientResult callResult = AgentClientUtil.put(user, defaultAgentParam.getCallOutUrl().replace(AGENT_ID, 
 				user.getAgentUser().getWorkno()), callParam);
 		AgentHttpResult<String> agentHttpResult = assertAgent(callResult, "坐席外呼请求失败", String.class);
+		// 注入前清理代理数据
+		clearAgentEventData(user);
 		// 呼叫成功后将被叫号码注入代理数据中，因为 呼叫振铃事件中没有 Called 返回参数
 		setAgentEventData(user, AgentConfig.AGENT_DATA_CALLNUM, callParam.getCalled());
 		return agentHttpResult;
@@ -385,6 +387,8 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		HttpClientResult httpClientResult = AgentClientUtil.put(user, defaultAgentParam.getRecordPlayUrl().replace(AGENT_ID, 
 				user.getAgentUser().getWorkno()), recordPlayParam);
 		AgentHttpResult<String> agentHttpResult = assertAgent(httpClientResult, "录音回放请求失败", String.class);
+		// 注入前清理代理数据
+		clearAgentEventData(user);
 		// 回放成功后将回放录音数据注入代理数据中，供推送和事件判断使用
 		setAgentEventData(user, AgentConfig.AGENT_DATA_RECORD, agentRecord);
 		return agentHttpResult;
@@ -509,8 +513,6 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @param object
 	 */
 	public void setAgentEventData(User user, String key, Object object) {
-		// 注入前清理代理数据
-		clearAgentEventData(user);
 		if (agentQueue.eventThreadMap.containsKey(user.getId())) {
 			agentQueue.eventThreadMap.get(user.getId()).setAgentEventData(key, object);
 		}
