@@ -33,6 +33,9 @@ import com.alibaba.fastjson.JSONObject;
 public @interface PageRequestBody {
 	
 	String value() default "";
+	
+	String page() default "page";  			// 当前页吗字段
+	String pageSize() default "pageSize";  	// 每页限制条数字段
 
 	boolean required() default true;
 
@@ -66,8 +69,10 @@ public @interface PageRequestBody {
 			}
 			
 			JSONObject pageJson = JSONObject.parseObject(parameterJson);
-			httpServletRequest.setAttribute("page", pageJson.get("page"));
-			httpServletRequest.setAttribute("pageSize", pageJson.get("pageSize"));
+			httpServletRequest.setAttribute(parameter.getParameterAnnotation(PageRequestBody.class).page(), 
+					pageJson.get(parameter.getParameterAnnotation(PageRequestBody.class).page()));
+			httpServletRequest.setAttribute(parameter.getParameterAnnotation(PageRequestBody.class).pageSize(), 
+					pageJson.get(parameter.getParameterAnnotation(PageRequestBody.class).pageSize()));
 
 			// parameter.getGenericParameterType() 返回参数的完整类型（带泛型）
 			return JSON.parseObject(parameterJson, parameter.getGenericParameterType());

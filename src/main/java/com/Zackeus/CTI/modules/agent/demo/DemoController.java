@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.entity.HttpClientResult;
 import com.Zackeus.CTI.common.entity.Page;
+import com.Zackeus.CTI.common.utils.AssertUtil;
 import com.Zackeus.CTI.common.utils.JsonMapper;
 import com.Zackeus.CTI.common.utils.Logs;
 import com.Zackeus.CTI.common.utils.StringUtils;
@@ -24,6 +26,7 @@ import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
+import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
 import com.Zackeus.CTI.modules.agent.entity.AgentSocketMsg;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
 import com.alibaba.fastjson.JSON;
@@ -51,16 +54,16 @@ public class DemoController extends BaseController {
 	/**
 	 * 
 	 * @Title：voiceTest
-	 * @Description: TODO(外呼)
+	 * @Description: TODO(演示页面)
 	 * @see：
 	 * @param agentSocketMsg
 	 * @param request
 	 * @param response
 	 * @throws Exception 
 	 */
-	@RequestMapping(value = {"/voiceCallOut"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"/demopage"}, method = RequestMethod.GET)
 	public String voiceCallOutPage(HttpServletRequest request, HttpServletResponse response) {
-		return "modules/demo/callOut";
+		return "modules/demo/demo";
 	}
 	
 	/***
@@ -132,20 +135,6 @@ public class DemoController extends BaseController {
 	
 	/**
 	 * 
-	 * @Title：callRecordManagePage
-	 * @Description: TODO(通话记录列表页面)
-	 * @see：
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping(value = "/callRecordManage", method = RequestMethod.GET)
-	public String callRecordManagePage(HttpServletRequest request, HttpServletResponse response) {
-		return "modules/demo/callRecordManage";
-	}
-	
-	/**
-	 * 
 	 * @Title：callRecordManage
 	 * @Description: TODO(通话记录分页查询)
 	 * @see：
@@ -166,6 +155,8 @@ public class DemoController extends BaseController {
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		this.userId = userId;
 		String callRecordManageUrl = URL.replace("{mapping}", "callRecordManage").replace("{userId}", this.userId).replace("{postUrl}", StringUtils.EMPTY);
+		// 前端响应信息
+		AjaxResult ajaxResult = new AjaxResult(HttpStatus.SC_SUCCESS, "查询成功");
 		
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("userId", userId);
@@ -178,14 +169,44 @@ public class DemoController extends BaseController {
 		HttpClientResult httpClientResult  = HttpClientUtil.doPostJson(callRecordManageUrl, jsonObject);
 		Logs.info("结果：" + httpClientResult.getCode());
 		if (HttpStatus.SC_OK == httpClientResult.getCode()) {
-			AjaxResult ajaxResult = JSON.parseObject(httpClientResult.getContent(), AjaxResult.class);
-			if (HttpStatus.SC_SUCCESS == ajaxResult.getCode()) {
-				Page<AgentCallData> pageData = JSON.parseObject(JsonMapper.toJsonString(ajaxResult.getCustomObj()), 
+			AjaxResult ajaxResultData = JSON.parseObject(httpClientResult.getContent(), AjaxResult.class);
+			if (HttpStatus.SC_SUCCESS == ajaxResultData.getCode()) {
+				Page<AgentCallData> pageData = JSON.parseObject(JsonMapper.toJsonString(ajaxResultData.getCustomObj()), 
 						new TypeReference<Page<AgentCallData>>(AgentCallData.class){});
+				ajaxResult.setMsg("查询成功，条数：" + pageData.getList().size());
 				Logs.info("条数：" + pageData.getList().size());
 				Logs.info("数据： " + pageData);
+			} else {
+				ajaxResult = new AjaxResult(ajaxResultData.getCode(), "查询失败， 信息：" + ajaxResultData.getMsg());
 			}
+		} else {
+			ajaxResult = new AjaxResult(httpClientResult.getCode(), "查询失败， 信息：" + httpClientResult.getContent());
 		}
-		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, "外呼成功"));
+		renderString(response, ajaxResult);
+	}
+	
+	/**
+	 * 
+	 * @Title：recordPlay
+	 * @Description: TODO(录音回放)
+	 * @see：
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	@RequestMapping(value = {"/recordPlay/{userId}"}, consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void recordPlay(@PathVariable("userId") String userId, @RequestBody AgentRecord agentRecord, 
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+		this.userId = userId;
+		String recordPlayUrl = URL.replace("{mapping}", "recordPlay").replace("{userId}", this.userId).replace("{postUrl}", StringUtils.EMPTY);
+		
+		HttpClientResult httpClientResult  = HttpClientUtil.doPostJson(recordPlayUrl, agentRecord);
+		Logs.info("结果：" + httpClientResult.getCode());
+		
+		AssertUtil.isTrue(HttpStatus.SC_OK == httpClientResult.getCode(), httpClientResult.getCode(), "操作失败");
+		AjaxResult ajaxResult =  JSON.parseObject(httpClientResult.getContent(), AjaxResult.class);
+		AssertUtil.isTrue(HttpStatus.SC_SUCCESS == ajaxResult.getCode(), ajaxResult.getCode(), ajaxResult.getMsg());
+		renderString(response, new AjaxResult(HttpStatus.SC_SUCCESS, ajaxResult.getMsg()));
 	}
 }
