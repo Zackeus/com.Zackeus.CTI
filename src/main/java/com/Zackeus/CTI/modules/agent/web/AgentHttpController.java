@@ -86,7 +86,8 @@ public class AgentHttpController extends BaseHttpController {
 	 * @param response
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/callRecordManage"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	@RequestMapping(value = {"/callRecordManage"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, 
+			method = RequestMethod.POST)
 	public void callRecordManage(@RequestAttribute(name = "user") User user, @PageRequestBody AgentCallData agentCallData,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		agentCallData.setCurrentUser(user);
@@ -105,7 +106,8 @@ public class AgentHttpController extends BaseHttpController {
 	 * @param response
 	 * @throws Exception
 	 */
-	@RequestMapping(value = {"/recordPlay"}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	@RequestMapping(value = {"/recordPlay"}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, 
+			method = RequestMethod.POST)
 	public void recordPlay(@RequestAttribute(name = "user") User user, @Validated @RequestBody AgentRecord agentRecord,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		AjaxResult ajaxResult = new AjaxResult(HttpStatus.SC_SUCCESS, "录音操作成功");
