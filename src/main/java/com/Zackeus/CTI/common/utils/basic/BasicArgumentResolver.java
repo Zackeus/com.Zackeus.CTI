@@ -36,7 +36,7 @@ public abstract class BasicArgumentResolver implements HandlerMethodArgumentReso
 		String jsonBody = (String) servletRequest.getAttribute(JSON_REQUEST_BODY);
 		if (StringUtils.isBlank(jsonBody)) {
 			try {
-				jsonBody = IOUtils.toString(servletRequest.getInputStream());
+				jsonBody = IOUtils.toString(servletRequest.getInputStream(), servletRequest.getCharacterEncoding());
 				servletRequest.setAttribute(JSON_REQUEST_BODY, jsonBody);
 			} catch (IOException e) {
 				Logs.error("参数解析器异常：" + e.getMessage());
