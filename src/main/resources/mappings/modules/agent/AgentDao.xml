@@ -111,6 +111,9 @@
 			<if test="userName != null and userName != ''">
 				AND SY.[NAME] LIKE '%'+#{userName}+'%'
 			</if>
+			<if test="otherPhone != null and otherPhone != ''">
+				AND (ACD.[OTHER_PHONE] = #{otherPhone} OR ACD.[OTHER_PHONE] = CONCAT('0', #{otherPhone}))
+			</if>
 			<if test="type != null and type != ''">
 				AND ACD.[TYPE] = #{type}
 			</if>
