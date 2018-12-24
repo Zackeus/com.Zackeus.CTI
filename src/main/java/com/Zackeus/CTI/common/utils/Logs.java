@@ -1,5 +1,9 @@
 package com.Zackeus.CTI.common.utils;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * 
  * @Title:Logs
@@ -180,6 +184,29 @@ public class Logs {
 			log(error, message, Thread.currentThread().getStackTrace());
 		} else {
 			log(error, message, null);
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：toLog
+	 * @Description: TODO(异常输出日志)
+	 * @see：
+	 * @param e
+	 * @return
+	 */
+	public static String toLog(Exception e) {
+		StringWriter sw = new StringWriter();    
+		PrintWriter pw = new PrintWriter(sw);   
+		try {
+			e.printStackTrace(pw);
+			return sw.toString();
+		} finally {
+			try {
+				sw.close();
+			} catch (IOException e1) {
+			}
+			pw.close();
 		}
 	}
 	

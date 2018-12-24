@@ -6,6 +6,7 @@ import javax.validation.GroupSequence;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.Zackeus.CTI.common.annotation.excel.ExcelField;
 import com.Zackeus.CTI.common.entity.DataEntity;
 import com.Zackeus.CTI.common.service.valid.First;
 import com.Zackeus.CTI.common.service.valid.Second;
@@ -25,17 +26,27 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 
 	private static final long serialVersionUID = 1L;
 
+	@ExcelField(title = "呼叫流水号")
 	private String callid; 						// 呼叫流水号
+	@ExcelField(title = "员工号")
 	private String userId; 						// 员工号
+	@ExcelField(title = "受理人")
 	private String userName;					// 当前受理人
+	@ExcelField(title = "坐席号")
 	private String workNo; 						// 坐席号
+	@ExcelField(title = "对方坐席号")
 	private String otherPhoneWorkno; 			// 对方座席号
+	@ExcelField(title = "座机号")
 	private String phoneNumber; 				// 座机号
+	@ExcelField(title = "对方电话")
 	private String otherPhone; 					// 对方电话号码
+	@ExcelField(title = "呼叫类型")
 	private String type; 						// 呼叫类型(main：去电；called：来电)
-	private Date createDate;					// 发生时间
+	@ExcelField(title = "结果")
 	private boolean result = Boolean.FALSE; 	// 结果(未通话false 0,通话 true 1)
-
+	@ExcelField(title = "发生时间")
+	private Date createDate;					// 发生时间
+	
 	@Valid
 	@NotNull(message = "{agentCallData.agentRecord.NotNull}")
 	private AgentRecord agentRecord;			// 录音
@@ -63,20 +74,23 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 		this.agentRecord = agentRecord;
 	}
 	
-	public AgentCallData(String callid, String userId, String workNo, String otherPhoneWorkno, String phoneNumber,
-			String otherPhone, String type, boolean result, AgentRecord agentRecord) {
+	public AgentCallData(String callid, String userId, String userName, String workNo, String otherPhoneWorkno,
+			String phoneNumber, String otherPhone, String type, boolean result, Date createDate,
+			AgentRecord agentRecord) {
 		super();
 		this.callid = callid;
 		this.userId = userId;
+		this.userName = userName;
 		this.workNo = workNo;
 		this.otherPhoneWorkno = otherPhoneWorkno;
 		this.phoneNumber = phoneNumber;
 		this.otherPhone = otherPhone;
 		this.type = type;
 		this.result = result;
+		this.createDate = createDate;
 		this.agentRecord = agentRecord;
 	}
-	
+
 	public String getCallid() {
 		return callid;
 	}
