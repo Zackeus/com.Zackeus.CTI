@@ -46,19 +46,12 @@ layui.use(['layuiRequest','form','layer','customerFrom','laydate'],function(){
     
     // 导出数据
     form.on('submit(exportData)', function(data) {
-    	var btn = $(this);
-    	layuiRequest.doPost(data.field, ctx + '/sys/agent/callDataExport',
-    			beforeSend = function() {
-    				btn.text("导出中...").attr("disabled","disabled").addClass("layui-disabled");
-    			},
-    			success = function(result) {
-    				console.log(result)
-    				btn.text("导出").attr("disabled",false).removeClass("layui-disabled");
-    			},
-    			error = function(event) {
-    				layer.msg('响应失败', {icon: 5,time: 2000,shift: 6}, function(){});
-    				btn.text("导出").attr("disabled",false).removeClass("layui-disabled");
-    			})
+    	var url = ctx + '/sys/agent/callDataExport';
+    	var form = $("<form></form>").attr("action", url).attr("method", "post");
+        for (var key in data.field) {
+        	form.append($("<input></input>").attr("type", "hidden").attr("name", key).attr("value", data.field[key]));
+        }
+        form.appendTo('body').submit().remove();
     	return false;
     });
     

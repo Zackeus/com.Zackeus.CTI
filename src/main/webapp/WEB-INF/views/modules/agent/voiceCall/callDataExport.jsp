@@ -13,14 +13,14 @@
 			<label class="layui-form-label">起始日期</label>
 			<div class="layui-input-block">
 				<input id="startDate" name="startDate" class="layui-input" type="text" lay-verify="required|date" placeholder="起始日期" 
-       			autocomplete="off" value="<fmt:formatDate value="${defaultSearch.startDay}" pattern="yyyy-MM-dd" />">
+       			autocomplete="off" value="<fmt:formatDate value="${nowDate}" pattern="yyyy-MM-dd" />">
 			</div>
 		</div>
 		<div class="layui-form-item layui-row layui-col-xs12">
 			<label class="layui-form-label">结束日期</label>
 			<div class="layui-input-block">
 				<input id="endDate" name="endDate" class="layui-input" type="text" lay-verify="required|date" placeholder="结束日期" 
-       			autocomplete="off" value="<fmt:formatDate value="${defaultSearch.endDay}" pattern="yyyy-MM-dd" />">
+       			autocomplete="off" value="<fmt:formatDate value="${nowDate}" pattern="yyyy-MM-dd" />">
 			</div>
 		</div>
 		<div class="layui-form-item">

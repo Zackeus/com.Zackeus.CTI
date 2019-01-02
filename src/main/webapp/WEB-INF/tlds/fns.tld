@@ -33,4 +33,13 @@
     <example>${fns:getDictListJson(type)}</example>  
   </function>
   
+    <!-- DateUtils -->
+  <function>
+    <description>获取当前日期</description>
+    <name>getDate</name>
+    <function-class>com.Zackeus.CTI.common.utils.DateUtils</function-class>
+    <function-signature>java.lang.String getDate(java.lang.String)</function-signature>
+    <example>${fns:getDate(pattern)}</example>  
+  </function>
+  
 </taglib>
