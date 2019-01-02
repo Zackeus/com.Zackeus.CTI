@@ -3,6 +3,7 @@ package com.Zackeus.CTI.modules.agent.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,8 @@ import com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody;
 import com.Zackeus.CTI.common.annotation.argumentResolver.RequestAttribute;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.entity.Page;
+import com.Zackeus.CTI.common.utils.ExcelUtil;
+import com.Zackeus.CTI.common.utils.IdGen;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
 import com.Zackeus.CTI.common.web.BaseHttpController;
@@ -22,6 +25,7 @@ import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.config.CallParam;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
+import com.Zackeus.CTI.modules.agent.entity.CallDataExport;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
 
@@ -160,6 +164,25 @@ public class AgentHttpController extends BaseHttpController {
 			break;
 		}
 		renderString(response, ajaxResult);
+	}
+	
+	/**
+	 * 
+	 * @Title：callDataExport
+	 * @Description: TODO(通话记录报表导出)
+	 * @see：
+	 * @param user
+	 * @param callDataExport
+	 * @param request
+	 * @param response
+	 */
+	@RequestMapping(value = {"/callDataExport"}, consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void callDataExport(@RequestAttribute(name = "user") User user, @Validated @RequestBody CallDataExport callDataExport,
+			HttpServletRequest request, HttpServletResponse response) {
+		XSSFWorkbook secondWb = ExcelUtil.exportExcel2007(agentService.getCallDataByExport(callDataExport), 
+				AgentCallData.class, null);
+		renderString(response, new AjaxResult(HttpStatus.SC_OK, IdGen.uuid() + ".xlsx", ExcelUtil.toBase64(secondWb)));
 	}
 	
 }

@@ -1,5 +1,6 @@
 package com.Zackeus.CTI.common.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -298,35 +299,6 @@ public class ExcelUtil {
 
 	/**
 	 * 
-	 * @Title:writeExcel
-	 * @Description: TODO(导出)
-	 * @param response
-	 * @param fileName
-	 * @param wb
-	 * @throws IOException
-	 */
-	public static void writeExcel(String fileName, HttpServletResponse response, Workbook wb) {
-		response.setContentType("application/vnd.ms-excel");
-		OutputStream ouputStream = null;
-		try {
-			response.setHeader("Content-disposition", "attachment; filename=" + 
-					URLEncoder.encode(fileName, WebUtils.UTF_ENCODING));
-			ouputStream = response.getOutputStream();
-			wb.write(ouputStream);
-		} catch (Exception e) {
-			Logs.error("导出报表异常：" + Logs.toLog(e));
-			throw new MyException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "导出报表异常：" + e.getMessage());
-		} finally {
-			try {
-				ouputStream.close();
-			} catch (Exception e2) {
-				Logs.error("关闭文件流异常：" + Logs.toLog(e2));
-			}
-		}
-	}
-
-	/**
-	 * 
 	 * @Title:getCellStyle
 	 * @Description: TODO(表头样式)
 	 * @param wb
@@ -439,6 +411,62 @@ public class ExcelUtil {
 	
 	/**
 	 * 
+	 * @Title:writeExcel
+	 * @Description: TODO(导出)
+	 * @param response
+	 * @param fileName
+	 * @param wb
+	 * @throws IOException
+	 */
+	public static void writeExcel(String fileName, HttpServletResponse response, Workbook wb) {
+		response.setContentType("application/vnd.ms-excel");
+		OutputStream ouputStream = null;
+		try {
+			response.setHeader("Content-disposition", "attachment; filename=" + 
+					URLEncoder.encode(fileName, WebUtils.UTF_ENCODING));
+			ouputStream = response.getOutputStream();
+			wb.write(ouputStream);
+		} catch (Exception e) {
+			Logs.error("导出报表异常：" + Logs.toLog(e));
+			throw new MyException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "导出报表异常：" + e.getMessage());
+		} finally {
+			try {
+				ouputStream.close();
+			} catch (Exception e2) {
+				Logs.error("关闭文件流异常：" + Logs.toLog(e2));
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @Title：toBase64
+	 * @Description: TODO(转base64)
+	 * @see：
+	 * @param workbook
+	 * @return
+	 * @throws IOException 
+	 */
+	public static String toBase64(Workbook workbook) {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			workbook.write(os);
+			byte[] bytes = os.toByteArray();
+			return FileUtils.byte2Base64StringFun(bytes);
+		} catch (Exception e) {
+			Logs.error("字节流转base64异常：" + Logs.toLog(e));
+			throw new MyException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "字节流转base64异常：" + Logs.toLog(e));
+		} finally {
+			try {
+				os.close();
+			} catch (IOException e) {
+				Logs.error("关闭字节输出流异常：" + Logs.toLog(e));
+			}
+		}
+	}
+	
+	/**
+	 * 
 	 * @Title:main
 	 * @Description: TODO(测试)
 	 * @param args
@@ -457,5 +485,6 @@ public class ExcelUtil {
 		
 		XSSFWorkbook secondWb = (XSSFWorkbook) ExcelUtil.exportExcel(agentCallDatas, AgentCallData.class, null, EXCEl_FILE_2007);
 		secondWb.write(new FileOutputStream("D:/TEST.xlsx"));
+		
 	}
 }

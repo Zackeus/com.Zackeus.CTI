@@ -46,6 +46,8 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 	private boolean result = Boolean.FALSE; 	// 结果(未通话false 0,通话 true 1)
 	@ExcelField(title = "发生时间")
 	private Date createDate;					// 发生时间
+	@ExcelField(title = "通话时长(秒)")
+	private Integer talkTime;					// 通话时长
 	
 	@Valid
 	@NotNull(message = "{agentCallData.agentRecord.NotNull}")
@@ -169,6 +171,14 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+	
+	public Integer getTalkTime() {
+		return talkTime;
+	}
+
+	public void setTalkTime(Integer talkTime) {
+		this.talkTime = talkTime;
 	}
 
 	public AgentRecord getAgentRecord() {

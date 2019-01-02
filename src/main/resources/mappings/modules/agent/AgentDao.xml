@@ -130,7 +130,8 @@
 		SELECT
 			<include refid="agentCallColumns"/>,
 			SY.[NAME] AS "userName",
-			AR.[RECORD_ID] AS "agentRecord.recordID"
+			AR.[RECORD_ID] AS "agentRecord.recordID",
+			DATEDIFF(ss,AR.[START_DATE],AR.[END_DATE]) AS [TALK_TIME]
 		FROM [CTI].[dbo].[AGENT_CALL_DATA] ACD
 		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] SY ON ACD.[USER_ID] = SY.[ID]
 		LEFT JOIN [CTI].[dbo].[AGENT_RECORD] AR ON ACD.[CALL_ID] = AR.[CALL_ID]

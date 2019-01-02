@@ -59,7 +59,7 @@ public class HttpClientUtil {
 	public static final int CONNECT_TIMEOUT = 6000;
 
 	// 请求获取数据的超时时间(即响应时间)，单位毫秒。
-	public static final int SOCKET_TIMEOUT = 6000;
+	public static final int SOCKET_TIMEOUT = 15000;
 
 	public static final String PARAM_MAP = "Map";
 	public static final String PARAM_JSON = "Json";
