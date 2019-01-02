@@ -27,7 +27,14 @@
 				<button class="layui-btn" lay-submit lay-filter="search"><i class="layui-icon layui-icon-search"></i></button>
 			</div>
 		</blockquote>
+		<!-- 工具按钮 -->
+		<blockquote class="layui-elem-quote quoteBox">
+			<div class="demoTable">
+				<button class="layui-btn" lay-submit lay-filter="export"><i class="layui-icon layui-icon-wenjianxiazai"></i></button>
+			</div>
+		</blockquote>
 	</form>
+	
 	<table id="callRecordList" lay-filter="callRecordList" class="layui-hide"></table>
 	<script type="text/html" id=callRecordListToolBar></script>
 	

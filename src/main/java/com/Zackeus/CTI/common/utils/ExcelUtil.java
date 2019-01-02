@@ -305,15 +305,23 @@ public class ExcelUtil {
 	 * @param wb
 	 * @throws IOException
 	 */
-	public static void writeExcel(HttpServletResponse response, String fileName, XSSFWorkbook wb) throws IOException {
+	public static void writeExcel(String fileName, HttpServletResponse response, Workbook wb) {
 		response.setContentType("application/vnd.ms-excel");
-		response.setHeader("Content-disposition", "attachment; filename=" + fileName);
 		OutputStream ouputStream = null;
 		try {
+			response.setHeader("Content-disposition", "attachment; filename=" + 
+					URLEncoder.encode(fileName, WebUtils.UTF_ENCODING));
 			ouputStream = response.getOutputStream();
 			wb.write(ouputStream);
+		} catch (Exception e) {
+			Logs.error("导出报表异常：" + Logs.toLog(e));
+			throw new MyException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "导出报表异常：" + e.getMessage());
 		} finally {
-			ouputStream.close();
+			try {
+				ouputStream.close();
+			} catch (Exception e2) {
+				Logs.error("关闭文件流异常：" + Logs.toLog(e2));
+			}
 		}
 	}
 

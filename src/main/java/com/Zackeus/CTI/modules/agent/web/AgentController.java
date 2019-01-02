@@ -1,8 +1,12 @@
 package com.Zackeus.CTI.modules.agent.web;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,6 +22,7 @@ import com.Zackeus.CTI.common.annotation.argumentResolver.PageRequestBody;
 import com.Zackeus.CTI.common.annotation.validator.CallNum;
 import com.Zackeus.CTI.common.entity.AjaxResult;
 import com.Zackeus.CTI.common.entity.Page;
+import com.Zackeus.CTI.common.utils.ExcelUtil;
 import com.Zackeus.CTI.common.utils.ObjectUtils;
 import com.Zackeus.CTI.common.utils.exception.MyException;
 import com.Zackeus.CTI.common.utils.httpClient.HttpStatus;
@@ -25,6 +30,7 @@ import com.Zackeus.CTI.common.web.BaseController;
 import com.Zackeus.CTI.modules.agent.config.AgentConfig;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
+import com.Zackeus.CTI.modules.agent.entity.CallDataExport;
 import com.Zackeus.CTI.modules.agent.service.AgentService;
 import com.Zackeus.CTI.modules.sys.entity.User;
 import com.Zackeus.CTI.modules.sys.utils.UserUtils;
@@ -310,6 +316,43 @@ public class AgentController extends BaseController {
 			break;
 		}
 		renderString(response, ajaxResult);
+	}
+	
+	/**
+	 * 
+	 * @Title：callDataExportPage
+	 * @Description: TODO(通话报表导出页面)
+	 * @see：
+	 * @param request
+	 * @param response
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "/callDataExport", method = RequestMethod.GET)
+	public String callDataExportPage(HttpServletRequest request, HttpServletResponse response) {
+		return "modules/agent/voiceCall/callDataExport";
+	}
+	
+	/**
+	 * 
+	 * @Title：callRecordExport
+	 * @Description: TODO(通话报表导出)
+	 * @see：
+	 * @param agentCallData
+	 * @param request
+	 * @param response
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
+	@RequiresPermissions("user")
+	@RequestMapping(value = "/callDataExport", consumes = MediaType.APPLICATION_JSON_VALUE, 
+		produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
+	public void callDataExport(@RequestBody CallDataExport callDataExport, 
+			HttpServletRequest request, HttpServletResponse response) throws Exception {
+//		consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE
+		
+		XSSFWorkbook secondWb = ExcelUtil.exportExcel2007(agentService.getCallDataByExport(callDataExport), 
+				AgentCallData.class, null);
+		ExcelUtil.writeExcel("test.xlsx", response, secondWb);
 	}
 	
 }

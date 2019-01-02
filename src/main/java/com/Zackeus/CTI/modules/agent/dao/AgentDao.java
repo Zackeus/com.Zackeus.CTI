@@ -6,6 +6,7 @@ import com.Zackeus.CTI.common.annotation.MyBatisDao;
 import com.Zackeus.CTI.common.dao.CrudDao;
 import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
+import com.Zackeus.CTI.modules.agent.entity.CallDataExport;
 
 /**
  * 
@@ -27,6 +28,8 @@ public interface AgentDao extends CrudDao<AgentCallData> {
 	public AgentRecord getRecordByRecordID(String recordID);
 	
 	public List<AgentCallData> findCallRecordList(AgentCallData agentCallData);
+	
+	public List<AgentCallData> getCallDataByExport(CallDataExport callDataExport);
 	
 
 }

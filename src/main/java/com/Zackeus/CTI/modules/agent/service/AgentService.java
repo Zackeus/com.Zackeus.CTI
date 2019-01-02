@@ -1,6 +1,7 @@
 package com.Zackeus.CTI.modules.agent.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
@@ -24,6 +25,7 @@ import com.Zackeus.CTI.modules.agent.entity.AgentCallData;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpEvent;
 import com.Zackeus.CTI.modules.agent.entity.AgentHttpResult;
 import com.Zackeus.CTI.modules.agent.entity.AgentRecord;
+import com.Zackeus.CTI.modules.agent.entity.CallDataExport;
 import com.Zackeus.CTI.modules.agent.entity.Result;
 import com.Zackeus.CTI.modules.agent.utils.AgentClientUtil;
 import com.Zackeus.CTI.modules.agent.utils.AgentEventThread;
@@ -715,6 +717,17 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		agentCallData.setPage(page);
 		page.setList(dao.findCallRecordList(agentCallData));
 		return page;
+	}
+	
+	/**
+	 * 
+	 * @Title：getCallDataByExport
+	 * @Description: TODO(根据导出参数查询通话记录)
+	 * @see：
+	 * @return
+	 */
+	public List<AgentCallData> getCallDataByExport(CallDataExport callDataExport) {
+		return dao.getCallDataByExport(callDataExport);
 	}
 	
 }

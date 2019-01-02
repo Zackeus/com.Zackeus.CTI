@@ -124,5 +124,18 @@
 		</where>
 		ORDER BY ACD.[CREATE_DATE] DESC
 	</select>
+	
+	<!-- 根据导出参数查询通话记录 -->
+	<select id="getCallDataByExport" resultType="AgentCallData">
+		SELECT
+			<include refid="agentCallColumns"/>,
+			SY.[NAME] AS "userName",
+			AR.[RECORD_ID] AS "agentRecord.recordID"
+		FROM [CTI].[dbo].[AGENT_CALL_DATA] ACD
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] SY ON ACD.[USER_ID] = SY.[ID]
+		LEFT JOIN [CTI].[dbo].[AGENT_RECORD] AR ON ACD.[CALL_ID] = AR.[CALL_ID]
+		WHERE ACD.[CREATE_DATE] BETWEEN #{startDate} AND #{endDate}
+		ORDER BY ACD.[CREATE_DATE] DESC
+	</select>
 
 </mapper>

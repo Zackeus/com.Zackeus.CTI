@@ -83,6 +83,18 @@ layui.use(['form','layer','table','laytpl','layuiRequest','customerFrom'],functi
     	return false;
     });
     
+    // 数据导出
+    form.on('submit(export)', function(data) {
+        layer.open({
+            title: '报表导出',
+            area: ['550px', '400px'],
+            type: 2,
+            moveType: 1,
+	        content: [ctx + '/sys/agent/callDataExport', 'no']
+        })
+    	return false;
+    });
+    
     // 录音回放
     function recordPlay(data) {
     	layuiRequest.doPost(
