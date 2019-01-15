@@ -160,7 +160,14 @@ public class AgentEventUtil {
 		case AgentConfig.AGENTEVENT_INSIDE_CALL_FAIL:
 		case AgentConfig.AGENTEVENT_CALL_RELEASE:
 		case AgentConfig.AGENTEVENT_NO_ANSWER:
+			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_END, agentHttpEvent.getEvent().getEventType(), 
+					agentHttpEvent.getEvent().getContent());
+			break;
+			
+		/*话机摘机*/
 		case AgentConfig.AGENTOTHER_PHONERELEASE:
+			// 更新振铃结束时间
+			agentService.updateRingingDate(user);
 			agentSocketMsg = new AgentSocketMsg(AgentConfig.EVENT_VOICE_END, agentHttpEvent.getEvent().getEventType(), 
 					agentHttpEvent.getEvent().getContent());
 			break;

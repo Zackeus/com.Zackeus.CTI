@@ -633,6 +633,26 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	
 	/**
 	 * 
+	 * @Title：updateRingingDate
+	 * @Description: TODO(更新振铃结束时间)
+	 * @see：
+	 * A。当未接通时，振铃结束以 话机摘机 动作为准
+	 * B。当接通时，振铃结束以 录音开始 动作为准
+	 */
+	public void updateRingingDate(User user) {
+		String callId = (String) getAgentEventData(user, AgentConfig.AGENT_DATA_CALLID);
+		if (StringUtils.isBlank(callId)) {
+			return;
+		}
+		AgentCallData agentCallData = get(callId);
+		if (ObjectUtils.isNotEmpty(agentCallData) && ObjectUtils.isEmpty(agentCallData.getRiningDate())) {
+			// 当接通时，会先触发录音，结束后触发摘机，所以这里先判断是否为空，为空在更新
+			dao.updateRingingDate(new AgentCallData(callId));
+		}
+	}
+	
+	/**
+	 * 
 	 * @Title：getRecordByCallId
 	 * @Description: TODO(根据呼叫流水号查询录音)
 	 * @see：
@@ -670,6 +690,8 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 	 * @param entity
 	 */
 	public void insertRecord(User user, AgentRecord entity) {
+		// 插入振铃结束时间
+		updateRingingDate(user);
 		String callId = (String) getAgentEventData(user, AgentConfig.AGENT_DATA_CALLID);
 		if (StringUtils.isBlank(callId)) {
 			return;
@@ -679,6 +701,7 @@ public class AgentService extends CrudService<AgentDao, AgentCallData> {
 		updateCallData(agentCallData);
 		entity.setCreateDate(new Date());
 		agentCallData.setAgentRecord(entity);
+		// 插入录音信息
 		dao.insertRecord(agentCallData);
 	}
 	

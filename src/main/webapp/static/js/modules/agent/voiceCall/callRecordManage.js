@@ -50,6 +50,7 @@ layui.use(['form','layer','table','laytpl','layuiRequest','customerFrom'],functi
             {templet: '#typeTpl', title: '呼叫类型', align:'center'},
             {templet: '#resultTpl', title: '结果', align:'center'},
             {field: 'createDate', title: '发生时间', sort: true, align:'center'},
+            {field: 'riningDate', title: '振铃结束', sort: true, align:'center'},
             {title: '操作', fixed:"right", align: 'center', templet:'#callRecordListBar'}
         ]],
         done: function(res, curr, count) {

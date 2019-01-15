@@ -11,6 +11,7 @@
       	ACD.[OTHER_PHONE],
       	ACD.[TYPE],
       	ACD.[CREATE_DATE],
+      	ACD.[RINING_DATE],
       	ACD.[RESULT]
 	</sql>
 	
@@ -23,6 +24,14 @@
       	[START_DATE],
       	[END_DATE]
 	</sql>
+	
+	<!-- 根据ID查询数据 -->
+	<select id="get" resultType="AgentCallData">
+		SELECT 
+		<include refid="agentCallColumns"/>
+		FROM [CTI].[dbo].[AGENT_CALL_DATA] ACD
+		WHERE ACD.[CALL_ID] = #{callid}
+	</select>
 	
 	<!-- 增加呼叫数据 -->
 	<insert id="insert">
@@ -41,6 +50,7 @@
 				#{otherPhone},
 				#{type},
 				#{createDate},
+				#{riningDate},
 				#{result})
         </if>
         <if test="count > 0">
@@ -54,6 +64,13 @@
 	<update id="update">
 		UPDATE [CTI].[dbo].[AGENT_CALL_DATA]
 		SET [RESULT] = 1 
+		WHERE [CALL_ID] = #{callid}
+	</update>
+	
+	<!-- 更新振铃结束时间 -->
+	<update id="updateRingingDate">
+		UPDATE [CTI].[dbo].[AGENT_CALL_DATA]
+		SET [RINING_DATE] = GETDATE()
 		WHERE [CALL_ID] = #{callid}
 	</update>
 	

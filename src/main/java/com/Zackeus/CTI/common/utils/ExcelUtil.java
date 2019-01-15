@@ -478,7 +478,7 @@ public class ExcelUtil {
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		List<AgentCallData> agentCallDatas = new ArrayList<>();
 		agentCallDatas.add(new AgentCallData("123", "1", "张舟", "152", "", "5117", "15058041631", "main", true, 
-				new Date(), null));
+				new Date(), null, null));
 		
 		HSSFWorkbook firstWb = (HSSFWorkbook) ExcelUtil.exportExcel(agentCallDatas, AgentCallData.class, null, EXCEL_FILE_2003);
 		firstWb.write(new FileOutputStream("D:/TEST.xls"));

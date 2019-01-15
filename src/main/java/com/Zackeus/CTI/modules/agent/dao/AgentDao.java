@@ -21,6 +21,8 @@ public interface AgentDao extends CrudDao<AgentCallData> {
 	
 	public void insertRecord(AgentCallData agentCallData);
 	
+	public void updateRingingDate(AgentCallData agentCallData);
+	
 	public void updateRecordEndDate(AgentCallData agentCallData);
 	
 	public AgentRecord getRecordByCallId(String callId);

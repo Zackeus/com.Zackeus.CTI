@@ -12,6 +12,7 @@ import com.Zackeus.CTI.common.service.valid.First;
 import com.Zackeus.CTI.common.service.valid.Second;
 import com.Zackeus.CTI.common.service.valid.Third;
 import com.Zackeus.CTI.modules.sys.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 
@@ -44,8 +45,15 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 	private String type; 						// 呼叫类型(main：去电；called：来电)
 	@ExcelField(title = "结果")
 	private boolean result = Boolean.FALSE; 	// 结果(未通话false 0,通话 true 1)
+	
 	@ExcelField(title = "发生时间")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createDate;					// 发生时间
+	
+	@ExcelField(title = "振铃结束")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date riningDate;					// 振铃结束时间
+	
 	@ExcelField(title = "通话时长(秒)")
 	private Integer talkTime;					// 通话时长
 	
@@ -77,7 +85,7 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 	}
 	
 	public AgentCallData(String callid, String userId, String userName, String workNo, String otherPhoneWorkno,
-			String phoneNumber, String otherPhone, String type, boolean result, Date createDate,
+			String phoneNumber, String otherPhone, String type, boolean result, Date createDate, Date riningDate,
 			AgentRecord agentRecord) {
 		super();
 		this.callid = callid;
@@ -90,6 +98,7 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 		this.type = type;
 		this.result = result;
 		this.createDate = createDate;
+		this.riningDate = riningDate;
 		this.agentRecord = agentRecord;
 	}
 
@@ -173,6 +182,14 @@ public class AgentCallData extends DataEntity<AgentCallData> {
 		this.createDate = createDate;
 	}
 	
+	public Date getRiningDate() {
+		return riningDate;
+	}
+
+	public void setRiningDate(Date riningDate) {
+		this.riningDate = riningDate;
+	}
+
 	public Integer getTalkTime() {
 		return talkTime;
 	}
