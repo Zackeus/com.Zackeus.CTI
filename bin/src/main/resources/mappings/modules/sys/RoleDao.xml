@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Zackeus.CTI.modules.sys.dao.RoleDao">
+
+	<sql id="roleColumns">
+		R.[ID],
+      	R.[NAME],
+      	R.[EN_NAME],
+      	R.[CREATE_BY],
+      	R.[UPDATE_BY],
+      	R.[CREATE_DATE],
+      	R.[UPDATE_DATE],
+      	R.[REMARKS]
+    </sql>
+    
+    <!-- 获取全部角色列表 -->
+    <select id="findAllList" resultType="Role">
+    	SELECT
+		<include refid="roleColumns"/>
+		FROM [CTI].[dbo].[SYS_ROLE] R
+		ORDER BY R.name
+    </select>
+    
+    <!-- 根据用户ID或登录名查询用户角色 -->
+	<select id="getRoleByUser" resultType="Role">
+		SELECT
+		<include refid="roleColumns"/>
+		FROM [CTI].[dbo].[SYS_ROLE] R
+		LEFT JOIN [CTI].[dbo].[SYS_USER_ROLE] UR ON R.[ID] = UR.[ROLE_ID]
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] U ON U.id = UR.[USER_ID]
+		<where>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND U.id = #{user.id}
+			</if>
+			<if test="user != null and user.loginName != null and user.loginName != ''">
+				AND U.login_name = #{user.loginName}
+			</if>
+		</where>
+		ORDER BY R.name
+	</select>
+	
+</mapper>

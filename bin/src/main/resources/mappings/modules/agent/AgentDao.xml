@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.Zackeus.CTI.modules.agent.dao.AgentDao">
+
+	<sql id="agentCallColumns">
+		ACD.[CALL_ID],
+      	ACD.[USER_ID],
+      	ACD.[WORK_NO],
+      	ACD.[OTHER_PHONE_WORK_NO],
+      	ACD.[PHONE_NUMBER],
+      	ACD.[OTHER_PHONE],
+      	ACD.[TYPE],
+      	ACD.[CREATE_DATE],
+      	ACD.[RINING_DATE],
+      	ACD.[RESULT]
+	</sql>
+	
+	<sql id="agentRecordColumns">
+		[RECORD_ID],
+		[CALL_ID],
+      	[RECORD_TITLE],
+      	[FILE_NAME],
+      	[LOCATION_ID],
+      	[START_DATE],
+      	[END_DATE]
+	</sql>
+	
+	<!-- 根据ID查询数据 -->
+	<select id="get" resultType="AgentCallData">
+		SELECT 
+		<include refid="agentCallColumns"/>
+		FROM [CTI].[dbo].[AGENT_CALL_DATA] ACD
+		WHERE ACD.[CALL_ID] = #{callid}
+	</select>
+	
+	<!-- 增加呼叫数据 -->
+	<insert id="insert">
+		<selectKey keyProperty="count" resultType="int" order="BEFORE">
+            SELECT COUNT(*) FROM [CTI].[dbo].[AGENT_CALL_DATA] WHERE [CALL_ID] = #{callid}
+        </selectKey>
+        <if test="count == 0">
+        	INSERT INTO [CTI].[dbo].[AGENT_CALL_DATA]
+			(<include refid="agentCallColumns"/>)
+			VALUES (
+				#{callid},
+				#{userId},
+				#{workNo},
+				#{otherPhoneWorkno},
+				#{phoneNumber},
+				#{otherPhone},
+				#{type},
+				#{createDate},
+				#{riningDate},
+				#{result})
+        </if>
+        <if test="count > 0">
+        	UPDATE [CTI].[dbo].[AGENT_CALL_DATA]
+        	SET [OTHER_PHONE_WORK_NO] = #{otherPhoneWorkno}
+        	WHERE [CALL_ID] = #{callid}
+        </if>
+	</insert>
+	
+	<!-- 更新呼叫数据 -->
+	<update id="update">
+		UPDATE [CTI].[dbo].[AGENT_CALL_DATA]
+		SET [RESULT] = 1 
+		WHERE [CALL_ID] = #{callid}
+	</update>
+	
+	<!-- 更新振铃结束时间 -->
+	<update id="updateRingingDate">
+		UPDATE [CTI].[dbo].[AGENT_CALL_DATA]
+		SET [RINING_DATE] = GETDATE()
+		WHERE [CALL_ID] = #{callid}
+	</update>
+	
+	<!-- 根据呼叫流水号查询录音 -->
+	<select id="getRecordByCallId" resultType="AgentRecord">
+		SELECT 
+		<include refid="agentRecordColumns"/>
+		FROM [CTI].[dbo].[AGENT_RECORD]
+		WHERE [CALL_ID] = #{callid}
+	</select>
+	
+	<!-- 根据录音流水号查询录音 -->
+	<select id="getRecordByRecordID" resultType="AgentRecord">
+		SELECT 
+		<include refid="agentRecordColumns"/>
+		FROM [CTI].[dbo].[AGENT_RECORD]
+		WHERE [RECORD_ID] = #{recordID}
+	</select>
+	
+	<!-- 插入录音 -->
+	<insert id="insertRecord">
+		INSERT INTO [CTI].[dbo].[AGENT_RECORD]
+		(<include refid="agentRecordColumns"/>)
+		VALUES (
+			#{agentRecord.recordID},
+			#{callid},
+			#{agentRecord.recordID},
+			#{agentRecord.fileName},
+			#{agentRecord.locationId},
+			#{agentRecord.createDate},
+			#{agentRecord.updateDate}
+		)
+	</insert>
+	
+	<!-- 更新录音结束时间 -->
+	<update id="updateRecordEndDate">
+		UPDATE [CTI].[dbo].[AGENT_RECORD]
+		SET [END_DATE] = #{agentRecord.updateDate}
+		WHERE [RECORD_ID] = #{agentRecord.recordID} AND [END_DATE] IS NULL
+	</update>
+
+	<!-- 分页查询通话记录信息 -->
+	<select id="findCallRecordList" resultType="AgentCallData">
+		SELECT
+			<include refid="agentCallColumns"/>,
+			SY.[NAME] AS "userName",
+			AR.[RECORD_ID] AS "agentRecord.recordID"
+		FROM [CTI].[dbo].[AGENT_CALL_DATA] ACD
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] SY ON ACD.[USER_ID] = SY.[ID]
+		LEFT JOIN [CTI].[dbo].[AGENT_RECORD] AR ON ACD.[CALL_ID] = AR.[CALL_ID]
+		<where>
+			<if test="callid != null and callid != ''">
+				AND ACD.[CALL_ID] = #{callid}
+			</if>
+			<if test="userName != null and userName != ''">
+				AND SY.[NAME] LIKE '%'+#{userName}+'%'
+			</if>
+			<if test="otherPhone != null and otherPhone != ''">
+				AND (ACD.[OTHER_PHONE] = #{otherPhone} OR ACD.[OTHER_PHONE] = CONCAT('0', #{otherPhone}))
+			</if>
+			<if test="type != null and type != ''">
+				AND ACD.[TYPE] = #{type}
+			</if>
+			<!-- 如果不是超级管理员，则只显示自己的呼叫记录 -->
+			<if test="!currentUser.admin">
+				AND ACD.[USER_ID] = #{currentUser.id}
+			</if>
+		</where>
+		ORDER BY ACD.[CREATE_DATE] DESC
+	</select>
+	
+	<!-- 根据导出参数查询通话记录 -->
+	<select id="getCallDataByExport" resultType="AgentCallData">
+		SELECT
+			<include refid="agentCallColumns"/>,
+			SY.[NAME] AS "userName",
+			AR.[RECORD_ID] AS "agentRecord.recordID",
+			DATEDIFF(ss,AR.[START_DATE],AR.[END_DATE]) AS [TALK_TIME]
+		FROM [CTI].[dbo].[AGENT_CALL_DATA] ACD
+		LEFT JOIN [jeesite-yfc].[dbo].[sys_user] SY ON ACD.[USER_ID] = SY.[ID]
+		LEFT JOIN [CTI].[dbo].[AGENT_RECORD] AR ON ACD.[CALL_ID] = AR.[CALL_ID]
+		WHERE ACD.[CREATE_DATE] BETWEEN #{startDate} AND #{endDate}
+		ORDER BY ACD.[CREATE_DATE] DESC
+	</select>
+
+</mapper>
