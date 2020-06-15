@@ -12,7 +12,7 @@
 	<properties>
 		<!-- spring版本号 -->
 		<spring.version>4.3.18.RELEASE</spring.version>
-		<validator.version>5.2.4.Final</validator.version>
+		<validator.version>5.3.5.Final</validator.version>
 		<javax.version>2.2.4</javax.version>
 		<!-- mybatis版本号 -->
 		<mybatis.version>3.4.5</mybatis.version>
