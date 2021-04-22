@@ -15,7 +15,7 @@
 		<validator.version>5.2.4.Final</validator.version>
 		<javax.version>2.2.4</javax.version>
 		<!-- mybatis版本号 -->
-		<mybatis.version>3.4.5</mybatis.version>
+		<mybatis.version>3.5.6</mybatis.version>
 		<!-- jdbc driver setting -->
 		<mysql.driver.version>5.1.30</mysql.driver.version>
 		<oracle.driver.version>10.2.0.4.0</oracle.driver.version>
